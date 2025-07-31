@@ -1,0 +1,416 @@
+## Criterios de Evaluación
+✅ **Poco saturado**
+✅ **Problema real y tangible** 
+✅ **Población dispuesta a buscar soluciones**
+✅ **Impacto genuino en salud**
+✅ **Posible hacer gratis**
+
+**¿Alguna de estas te resuena? ¿O querés que profundice en alguna específica?**
+
+---
+
+## Análisis Detallado de Competencia - Apps de Tracking de Gimnasio
+
+### Apps Principales Analizadas
+- **Hevy** (más popular actualmente)
+- **Strong** (iOS, muy valorada)
+- **Jefit** (veterana del mercado)
+- **Simple Workout Log**
+- **Progressive** (Android)
+- **FitNotes** (simple y gratuita)
+
+---
+
+## HEVY - Análisis Detallado
+
+### ✅ Qué hace muy bien:
+- **UX moderna y limpia** - Interfaz muy intuitiva
+- **Análisis de progreso** - Gráficos claros y útiles
+- **Base de datos de ejercicios** - Extensa y bien organizada
+- **Templates de rutina** - Fácil duplicar workouts
+- **Backup automático** - No perdés datos
+- **Multiplataforma** - iOS y Android sincronizados
+
+### ❌ Principales quejas/limitaciones:
+- **Límite de 4 rutinas gratis** - La queja #1 en reviews
+- **Red social forzada** - Muchos no la quieren
+- **No permite circuitos/supersets complejos** - Solo básicos
+- **Falta personalización avanzada** - Plantillas muy rígidas
+- **No tiene timer de descanso customizable por ejercicio**
+- **Analytics limitados en versión gratuita**
+- **No permite exportar datos fácilmente**
+
+---
+
+## STRONG - Análisis Detallado
+
+### ✅ Qué hace muy bien:
+- **Simplicidad extrema** - Solo lo esencial, muy rápido de usar
+- **Timer de descanso inteligente** - Se adapta por ejercicio
+- **Entrada de datos súper rápida** - Interfaz optimizada
+- **Historial completo** - Ve todo tu progreso histórico
+- **Notas por set** - Puedes anotar observaciones
+
+### ❌ Principales limitaciones:
+- **Solo iOS** - Excluye mercado Android
+- **Caro** - $5/mes o $30/año
+- **Sin base de datos de ejercicios** - Tenés que crear todo
+- **Análisis básicos** - Pocos gráficos y stats
+- **No tiene comunidad/sharing**
+
+---
+
+## Lo que TODA la competencia hace mal:
+
+### 1. **Circuitos y Entrenamientos Complejos**
+- Ninguna maneja bien circuitos, drop sets, pyramid sets
+- No permiten estructuras de entrenamiento más avanzadas
+- Falta flexibilidad para métodos como 5/3/1, German Volume Training, etc.
+
+### 2. **Herramientas para Entrenadores**
+- No hay panel para que un PT siga múltiples clientes
+- No permiten asignar rutinas o hacer seguimiento grupal
+- Falta comunicación entrenador-cliente dentro de la app
+
+### 3. **Personalización Inteligente**
+- No aprenden de tus patrones de entrenamiento
+- No sugieren progresiones automáticas inteligentes
+- No adaptan rutinas según tu recuperación/rendimiento
+
+### 4. **Análisis Profundos**
+- Stats muy básicos (peso levantado, PRs)
+- No analizan volumen por grupo muscular
+- No detectan desequilibrios o patrones problemáticos
+- No predicen plateaus o sugieren deloads
+
+### 5. **Integración con Wearables**
+- Muy poca integración con smartwatches
+- No usan datos de HR, HRV, sueño para optimizar entrenamientos
+
+---
+
+## Oportunidades Identificadas
+
+### 🎯 **Gaps Principales que Podés Explotar:**
+
+#### 1. **App Verdaderamente Gratuita**
+- Sin límites artificiales en rutinas
+- Monetización ética (donaciones, pro features opcionales)
+
+#### 2. **Circuitos y Métodos Avanzados**
+- Soporte nativo para circuitos complejos
+- Templates para métodos populares (5/3/1, PPL, etc.)
+- Drop sets, rest-pause, cluster sets
+
+#### 3. **Panel para Entrenadores**
+- Dashboard para PTs que manejan múltiples clientes
+- Asignación y seguimiento de rutinas
+- Comunicación in-app
+- **Modelo de negocio**: Freemium para usuarios, pago para entrenadores
+
+#### 4. **IA para Progresión**
+- Sugerencias inteligentes de peso/reps
+- Detección automática de plateaus
+- Recomendaciones de deload basadas en rendimiento
+
+#### 5. **Análisis de Volumen Inteligente**
+- Balance por grupo muscular
+- Detección de desequilibrios
+- Recomendaciones de ejercicios complementarios
+
+---
+
+## Qué Pide la Gente (según reviews):
+
+### Top 5 Quejas Recurrentes:
+1. **"Muy caro para lo que ofrece"**
+2. **"Límites artificiales en versión gratuita"**
+3. **"No maneja circuitos bien"**
+4. **"Falta flexibilidad en rutinas"**
+5. **"Quiero solo tracking, no red social"**
+
+### Features Más Pedidas:
+1. **Más rutinas gratis**
+2. **Mejor soporte para circuitos**
+3. **Timer más inteligente**
+4. **Análisis más profundos**
+5. **Panel para entrenadores**
+
+**¿Te parece viable atacar estos gaps? ¿Cuál te resulta más interesante?**
+
+---
+
+## Diseño de UX para Circuitos y Superseries Complejas
+
+### El Problema Actual (Hevy y otros):
+```
+Ejercicio A - 3 sets
+Ejercicio B - 3 sets [CHIP: Superserie con A]
+Ejercicio C - 3 sets
+```
+**Limitaciones:**
+- Solo maneja superseries básicas (A+B)
+- No diferencia entre superseries, circuitos, drop sets
+- Navegación confusa durante entrenamiento
+- No optimiza timer de descanso para estructura compleja
+
+---
+
+## Solución Propuesta: Estructura de Bloques
+
+### Concepto Visual:
+```
+┌─── BLOQUE 1: Superserie ────┐
+│ A1. Press Banca    3x8-10   │
+│ A2. Remo con Barra 3x8-10   │
+│ Descanso: 90seg entre bloques│
+└─────────────────────────────┘
+
+┌─── BLOQUE 2: Circuito ──────┐
+│ B1. Sentadillas    4x12     │
+│ B2. Push-ups       4x15     │  
+│ B3. Plancha        4x30seg  │
+│ Sin descanso entre ejercicios│
+│ Descanso: 2min entre rondas │
+└─────────────────────────────┘
+
+┌─── BLOQUE 3: Drop Set ──────┐
+│ C1. Curl Biceps             │
+│     Set 1: 20kg x 8         │
+│     Drop:  15kg x max       │
+│     Drop:  10kg x max       │
+│ Descanso: 60seg             │
+└─────────────────────────────┘
+```
+
+### Características Clave:
+
+#### 1. **Tipos de Bloque Predefinidos:**
+- **Superserie**: A1→A2→descanso→repeat
+- **Circuito**: A1→A2→A3→(opcional mini-descanso)→repeat
+- **Tri-set**: Como superserie pero 3 ejercicios
+- **Drop Set**: Mismo ejercicio, pesos descendentes
+- **Rest-Pause**: Ejercicio→mini pausa→repeat hasta completar
+- **Cluster Set**: Sets fraccionados con micro-descansos
+- **Giant Set**: 4+ ejercicios consecutivos
+
+#### 2. **Interfaz Durante Entrenamiento:**
+
+**Vista de Bloque Activo:**
+```
+🔥 SUPERSERIE - Ronda 2/3
+┌─────────────────────────┐
+│ ✅ A1. Press Banca      │
+│    Set 2: 80kg x 8 ✓    │
+│                         │
+│ ▶️  A2. Remo con Barra   │
+│    Set 2: 70kg x __     │
+│    [Completar Set]      │
+│                         │
+│ ⏱️ Próximo: Descanso 90s │
+└─────────────────────────┘
+```
+
+**Vista de Circuito:**
+```
+🔄 CIRCUITO - Ronda 1/4
+┌─────────────────────────┐
+│ ✅ B1. Sentadillas      │
+│ ✅ B2. Push-ups         │
+│ ▶️  B3. Plancha         │
+│    30 segundos          │
+│    [⏰ Iniciar Timer]   │
+│                         │
+│ Progreso: [██░░] 2/3    │
+└─────────────────────────┘
+```
+
+#### 3. **Timer Inteligente por Tipo:**
+- **Superserie**: Solo cuenta descanso entre bloques completos
+- **Circuito**: Timer opcional entre ejercicios + timer entre rondas
+- **Drop Set**: Auto-inicia siguiente peso sin timer
+- **Rest-Pause**: Micro-timer (15-30seg) automático
+
+#### 4. **Creación de Rutinas Visual:**
+
+**Drag & Drop Interface:**
+```
+Ejercicios Disponibles:     Rutina en Construcción:
+┌─────────────────┐        ┌──────────────────────┐
+│ 🏋️ Press Banca   │   →    │ BLOQUE 1: Superserie │
+│ 🚣 Remo          │        │ • Press Banca 3x8    │
+│ 🦵 Sentadillas   │        │ • Remo 3x8           │
+│ 💪 Curl Biceps   │        │ Descanso: 90seg      │
+└─────────────────┘        └──────────────────────┘
+                           ┌──────────────────────┐
+Tipos de Bloque:           │ + Agregar Bloque     │
+[Superserie] [Circuito]    └──────────────────────┘
+[Drop Set] [Individual]
+```
+
+#### 5. **Templates Populares Pre-hechos:**
+- **Push/Pull/Legs** con superseries típicas
+- **Upper/Lower** con circuitos de accesorios
+- **5/3/1** con estructura correcta de assistance work
+- **German Volume Training** con timing específico
+- **Crossfit WODs** como circuitos
+
+### Ventajas sobre Competencia:
+
+✅ **Flexibilidad Real**: Cualquier combinación de ejercicios
+✅ **Timer Inteligente**: Se adapta al tipo de entrenamiento
+✅ **Vista Clara**: Sabes exactamente qué hacer y cuándo
+✅ **Educativo**: Templates enseñan métodos de entrenamiento
+✅ **Progresión Inteligente**: Trackea volumen por bloque, no solo ejercicio
+
+### Casos de Uso Complejos que Manejaría:
+
+1. **Circuito Metabólico** (20min AMRAP)
+2. **Superseries Antagonistas** (Push/Pull alternadas)
+3. **German Volume Training** (10x10 con timing estricto)
+4. **Crossfit WODs** (For time, EMOM, etc.)
+5. **Powerbuilding** (Fuerza + hipertrofia mezclados)
+
+**¿Te gusta este enfoque de bloques? ¿Ves algún caso de uso que no cubriría?**
+
+---
+
+## MVP - Fitness Tracker con Bloques Inteligentes
+
+### 🎯 **Objetivo del MVP**
+Crear la primera app de fitness que maneja circuitos y superseries de manera intuitiva, completamente gratis, sin limitaciones artificiales.
+
+### 🏗️ **Core Features (Imprescindibles)**
+
+#### 1. **Sistema de Bloques**
+- **Tipos básicos**: Individual, Superserie, Circuito
+- **Configuración**: Sets, reps, peso, tiempo de descanso por bloque
+- **Máximo 4 ejercicios por bloque** (para MVP)
+
+#### 2. **Creación de Rutinas**
+- **Interface simple**: Lista de ejercicios → Drag & drop a bloques
+- **Templates básicos**: 3-4 rutinas populares pre-hechas
+- **Rutinas ilimitadas** (diferenciador clave vs Hevy)
+
+#### 3. **Ejecución de Entrenamientos**
+- **Vista de bloque activo** con progreso claro
+- **Timer inteligente** que entiende el tipo de bloque
+- **Entrada rápida de datos** (peso, reps)
+- **Navegación clara**: qué ejercicio sigue, cuándo descansar
+
+#### 4. **Base de Datos de Ejercicios**
+- **~100 ejercicios básicos** con categorías (Pecho, Espalda, Piernas, etc.)
+- **Posibilidad de crear ejercicios custom**
+- **Búsqueda simple** por nombre o músculo
+
+#### 5. **Tracking Básico**
+- **Historial de entrenamientos** por fecha
+- **PRs simples** por ejercicio
+- **Progreso visual básico** (gráfico de peso/volumen)
+
+---
+
+### 📱 **Flujo de Usuario MVP**
+
+#### Primera Vez:
+1. **Onboarding**: "Bienvenido, elegí una rutina para empezar"
+2. **Templates**: Push/Pull/Legs, Upper/Lower, Full Body
+3. **Customización básica**: Ajustar pesos iniciales
+
+#### Día a Día:
+1. **Home**: "Hoy toca: Push Day" → [Empezar Entrenamiento]
+2. **Durante workout**: Vista de bloque → Completar sets → Timer automático
+3. **Finalizar**: Resumen del entrenamiento → Guardar
+
+#### Creación de Rutina:
+1. **Nuevo workout**: Nombre + seleccionar ejercicios
+2. **Organizar en bloques**: Drag & drop + elegir tipo de bloque
+3. **Configurar**: Sets, reps, descansos
+4. **Guardar**: Lista de rutinas propias
+
+---
+
+### 🔧 **Tech Stack Sugerido**
+
+#### Frontend (Mobile):
+- **React Native** - Multiplataforma desde día 1
+- **Expo** - Deploy rápido y actualizaciones OTA
+- **React Navigation** - Navegación fluida
+- **AsyncStorage** - Datos locales
+
+#### Backend (Básico):
+- **Firebase/Supabase** - Backend as a Service
+- **Sync automático** - Backup en la nube
+- **Auth básico** - Google/Apple sign-in
+
+#### Diseño:
+- **Expo Router** - File-based routing
+- **NativeWind** - Styling con Tailwind CSS
+- **React Hook Form** - Manejo de formularios
+
+---
+
+### 📋 **Features Excluidas del MVP**
+(Para versiones futuras)
+
+❌ **Panel para entrenadores**
+❌ **IA y sugerencias automáticas**
+❌ **Análisis avanzados**
+❌ **Integración con wearables**
+❌ **Red social**
+❌ **Templates complejos** (5/3/1, etc.)
+❌ **Export de datos**
+❌ **Modo offline completo**
+
+---
+
+### 🚀 **Plan de Desarrollo (8-12 semanas)**
+
+#### Semana 1-2: Setup + Base
+- Configurar proyecto React Native
+- Diseñar base de datos local
+- Crear componentes básicos (ejercicio, set, timer)
+
+#### Semana 3-4: Sistema de Bloques
+- Implementar lógica de bloques
+- UI para creación de rutinas
+- Drag & drop functionality
+
+#### Semana 5-6: Ejecución de Entrenamientos
+- Vista de entrenamiento activo
+- Timer inteligente por tipo de bloque
+- Navegación entre ejercicios/bloques
+
+#### Semana 7-8: Base de Datos + Templates
+- Cargar ejercicios básicos
+- Crear templates de rutinas populares
+- Búsqueda y filtros
+
+#### Semana 9-10: Tracking + Historial
+- Guardar entrenamientos
+- Vista de historial
+- PRs básicos
+
+#### Semana 11-12: Polish + Testing
+- Refinamiento de UX
+- Testing en dispositivos reales
+- Preparación para launch
+
+---
+
+### 💰 **Monetización (Post-MVP)**
+- **100% Gratuito** para empezar
+- Futuro: Premium features opcionales (análisis avanzados, panel PT)
+- **No ads, no limitaciones artificiales**
+
+### 🎯 **Métricas de Éxito MVP**
+- **500+ usuarios activos** en primer mes
+- **Retention 7 días > 40%**
+- **Rating > 4.5** en stores
+- **Feedback positivo** sobre funcionalidad de bloques
+
+---
+
+**¿Te parece bien este scope para el MVP? ¿Agregarías o quitarías algo?**
+
+*Próximo paso: Crear wireframes y comenzar desarrollo*
