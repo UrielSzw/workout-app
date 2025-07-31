@@ -1,5 +1,5 @@
 import React from "react";
-import { View } from "react-native";
+import { View, TouchableOpacity, Alert } from "react-native";
 import { MoreHorizontal } from "lucide-react-native";
 
 import { Typography, Card } from "@/components/ui";
@@ -11,15 +11,35 @@ interface FolderCardProps {
   folder: FolderType;
   routines: Routine[];
   onPress: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export const FolderCard: React.FC<FolderCardProps> = ({
   folder,
   routines,
   onPress,
+  onEdit,
+  onDelete,
 }) => {
   const colorScheme = useColorScheme();
   const colors = getThemeColors(colorScheme === "dark");
+
+  const handleMenuPress = () => {
+    Alert.alert(folder.name, "¿Qué deseas hacer?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Editar",
+        onPress: onEdit,
+        style: "default",
+      },
+      {
+        text: "Eliminar",
+        onPress: onDelete,
+        style: "destructive",
+      },
+    ]);
+  };
 
   return (
     <Card
@@ -57,9 +77,9 @@ export const FolderCard: React.FC<FolderCardProps> = ({
           </Typography>
         </View>
 
-        <View>
+        <TouchableOpacity onPress={handleMenuPress}>
           <MoreHorizontal size={20} color={colors.textMuted} />
-        </View>
+        </TouchableOpacity>
       </View>
     </Card>
   );

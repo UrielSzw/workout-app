@@ -107,11 +107,13 @@ interface AppState {
   addRoutine: (routine: Routine) => void;
   updateRoutine: (id: string, routine: Partial<Routine>) => void;
   deleteRoutine: (id: string) => void;
+  moveRoutineToFolder: (routineId: string, folderId?: string) => void;
 
   setFolders: (folders: Folder[]) => void;
   addFolder: (folder: Folder) => void;
   updateFolder: (id: string, folder: Partial<Folder>) => void;
   deleteFolder: (id: string) => void;
+  reorderFolders: (folders: Folder[]) => void;
 
   startWorkout: (routine: Routine) => void;
   completeSet: (blockExerciseId: string, set: WorkoutSet) => void;
@@ -167,6 +169,17 @@ export const useAppStore = create<AppState>((set, get) => ({
     get().saveToStorage();
   },
 
+  moveRoutineToFolder: (routineId, folderId) => {
+    set((state) => ({
+      routines: state.routines.map((routine) =>
+        routine.id === routineId
+          ? { ...routine, folderId, updatedAt: new Date().toISOString() }
+          : routine
+      ),
+    }));
+    get().saveToStorage();
+  },
+
   setFolders: (folders) => {
     set({ folders });
     get().saveToStorage();
@@ -196,6 +209,11 @@ export const useAppStore = create<AppState>((set, get) => ({
         routine.folderId === id ? { ...routine, folderId: undefined } : routine
       ),
     }));
+    get().saveToStorage();
+  },
+
+  reorderFolders: (folders) => {
+    set({ folders });
     get().saveToStorage();
   },
 
