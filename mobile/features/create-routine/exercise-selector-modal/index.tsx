@@ -16,6 +16,8 @@ interface ExerciseSelectorModalProps {
   onClose: () => void;
   onSelectExercise: (exercise: Exercise) => void;
   selectedExercises: Exercise[];
+  onAddAsIndividual: () => void;
+  onAddAsBlock: () => void;
 }
 
 export const ExerciseSelectorModal: React.FC<ExerciseSelectorModalProps> = ({
@@ -23,6 +25,8 @@ export const ExerciseSelectorModal: React.FC<ExerciseSelectorModalProps> = ({
   onClose,
   onSelectExercise,
   selectedExercises,
+  onAddAsIndividual,
+  onAddAsBlock,
 }) => {
   const colorScheme = useColorScheme();
   const colors = getThemeColors(colorScheme === "dark");
@@ -286,9 +290,18 @@ export const ExerciseSelectorModal: React.FC<ExerciseSelectorModalProps> = ({
               backgroundColor: colors.background,
             }}
           >
-            <Button variant="primary" fullWidth onPress={onClose}>
-              Confirmar {selectedExercises.length} ejercicios
-            </Button>
+            <View style={{ gap: 12 }}>
+              {selectedExercises.length > 1 && (
+                <Button variant="primary" fullWidth onPress={onAddAsBlock}>
+                  Agregar {selectedExercises.length} ejercicios en bloque
+                </Button>
+              )}
+              <Button variant="outline" fullWidth onPress={onAddAsIndividual}>
+                Agregar {selectedExercises.length} ejercicio
+                {selectedExercises.length > 1 ? "s" : ""} individual
+                {selectedExercises.length > 1 ? "es" : ""}
+              </Button>
+            </View>
           </View>
         )}
       </View>

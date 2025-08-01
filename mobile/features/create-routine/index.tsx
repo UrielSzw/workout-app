@@ -17,7 +17,7 @@ import { Typography, Button, Card } from "@/components/ui";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { getThemeColors } from "@/constants/Colors";
 import { RoutineInfoForm } from "./routine-info-form";
-import { ExerciseRow } from "./ExerciseRow";
+import { BlockRow } from "./BlockRow";
 import { ExerciseSelectorModal } from "./exercise-selector-modal";
 import { SetTypeBottomSheet } from "./SetTypeBottomSheet";
 import { RepsTypeBottomSheet } from "./RepsTypeBottomSheet";
@@ -44,6 +44,25 @@ interface SetData {
   repsRange?: { min: string; max: string };
 }
 
+interface ExerciseInBlock {
+  id: string;
+  exercise: Exercise;
+  sets: SetData[];
+  orderIndex: number;
+  notes?: string;
+}
+
+interface BlockData {
+  id: string;
+  type: "individual" | "superset" | "circuit";
+  orderIndex: number;
+  exercises: ExerciseInBlock[];
+  restTimeSeconds: number;
+  restBetweenExercisesSeconds: number;
+  name?: string;
+}
+
+// Legacy interface para compatibilidad durante la transición
 interface ExerciseData {
   id: string;
   exercise: Exercise;
@@ -60,7 +79,7 @@ export const CreateRoutineFeature = () => {
 
   const [routineName] = useState("Mi Nueva Rutina");
   const [routineDescription] = useState("Descripción de la rutina");
-  const [exercises, setExercises] = useState<ExerciseData[]>([]);
+  const [blocks, setBlocks] = useState<BlockData[]>([]);
   const [globalRepsType, setGlobalRepsType] = useState<
     "reps" | "range" | "time" | "distance"
   >("reps");
@@ -74,22 +93,75 @@ export const CreateRoutineFeature = () => {
   const [currentExerciseId, setCurrentExerciseId] = useState<string | null>(
     null
   );
+  const [currentBlockId, setCurrentBlockId] = useState<string | null>(null);
   const [currentRestTime, setCurrentRestTime] = useState<number>(90);
+  const [currentRestTimeType, setCurrentRestTimeType] = useState<
+    "between-rounds" | "between-exercises"
+  >("between-rounds");
 
   // Bottom sheet refs
   const setTypeBottomSheetRef = useRef<BottomSheetModal>(null);
   const repsTypeBottomSheetRef = useRef<BottomSheetModal>(null);
   const restTimeBottomSheetRef = useRef<BottomSheetModal>(null);
 
+  // Helper Functions
+  const calculateBlockType = (block: BlockData): BlockData["type"] => {
+    if (block.exercises.length === 1) return "individual";
+    return block.restBetweenExercisesSeconds === 0 ? "superset" : "circuit";
+  };
+
+  const generateBlockName = (type: BlockData["type"]): string => {
+    switch (type) {
+      case "superset":
+        return "Superserie";
+      case "circuit":
+        return "Circuito";
+      default:
+        return "";
+    }
+  };
+
+  const createDefaultSets = (): SetData[] => [
+    {
+      id: `set_${Date.now()}_1`,
+      setNumber: 1,
+      weight: "",
+      reps: "",
+      type: "normal",
+      completed: false,
+      repsType: "reps",
+    },
+    {
+      id: `set_${Date.now()}_2`,
+      setNumber: 2,
+      weight: "",
+      reps: "",
+      type: "normal",
+      completed: false,
+      repsType: "reps",
+    },
+    {
+      id: `set_${Date.now()}_3`,
+      setNumber: 3,
+      weight: "",
+      reps: "",
+      type: "normal",
+      completed: false,
+      repsType: "reps",
+    },
+  ];
+
   const calculateEstimatedDuration = () => {
     let totalMinutes = 0;
-    exercises.forEach((exerciseData) => {
-      const sets = exerciseData.sets.filter(
-        (set) => set.type !== "warmup"
-      ).length;
-      const setsTime = sets * 0.5; // 30 seconds per set
-      const restTime = (sets - 1) * (exerciseData.restTimeSeconds / 60);
-      totalMinutes += setsTime + restTime;
+    blocks.forEach((block) => {
+      block.exercises.forEach((exerciseInBlock) => {
+        const sets = exerciseInBlock.sets.filter(
+          (set) => set.type !== "warmup"
+        ).length;
+        const setsTime = sets * 0.5; // 30 seconds per set
+        const restTime = (sets - 1) * (block.restTimeSeconds / 60);
+        totalMinutes += setsTime + restTime;
+      });
     });
     return Math.max(15, Math.round(totalMinutes));
   };
@@ -100,10 +172,43 @@ export const CreateRoutineFeature = () => {
       return;
     }
 
-    if (exercises.length === 0) {
+    if (blocks.length === 0) {
       Alert.alert("Error", "Agrega al menos un ejercicio a la rutina");
       return;
     }
+
+    // Flatten blocks to exercises for saving
+    const exercisesForSave = blocks.flatMap((block, blockIndex) =>
+      block.exercises.map((exerciseInBlock, exerciseIndex) => {
+        const exerciseData: any = {
+          id: exerciseInBlock.id,
+          exerciseId: exerciseInBlock.exercise.id,
+          orderIndex: blockIndex * 100 + exerciseIndex, // Ensure unique ordering
+          sets: exerciseInBlock.sets.map((set, setIndex) => ({
+            id: set.id,
+            setNumber: setIndex + 1,
+            type: set.type,
+            targetWeight: set.weight,
+            targetReps: set.reps,
+            notes: set.notes,
+          })),
+          notes: exerciseInBlock.notes,
+          blockType: calculateBlockType(block),
+        };
+
+        // For individual exercises: use restTimeSeconds (between sets)
+        if (block.exercises.length === 1) {
+          exerciseData.restTimeSeconds = block.restTimeSeconds;
+        } else {
+          // For blocks: use restBetweenExercisesSeconds as restTimeSeconds and add restBetweenRoundsSeconds
+          exerciseData.restTimeSeconds = block.restBetweenExercisesSeconds;
+          exerciseData.restBetweenRoundsSeconds = block.restTimeSeconds;
+          exerciseData.blockId = block.id;
+        }
+
+        return exerciseData;
+      })
+    );
 
     const newRoutine = {
       id: Date.now().toString(),
@@ -111,23 +216,7 @@ export const CreateRoutineFeature = () => {
       description: routineDescription,
       estimatedDurationMinutes: calculateEstimatedDuration(),
       difficultyLevel: "intermediate" as const,
-      exercises: exercises.map((exerciseData, index) => ({
-        id: exerciseData.id,
-        exerciseId: exerciseData.exercise.id,
-        orderIndex: index,
-        sets: exerciseData.sets.map((set, setIndex) => ({
-          id: set.id,
-          setNumber: setIndex + 1,
-          type: set.type,
-          targetWeight: set.weight,
-          targetReps: set.reps,
-          notes: set.notes,
-        })),
-        restTimeSeconds: exerciseData.restTimeSeconds,
-        notes: exerciseData.notes,
-        blockType: exerciseData.blockType || "individual",
-        blockId: exerciseData.blockId,
-      })),
+      exercises: exercisesForSave,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -151,76 +240,165 @@ export const CreateRoutineFeature = () => {
     }
   };
 
-  const handleExerciseSelectorClose = () => {
-    if (selectedExercises.length > 0) {
-      const newExercises = selectedExercises.map((exercise) => ({
-        id: Date.now().toString() + Math.random(),
-        exercise,
-        sets: [
-          {
-            id: Date.now().toString() + Math.random(),
-            setNumber: 1,
-            weight: "",
-            reps: "",
-            type: "normal" as const,
-            completed: false,
-            repsType: "reps" as const,
-          },
-          {
-            id: Date.now().toString() + Math.random() + 1,
-            setNumber: 2,
-            weight: "",
-            reps: "",
-            type: "normal" as const,
-            completed: false,
-            repsType: "reps" as const,
-          },
-          {
-            id: Date.now().toString() + Math.random() + 2,
-            setNumber: 3,
-            weight: "",
-            reps: "",
-            type: "normal" as const,
-            completed: false,
-            repsType: "reps" as const,
-          },
-        ],
-        restTimeSeconds: 90,
-        blockType: "individual" as const,
-      }));
+  const handleAddAsIndividual = () => {
+    if (selectedExercises.length === 0) return;
 
-      setExercises([...exercises, ...newExercises]);
-    }
+    const newBlocks = selectedExercises.map((exercise, i) => ({
+      id: `block_${Date.now()}_${i}`,
+      type: "individual" as const,
+      orderIndex: blocks.length + i,
+      exercises: [
+        {
+          id: `exercise_${Date.now()}_${i}`,
+          exercise,
+          sets: createDefaultSets(),
+          orderIndex: 0,
+        },
+      ],
+      restTimeSeconds: 90,
+      restBetweenExercisesSeconds: 0,
+    }));
 
-    setExerciseSelectorVisible(false);
+    setBlocks([...blocks, ...newBlocks]);
     setSelectedExercises([]);
+    setExerciseSelectorVisible(false);
   };
 
-  const handleDeleteExercise = (exerciseId: string) => {
-    setExercises(exercises.filter((ex) => ex.id !== exerciseId));
+  const handleAddAsBlock = () => {
+    if (selectedExercises.length < 2) return;
+
+    const newBlock: BlockData = {
+      id: `block_${Date.now()}`,
+      type: "superset", // Always start as superset
+      orderIndex: blocks.length,
+      exercises: selectedExercises.map((exercise, i) => ({
+        id: `exercise_${Date.now()}_${i}`,
+        exercise,
+        sets: createDefaultSets(),
+        orderIndex: i,
+      })),
+      restTimeSeconds: 90,
+      restBetweenExercisesSeconds: 0, // No rest = superset
+      name: "Superserie",
+    };
+
+    setBlocks([...blocks, newBlock]);
+    setSelectedExercises([]);
+    setExerciseSelectorVisible(false);
   };
 
-  const handleUpdateExercise = (
-    exerciseId: string,
-    updatedExercise: Partial<ExerciseData>
+  // FASE 4: Block Management Functions
+  const handleDeleteBlock = (blockId: string) => {
+    setBlocks((currentBlocks) =>
+      currentBlocks.filter((block) => block.id !== blockId)
+    );
+  };
+
+  const handleConvertToIndividual = (blockId: string) => {
+    setBlocks((currentBlocks) => {
+      const blockToConvert = currentBlocks.find(
+        (block) => block.id === blockId
+      );
+      if (!blockToConvert) return currentBlocks;
+
+      // Remove the original block and add individual blocks for each exercise
+      const otherBlocks = currentBlocks.filter((block) => block.id !== blockId);
+      const individualBlocks: BlockData[] = blockToConvert.exercises.map(
+        (exerciseInBlock, index) => ({
+          id: Date.now().toString() + index,
+          type: "individual" as const,
+          orderIndex: otherBlocks.length + index,
+          exercises: [exerciseInBlock],
+          restTimeSeconds: blockToConvert.restTimeSeconds,
+          restBetweenExercisesSeconds: 0,
+          name: `Ejercicio Individual ${otherBlocks.length + index + 1}`,
+        })
+      );
+
+      return [...otherBlocks, ...individualBlocks];
+    });
+  };
+
+  const handleUpdateBlock = (
+    blockId: string,
+    updatedData: Partial<BlockData>
   ) => {
-    setExercises(
-      exercises.map((ex) =>
-        ex.id === exerciseId ? { ...ex, ...updatedExercise } : ex
+    setBlocks((currentBlocks) =>
+      currentBlocks.map((block) =>
+        block.id === blockId ? { ...block, ...updatedData } : block
       )
     );
   };
 
-  const handleCreateSuperset = (exerciseIds: string[]) => {
-    if (exerciseIds.length < 2) return;
+  const handleShowBlockRestTimeBottomSheet = (
+    blockId: string,
+    currentRestTime: number,
+    type: "between-rounds" | "between-exercises"
+  ) => {
+    setCurrentBlockId(blockId);
+    setCurrentRestTime(currentRestTime);
+    setCurrentRestTimeType(type);
+    restTimeBottomSheetRef.current?.present();
+  };
 
-    const supersetId = Date.now().toString();
-    setExercises(
-      exercises.map((ex) =>
-        exerciseIds.includes(ex.id)
-          ? { ...ex, blockType: "superset", blockId: supersetId }
-          : ex
-      )
+  const handleBlockRestTimeSelect = (restTimeSeconds: number) => {
+    if (currentBlockId) {
+      if (currentRestTimeType === "between-exercises") {
+        // When updating rest between exercises, also update block type
+        const updatedBlock: Partial<BlockData> = {
+          restBetweenExercisesSeconds: restTimeSeconds,
+        };
+
+        // Auto-update block type based on rest time
+        if (restTimeSeconds > 0) {
+          updatedBlock.type = "circuit";
+          updatedBlock.name = "Circuito";
+        } else {
+          updatedBlock.type = "superset";
+          updatedBlock.name = "Superserie";
+        }
+
+        handleUpdateBlock(currentBlockId, updatedBlock);
+      } else {
+        handleUpdateBlock(currentBlockId, { restTimeSeconds });
+      }
+    }
+    restTimeBottomSheetRef.current?.dismiss();
+  };
+
+  // Legacy handler for backward compatibility (we'll remove this later)
+
+  const handleDeleteExercise = (exerciseId: string) => {
+    setBlocks(
+      (currentBlocks) =>
+        currentBlocks
+          .map((block) => ({
+            ...block,
+            exercises: block.exercises.filter((ex) => ex.id !== exerciseId),
+          }))
+          .filter((block) => block.exercises.length > 0) // Elimina bloques vacíos
+    );
+  };
+
+  const handleUpdateExercise = (
+    exerciseId: string,
+    updatedData: Partial<ExerciseInBlock>
+  ) => {
+    setBlocks((currentBlocks) =>
+      currentBlocks.map((block) => ({
+        ...block,
+        exercises: block.exercises.map((ex) =>
+          ex.id === exerciseId ? { ...ex, ...updatedData } : ex
+        ),
+      }))
+    );
+  };
+
+  const handleCreateSuperset = (exerciseIds: string[]) => {
+    // Esta función será reemplazada por handleAddAsBlock
+    // Por ahora comentada hasta completar la migración
+    console.log(
+      "handleCreateSuperset deprecated, use handleAddAsBlock instead"
     );
   };
 
@@ -236,39 +414,45 @@ export const CreateRoutineFeature = () => {
 
   const handleSetTypeSelect = (setType: SetData["type"]) => {
     if (currentSetId && currentExerciseId) {
-      const exerciseIndex = exercises.findIndex(
-        (ex) => ex.id === currentExerciseId
+      setBlocks((currentBlocks) =>
+        currentBlocks.map((block) => ({
+          ...block,
+          exercises: block.exercises.map((ex) => {
+            if (ex.id === currentExerciseId) {
+              const updatedSets = ex.sets.map((set) =>
+                set.id === currentSetId ? { ...set, type: setType } : set
+              );
+              return { ...ex, sets: updatedSets };
+            }
+            return ex;
+          }),
+        }))
       );
-      if (exerciseIndex !== -1) {
-        const updatedExercise = { ...exercises[exerciseIndex] };
-        const setIndex = updatedExercise.sets.findIndex(
-          (set) => set.id === currentSetId
-        );
-        if (setIndex !== -1) {
-          updatedExercise.sets[setIndex].type = setType;
-          handleUpdateExercise(currentExerciseId, updatedExercise);
-        }
-      }
     }
     setTypeBottomSheetRef.current?.dismiss();
   };
 
   const handleDeleteSet = () => {
     if (currentSetId && currentExerciseId) {
-      const exerciseIndex = exercises.findIndex(
-        (ex) => ex.id === currentExerciseId
+      setBlocks((currentBlocks) =>
+        currentBlocks.map((block) => ({
+          ...block,
+          exercises: block.exercises.map((ex) => {
+            if (ex.id === currentExerciseId) {
+              const filteredSets = ex.sets.filter(
+                (set) => set.id !== currentSetId
+              );
+              // Renumber sets
+              const renumberedSets = filteredSets.map((set, index) => ({
+                ...set,
+                setNumber: index + 1,
+              }));
+              return { ...ex, sets: renumberedSets };
+            }
+            return ex;
+          }),
+        }))
       );
-      if (exerciseIndex !== -1) {
-        const updatedExercise = { ...exercises[exerciseIndex] };
-        updatedExercise.sets = updatedExercise.sets.filter(
-          (set) => set.id !== currentSetId
-        );
-        // Renumber sets
-        updatedExercise.sets.forEach((set, index) => {
-          set.setNumber = index + 1;
-        });
-        handleUpdateExercise(currentExerciseId, updatedExercise);
-      }
     }
     setTypeBottomSheetRef.current?.dismiss();
   };
@@ -291,18 +475,25 @@ export const CreateRoutineFeature = () => {
 
   const handleRestTimeSelect = (restTimeSeconds: number) => {
     if (currentExerciseId) {
-      handleUpdateExercise(currentExerciseId, { restTimeSeconds });
+      // En la nueva estructura, restTimeSeconds se almacena a nivel de bloque
+      setBlocks((currentBlocks) =>
+        currentBlocks.map((block) => ({
+          ...block,
+          restTimeSeconds: block.exercises.some(
+            (ex) => ex.id === currentExerciseId
+          )
+            ? restTimeSeconds
+            : block.restTimeSeconds,
+        }))
+      );
     }
     restTimeBottomSheetRef.current?.dismiss();
   };
 
   const handleBreakSuperset = (blockId: string) => {
-    setExercises(
-      exercises.map((ex) =>
-        ex.blockId === blockId
-          ? { ...ex, blockType: "individual", blockId: undefined }
-          : ex
-      )
+    // Esta función será reemplazada por un sistema de gestión de bloques
+    console.log(
+      "handleBreakSuperset deprecated, will be replaced by block management"
     );
   };
 
@@ -350,7 +541,12 @@ export const CreateRoutineFeature = () => {
                 }}
               >
                 <Typography variant="h6" weight="semibold">
-                  Ejercicios ({exercises.length})
+                  Ejercicios (
+                  {blocks.reduce(
+                    (total, block) => total + block.exercises.length,
+                    0
+                  )}
+                  )
                 </Typography>
 
                 <Button
@@ -362,7 +558,7 @@ export const CreateRoutineFeature = () => {
                 </Button>
               </View>
 
-              {exercises.length === 0 ? (
+              {blocks.length === 0 ? (
                 <Card variant="outlined" padding="lg">
                   <View style={{ alignItems: "center", padding: 32 }}>
                     <Typography
@@ -384,17 +580,18 @@ export const CreateRoutineFeature = () => {
                 </Card>
               ) : (
                 <View style={{ gap: 16 }}>
-                  {exercises.map((exerciseData, index) => (
-                    <ExerciseRow
-                      key={exerciseData.id}
-                      exerciseData={exerciseData}
+                  {blocks.map((blockData, index) => (
+                    <BlockRow
+                      key={blockData.id}
+                      blockData={blockData}
                       index={index}
-                      onDelete={handleDeleteExercise}
-                      onUpdate={handleUpdateExercise}
-                      onCreateSuperset={handleCreateSuperset}
-                      onBreakSuperset={handleBreakSuperset}
+                      onDeleteBlock={handleDeleteBlock}
+                      onConvertToIndividual={handleConvertToIndividual}
+                      onUpdateBlock={handleUpdateBlock}
                       onShowSetTypeBottomSheet={handleShowSetTypeBottomSheet}
-                      onShowRestTimeBottomSheet={handleShowRestTimeBottomSheet}
+                      onShowRestTimeBottomSheet={
+                        handleShowBlockRestTimeBottomSheet
+                      }
                       globalRepsType={globalRepsType}
                       onChangeGlobalRepsType={handleChangeGlobalRepsType}
                     />
@@ -434,9 +631,11 @@ export const CreateRoutineFeature = () => {
         {/* Exercise Selector Modal */}
         <ExerciseSelectorModal
           visible={exerciseSelectorVisible}
-          onClose={handleExerciseSelectorClose}
+          onClose={() => setExerciseSelectorVisible(false)}
           selectedExercises={selectedExercises}
           onSelectExercise={handleSelectExercise}
+          onAddAsIndividual={handleAddAsIndividual}
+          onAddAsBlock={handleAddAsBlock}
         />
 
         {/* Bottom Sheets */}
@@ -455,7 +654,7 @@ export const CreateRoutineFeature = () => {
         <RestTimeBottomSheet
           ref={restTimeBottomSheetRef}
           currentRestTime={currentRestTime}
-          onSelectRestTime={handleRestTimeSelect}
+          onSelectRestTime={handleBlockRestTimeSelect}
         />
       </SafeAreaView>
     </BottomSheetModalProvider>
