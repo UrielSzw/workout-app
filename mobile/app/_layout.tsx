@@ -61,6 +61,24 @@ export default function RootLayout() {
               headerShown: false,
             }}
           />
+          <Stack.Screen
+            name="reorder-blocks"
+            options={{
+              presentation: "modal",
+              headerShown: false,
+              title: "Reordenar Bloques",
+              gestureEnabled: false,
+            }}
+          />
+          <Stack.Screen
+            name="reorder-exercises"
+            options={{
+              presentation: "modal",
+              headerShown: false,
+              title: "Reordenar Ejercicios",
+              gestureEnabled: false,
+            }}
+          />
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>

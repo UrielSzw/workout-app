@@ -6,7 +6,7 @@ import {
   Alert,
   TouchableOpacity,
 } from "react-native";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { Plus } from "lucide-react-native";
 import {
   BottomSheetModal,
@@ -23,6 +23,12 @@ import { SetTypeBottomSheet } from "./SetTypeBottomSheet";
 import { RepsTypeBottomSheet } from "./RepsTypeBottomSheet";
 import { RestTimeBottomSheet } from "./RestTimeBottomSheet";
 import { Exercise } from "@/data/mockExercises";
+
+// Declare global variable for temporary storage
+declare global {
+  var reorderedBlocks: any;
+  var reorderedBlock: any;
+}
 
 interface SetData {
   id: string;
@@ -77,12 +83,35 @@ export const CreateRoutineFeature = () => {
   const colorScheme = useColorScheme();
   const colors = getThemeColors(colorScheme === "dark");
 
-  const [routineName] = useState("Mi Nueva Rutina");
-  const [routineDescription] = useState("Descripción de la rutina");
+  const [routineName, setRoutineName] = useState("");
   const [blocks, setBlocks] = useState<BlockData[]>([]);
   const [globalRepsType, setGlobalRepsType] = useState<
     "reps" | "range" | "time" | "distance"
   >("reps");
+
+  // Listen for reorder events when screen comes back into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      // Check if we have reordered blocks from the reorder screen
+      if (global.reorderedBlocks) {
+        console.log("📥 Found reordered blocks:", global.reorderedBlocks);
+        setBlocks(global.reorderedBlocks);
+        // Clean up
+        global.reorderedBlocks = null;
+      }
+
+      // Check if we have a reordered block from the reorder exercises screen
+      if (global.reorderedBlock) {
+        console.log("📥 Found reordered block:", global.reorderedBlock);
+        const updatedBlocks = blocks.map((block) =>
+          block.id === global.reorderedBlock.id ? global.reorderedBlock : block
+        );
+        setBlocks(updatedBlocks);
+        // Clean up
+        global.reorderedBlock = null;
+      }
+    }, [blocks])
+  );
 
   // Modal states
   const [exerciseSelectorVisible, setExerciseSelectorVisible] = useState(false);
@@ -167,10 +196,8 @@ export const CreateRoutineFeature = () => {
   };
 
   const handleSaveRoutine = () => {
-    if (!routineName.trim()) {
-      Alert.alert("Error", "El nombre de la rutina es obligatorio");
-      return;
-    }
+    // Use default name if empty
+    const finalRoutineName = routineName.trim() || "Mi Nueva Rutina";
 
     if (blocks.length === 0) {
       Alert.alert("Error", "Agrega al menos un ejercicio a la rutina");
@@ -212,8 +239,7 @@ export const CreateRoutineFeature = () => {
 
     const newRoutine = {
       id: Date.now().toString(),
-      name: routineName,
-      description: routineDescription,
+      name: finalRoutineName,
       estimatedDurationMinutes: calculateEstimatedDuration(),
       difficultyLevel: "intermediate" as const,
       exercises: exercisesForSave,
@@ -225,7 +251,7 @@ export const CreateRoutineFeature = () => {
 
     Alert.alert(
       "¡Rutina Creada! 🎉",
-      `Tu rutina "${routineName}" ha sido creada exitosamente. Revisa la consola para ver los detalles completos.`,
+      `Tu rutina "${finalRoutineName}" ha sido creada exitosamente. Revisa la consola para ver los detalles completos.`,
       [{ text: "OK", onPress: () => router.back() }]
     );
   };
@@ -497,37 +523,63 @@ export const CreateRoutineFeature = () => {
     );
   };
 
+  const handleReorderBlocks = () => {
+    // Navigate to reorder screen with blocks data using push (not modal)
+    router.push({
+      pathname: "/reorder-blocks",
+      params: {
+        blocks: JSON.stringify(blocks),
+      },
+    });
+  };
+
+  const handleReorderExercises = (blockData: BlockData) => {
+    // Navigate to reorder exercises screen with block data
+    router.push({
+      pathname: "/reorder-exercises",
+      params: {
+        blockData: JSON.stringify(blockData),
+      },
+    });
+  };
+
   return (
     <BottomSheetModalProvider>
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+        {/* Sticky Header */}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingHorizontal: 20,
+            paddingVertical: 16,
+            backgroundColor: colors.background,
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border,
+            zIndex: 1,
+          }}
+        >
+          <Button variant="ghost" size="sm" onPress={() => router.back()}>
+            ← Atrás
+          </Button>
+
+          <Typography variant="h6" weight="semibold">
+            Crear Rutina
+          </Typography>
+
+          <Button variant="primary" size="sm" onPress={handleSaveRoutine}>
+            Guardar
+          </Button>
+        </View>
+
+        {/* Scrollable Content */}
         <ScrollView style={{ flex: 1 }}>
           <View style={{ flex: 1, padding: 20 }}>
-            {/* Header */}
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-                marginBottom: 24,
-              }}
-            >
-              <Button variant="ghost" size="sm" onPress={() => router.back()}>
-                ← Atrás
-              </Button>
-
-              <Typography variant="h6" weight="semibold">
-                Crear Rutina
-              </Typography>
-
-              <Button variant="primary" size="sm" onPress={handleSaveRoutine}>
-                Guardar
-              </Button>
-            </View>
-
             {/* Routine Information */}
             <RoutineInfoForm
               routineName={routineName}
-              routineDescription={routineDescription}
+              onRoutineNameChange={setRoutineName}
             />
 
             {/* Exercises List */}
@@ -558,6 +610,19 @@ export const CreateRoutineFeature = () => {
                 </Button>
               </View>
 
+              {/* Help text - always visible */}
+              <View style={{ marginBottom: 16, paddingHorizontal: 8 }}>
+                <Typography
+                  variant="caption"
+                  color="textMuted"
+                  style={{ textAlign: "center" }}
+                >
+                  💡 Mantén presionado un bloque para reordenar bloques
+                  {blocks.some((block) => block.exercises.length > 1) &&
+                    " • Mantén presionado un ejercicio para reordenar ejercicios dentro del bloque"}
+                </Typography>
+              </View>
+
               {blocks.length === 0 ? (
                 <Card variant="outlined" padding="lg">
                   <View style={{ alignItems: "center", padding: 32 }}>
@@ -580,6 +645,30 @@ export const CreateRoutineFeature = () => {
                 </Card>
               ) : (
                 <View style={{ gap: 16 }}>
+                  {/* First time user hint */}
+
+                  <View
+                    style={{
+                      backgroundColor: colors.primary[500] + "10",
+                      borderLeftWidth: 3,
+                      borderLeftColor: colors.primary[500],
+                      padding: 12,
+                      marginBottom: 8,
+                      borderRadius: 8,
+                    }}
+                  >
+                    <Typography
+                      variant="caption"
+                      style={{
+                        color: colors.primary[500],
+                        fontWeight: "500",
+                      }}
+                    >
+                      💡 Consejo: Mantén presionado cualquier bloque para
+                      reordenar los ejercicios
+                    </Typography>
+                  </View>
+
                   {blocks.map((blockData, index) => (
                     <BlockRow
                       key={blockData.id}
@@ -594,6 +683,8 @@ export const CreateRoutineFeature = () => {
                       }
                       globalRepsType={globalRepsType}
                       onChangeGlobalRepsType={handleChangeGlobalRepsType}
+                      onLongPressReorder={handleReorderBlocks}
+                      onLongPressReorderExercises={handleReorderExercises}
                     />
                   ))}
 

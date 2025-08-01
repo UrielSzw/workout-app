@@ -1,70 +1,46 @@
-import React from "react";
-import { View } from "react-native";
+import React, { useState } from "react";
+import { View, TextInput } from "react-native";
 import { Typography, Card } from "@/components/ui";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { getThemeColors } from "@/constants/Colors";
 
 interface RoutineInfoFormProps {
   routineName: string;
-  routineDescription: string;
+  onRoutineNameChange: (name: string) => void;
 }
 
 export const RoutineInfoForm: React.FC<RoutineInfoFormProps> = ({
   routineName,
-  routineDescription,
+  onRoutineNameChange,
 }) => {
   const colorScheme = useColorScheme();
   const colors = getThemeColors(colorScheme === "dark");
+  const [isNameFocused, setIsNameFocused] = useState(false);
 
   return (
     <Card variant="outlined" padding="lg" style={{ marginBottom: 24 }}>
       <Typography variant="h6" weight="semibold" style={{ marginBottom: 16 }}>
-        Información de la Rutina
+        Nombre de la Rutina
       </Typography>
 
       <View style={{ marginBottom: 16 }}>
-        <Typography
-          variant="body2"
-          color="textMuted"
-          style={{ marginBottom: 8 }}
-        >
-          Nombre de la rutina
-        </Typography>
-        <View
+        <TextInput
+          value={routineName}
+          onChangeText={onRoutineNameChange}
+          onFocus={() => setIsNameFocused(true)}
+          onBlur={() => setIsNameFocused(false)}
+          placeholder="Ej: Push Pull Legs"
           style={{
             borderWidth: 1,
-            borderColor: colors.border,
+            borderColor: isNameFocused ? colors.primary[500] : colors.border,
             borderRadius: 12,
             backgroundColor: colors.background,
             padding: 12,
+            fontSize: 16,
+            color: colors.text,
           }}
-        >
-          <Typography variant="body1">{routineName}</Typography>
-        </View>
-      </View>
-
-      <View>
-        <Typography
-          variant="body2"
-          color="textMuted"
-          style={{ marginBottom: 8 }}
-        >
-          Descripción
-        </Typography>
-        <View
-          style={{
-            borderWidth: 1,
-            borderColor: colors.border,
-            borderRadius: 12,
-            backgroundColor: colors.background,
-            padding: 12,
-            minHeight: 80,
-          }}
-        >
-          <Typography variant="body1" color="textMuted">
-            {routineDescription}
-          </Typography>
-        </View>
+          placeholderTextColor={colors.textMuted}
+        />
       </View>
     </Card>
   );

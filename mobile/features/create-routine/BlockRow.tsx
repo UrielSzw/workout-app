@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, TouchableOpacity, TextInput } from "react-native";
+import { View, TouchableOpacity, TextInput, Vibration } from "react-native";
 import {
   MoreVertical,
   Plus,
@@ -10,6 +10,7 @@ import {
   Trash2,
   Split,
   RotateCcw,
+  GripVertical,
 } from "lucide-react-native";
 import { Typography, Card } from "@/components/ui";
 import { ExercisePlaceholderImage } from "@/components/ui/ExercisePlaceholderImage";
@@ -69,6 +70,8 @@ interface BlockRowProps {
   ) => void;
   globalRepsType: "reps" | "range" | "time" | "distance";
   onChangeGlobalRepsType: () => void;
+  onLongPressReorder?: () => void;
+  onLongPressReorderExercises?: (blockData: BlockData) => void;
 }
 
 export const BlockRow: React.FC<BlockRowProps> = ({
@@ -81,6 +84,8 @@ export const BlockRow: React.FC<BlockRowProps> = ({
   onShowRestTimeBottomSheet,
   globalRepsType,
   onChangeGlobalRepsType,
+  onLongPressReorder,
+  onLongPressReorderExercises,
 }) => {
   const colorScheme = useColorScheme();
   const colors = getThemeColors(colorScheme === "dark");
@@ -255,127 +260,186 @@ export const BlockRow: React.FC<BlockRowProps> = ({
     onConvertToIndividual(blockData.id);
   };
 
+  const handleLongPress = () => {
+    if (onLongPressReorder) {
+      Vibration.vibrate(50); // Haptic feedback
+      onLongPressReorder();
+    }
+  };
+
+  const handleLongPressExercise = () => {
+    // Solo permitir reordenamiento si hay más de 1 ejercicio
+    if (onLongPressReorderExercises && blockData.exercises.length > 1) {
+      Vibration.vibrate(50); // Haptic feedback
+      onLongPressReorderExercises(blockData);
+    }
+  };
+
   return (
-    <Card variant="outlined" padding="none">
-      {/* Block Header with Continuous Line */}
-      <View
-        style={{
-          paddingHorizontal: 16,
-          paddingVertical: 12,
-          backgroundColor: blockColors.light,
-          borderBottomWidth: 1,
-          borderBottomColor: colors.border,
-        }}
-      >
-        {/* First Row - Block Title and Main Controls */}
+    <TouchableOpacity
+      onLongPress={handleLongPress}
+      delayLongPress={500}
+      activeOpacity={1}
+    >
+      <Card variant="outlined" padding="none">
+        {/* Block Header with Continuous Line */}
         <View
           style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: 8,
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            backgroundColor: blockColors.light,
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border,
           }}
         >
-          {/* Left - Block Title */}
+          {/* First Row - Block Title and Main Controls */}
           <View
             style={{
-              flex: 1,
               flexDirection: "row",
               alignItems: "center",
-              gap: 8,
+              justifyContent: "space-between",
+              marginBottom: 8,
             }}
           >
-            {getBlockTypeIcon()}
-            <Typography
-              variant="body2"
-              weight="semibold"
-              style={{ color: blockColors.primary }}
+            {/* Left - Block Title */}
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 8,
+              }}
             >
-              {blockData.name || `${getBlockTypeLabel()} ${index + 1}`}
-            </Typography>
-          </View>
+              {getBlockTypeIcon()}
+              <Typography
+                variant="body2"
+                weight="semibold"
+                style={{ color: blockColors.primary }}
+              >
+                {blockData.name || `${getBlockTypeLabel()} ${index + 1}`}
+              </Typography>
+            </View>
 
-          {/* Right - Main Controls */}
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-            {/* Expand/Collapse */}
-            <TouchableOpacity
-              onPress={() => setIsExpanded(!isExpanded)}
-              style={{ padding: 4 }}
+            {/* Right - Main Controls */}
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
             >
-              {isExpanded ? (
-                <ChevronUp size={16} color={colors.textMuted} />
-              ) : (
-                <ChevronDown size={16} color={colors.textMuted} />
-              )}
-            </TouchableOpacity>
-
-            {/* Menu for multi-exercise blocks */}
-            {blockData.exercises.length > 1 && (
+              {/* Expand/Collapse */}
               <TouchableOpacity
-                onPress={() => setShowMenu(!showMenu)}
+                onPress={() => setIsExpanded(!isExpanded)}
                 style={{ padding: 4 }}
               >
-                <MoreVertical size={16} color={colors.textMuted} />
+                {isExpanded ? (
+                  <ChevronUp size={16} color={colors.textMuted} />
+                ) : (
+                  <ChevronDown size={16} color={colors.textMuted} />
+                )}
               </TouchableOpacity>
-            )}
-          </View>
-        </View>
 
-        {/* Second Row - Exercise Count and Rest Times */}
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          {/* Left - Exercise Count */}
-          <Typography variant="caption" color="textMuted">
-            {blockData.exercises.length} ejercicio
-            {blockData.exercises.length !== 1 ? "s" : ""}
-          </Typography>
-
-          {/* Right - Rest Time Buttons */}
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-            {blockData.exercises.length > 1 ? (
-              // Multi-exercise blocks: show 2 buttons
-              <>
-                {/* Rest Between Exercises */}
+              {/* Menu for multi-exercise blocks */}
+              {blockData.exercises.length > 1 && (
                 <TouchableOpacity
-                  onPress={() =>
-                    onShowRestTimeBottomSheet(
-                      blockData.id,
-                      blockData.restBetweenExercisesSeconds,
-                      "between-exercises"
-                    )
-                  }
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    paddingVertical: 3,
-                    paddingHorizontal: 6,
-                    backgroundColor: blockColors.primary + "10",
-                    borderRadius: 4,
-                    borderWidth: 1,
-                    borderColor: blockColors.border,
-                  }}
+                  onPress={() => setShowMenu(!showMenu)}
+                  style={{ padding: 4 }}
                 >
-                  <Timer size={12} color={blockColors.primary} />
-                  <Typography
-                    variant="caption"
-                    weight="medium"
+                  <MoreVertical size={16} color={colors.textMuted} />
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+
+          {/* Second Row - Exercise Count and Rest Times */}
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            {/* Left - Exercise Count */}
+            <Typography variant="caption" color="textMuted">
+              {blockData.exercises.length} ejercicio
+              {blockData.exercises.length !== 1 ? "s" : ""}
+            </Typography>
+
+            {/* Right - Rest Time Buttons */}
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
+            >
+              {blockData.exercises.length > 1 ? (
+                // Multi-exercise blocks: show 2 buttons
+                <>
+                  {/* Rest Between Exercises */}
+                  <TouchableOpacity
+                    onPress={() =>
+                      onShowRestTimeBottomSheet(
+                        blockData.id,
+                        blockData.restBetweenExercisesSeconds,
+                        "between-exercises"
+                      )
+                    }
                     style={{
-                      color: blockColors.primary,
-                      marginLeft: 3,
-                      fontSize: 10,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      paddingVertical: 3,
+                      paddingHorizontal: 6,
+                      backgroundColor: blockColors.primary + "10",
+                      borderRadius: 4,
+                      borderWidth: 1,
+                      borderColor: blockColors.border,
                     }}
                   >
-                    Entre:{" "}
-                    {formatRestTime(blockData.restBetweenExercisesSeconds)}
-                  </Typography>
-                </TouchableOpacity>
+                    <Timer size={12} color={blockColors.primary} />
+                    <Typography
+                      variant="caption"
+                      weight="medium"
+                      style={{
+                        color: blockColors.primary,
+                        marginLeft: 3,
+                        fontSize: 10,
+                      }}
+                    >
+                      Entre:{" "}
+                      {formatRestTime(blockData.restBetweenExercisesSeconds)}
+                    </Typography>
+                  </TouchableOpacity>
 
-                {/* Rest Between Rounds */}
+                  {/* Rest Between Rounds */}
+                  <TouchableOpacity
+                    onPress={() =>
+                      onShowRestTimeBottomSheet(
+                        blockData.id,
+                        blockData.restTimeSeconds,
+                        "between-rounds"
+                      )
+                    }
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      paddingVertical: 4,
+                      paddingHorizontal: 6,
+                      backgroundColor: blockColors.primary + "15",
+                      borderRadius: 4,
+                      borderWidth: 1,
+                      borderColor: blockColors.border,
+                    }}
+                  >
+                    <Timer size={12} color={blockColors.primary} />
+                    <Typography
+                      variant="caption"
+                      weight="medium"
+                      style={{
+                        color: blockColors.primary,
+                        marginLeft: 3,
+                        fontSize: 10,
+                      }}
+                    >
+                      Vueltas: {formatRestTime(blockData.restTimeSeconds)}
+                    </Typography>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                // Individual exercises: show 1 button (between sets)
                 <TouchableOpacity
                   onPress={() =>
                     onShowRestTimeBottomSheet(
@@ -405,411 +469,406 @@ export const BlockRow: React.FC<BlockRowProps> = ({
                       fontSize: 10,
                     }}
                   >
-                    Vueltas: {formatRestTime(blockData.restTimeSeconds)}
+                    {formatRestTime(blockData.restTimeSeconds)}
                   </Typography>
                 </TouchableOpacity>
-              </>
-            ) : (
-              // Individual exercises: show 1 button (between sets)
-              <TouchableOpacity
-                onPress={() =>
-                  onShowRestTimeBottomSheet(
-                    blockData.id,
-                    blockData.restTimeSeconds,
-                    "between-rounds"
-                  )
-                }
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  paddingVertical: 4,
-                  paddingHorizontal: 6,
-                  backgroundColor: blockColors.primary + "15",
-                  borderRadius: 4,
-                  borderWidth: 1,
-                  borderColor: blockColors.border,
-                }}
-              >
-                <Timer size={12} color={blockColors.primary} />
-                <Typography
-                  variant="caption"
-                  weight="medium"
-                  style={{
-                    color: blockColors.primary,
-                    marginLeft: 3,
-                    fontSize: 10,
-                  }}
-                >
-                  {formatRestTime(blockData.restTimeSeconds)}
-                </Typography>
-              </TouchableOpacity>
-            )}
+              )}
+            </View>
           </View>
         </View>
-      </View>
 
-      {/* Menu Options - Only for multi-exercise blocks */}
-      {showMenu && blockData.exercises.length > 1 && (
-        <View
-          style={{
-            position: "absolute",
-            top: 60,
-            right: 16,
-            backgroundColor: colors.surface,
-            borderRadius: 8,
-            padding: 8,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 8,
-            elevation: 4,
-            zIndex: 1000,
-            minWidth: 180,
-          }}
-        >
-          <TouchableOpacity
-            onPress={handleConvertToIndividual}
+        {/* Menu Options - Only for multi-exercise blocks */}
+        {showMenu && blockData.exercises.length > 1 && (
+          <View
             style={{
-              flexDirection: "row",
-              alignItems: "center",
-              paddingVertical: 8,
-              paddingHorizontal: 12,
-              gap: 8,
+              position: "absolute",
+              top: 60,
+              right: 16,
+              backgroundColor: colors.surface,
+              borderRadius: 8,
+              padding: 8,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 8,
+              elevation: 4,
+              zIndex: 1000,
+              minWidth: 180,
             }}
           >
-            <Split size={16} color={colors.text} />
-            <Typography variant="body2">Separar ejercicios</Typography>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={handleDeleteBlock}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              paddingVertical: 8,
-              paddingHorizontal: 12,
-              gap: 8,
-            }}
-          >
-            <Trash2 size={16} color={colors.error[500]} />
-            <Typography variant="body2" style={{ color: colors.error[500] }}>
-              Eliminar bloque
-            </Typography>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* Exercises List with Continuous Visual Line */}
-      {isExpanded && (
-        <View style={{ position: "relative" }}>
-          {/* Continuous Line - THIS IS THE KEY FEATURE! */}
-          {blockData.exercises.length > 1 && (
-            <View
+            <TouchableOpacity
+              onPress={handleConvertToIndividual}
               style={{
-                position: "absolute",
-                left: 32,
-                top: 0,
-                bottom: 0,
-                width: 3,
-                backgroundColor: blockColors.primary,
-                borderRadius: 1.5,
-                zIndex: 1,
+                flexDirection: "row",
+                alignItems: "center",
+                paddingVertical: 8,
+                paddingHorizontal: 12,
+                gap: 8,
               }}
-            />
-          )}
+            >
+              <Split size={16} color={colors.text} />
+              <Typography variant="body2">Separar ejercicios</Typography>
+            </TouchableOpacity>
 
-          {blockData.exercises.map((exerciseInBlock, exerciseIndex) => (
-            <View key={exerciseInBlock.id} style={{ position: "relative" }}>
-              {/* Exercise Container */}
-              <View style={{ paddingHorizontal: 16, paddingVertical: 12 }}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "flex-start",
-                    gap: 12,
-                  }}
-                >
-                  {/* Exercise Number with Connection to Line */}
-                  <View style={{ alignItems: "center" }}>
-                    <View
-                      style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: 16,
-                        backgroundColor:
-                          blockData.exercises.length > 1
-                            ? blockColors.primary
-                            : colors.border,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        zIndex: 2,
-                        borderWidth: blockData.exercises.length > 1 ? 2 : 0,
-                        borderColor: colors.background,
-                      }}
-                    >
-                      <Typography
-                        variant="caption"
-                        weight="bold"
+            <TouchableOpacity
+              onPress={handleDeleteBlock}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                paddingVertical: 8,
+                paddingHorizontal: 12,
+                gap: 8,
+              }}
+            >
+              <Trash2 size={16} color={colors.error[500]} />
+              <Typography variant="body2" style={{ color: colors.error[500] }}>
+                Eliminar bloque
+              </Typography>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Exercises List with Continuous Visual Line */}
+        {isExpanded && (
+          <View style={{ position: "relative" }}>
+            {/* Continuous Line - THIS IS THE KEY FEATURE! */}
+            {blockData.exercises.length > 1 && (
+              <View
+                style={{
+                  position: "absolute",
+                  left: 32,
+                  top: 0,
+                  bottom: 0,
+                  width: 3,
+                  backgroundColor: blockColors.primary,
+                  borderRadius: 1.5,
+                  zIndex: 1,
+                }}
+              />
+            )}
+
+            {blockData.exercises.map((exerciseInBlock, exerciseIndex) => (
+              <View key={exerciseInBlock.id} style={{ position: "relative" }}>
+                {/* Exercise Container */}
+                <View style={{ paddingHorizontal: 16, paddingVertical: 12 }}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "flex-start",
+                      gap: 12,
+                    }}
+                  >
+                    {/* Exercise Number with Connection to Line */}
+                    <View style={{ alignItems: "center" }}>
+                      <View
                         style={{
-                          color:
+                          width: 32,
+                          height: 32,
+                          borderRadius: 16,
+                          backgroundColor:
                             blockData.exercises.length > 1
-                              ? "white"
-                              : colors.text,
+                              ? blockColors.primary
+                              : colors.border,
+                          alignItems: "center",
+                          justifyContent: "center",
+                          zIndex: 2,
+                          borderWidth: blockData.exercises.length > 1 ? 2 : 0,
+                          borderColor: colors.background,
                         }}
                       >
-                        {exerciseIndex + 1}
-                      </Typography>
-                    </View>
-                  </View>
-
-                  {/* Exercise Details */}
-                  <View style={{ flex: 1 }}>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 8,
-                      }}
-                    >
-                      <ExercisePlaceholderImage size={40} />
-                      <View style={{ flex: 1 }}>
-                        <Typography variant="body1" weight="semibold">
-                          {exerciseInBlock.exercise.name}
-                        </Typography>
-                        <Typography variant="caption" color="textMuted">
-                          {exerciseInBlock.exercise.muscleGroups.join(", ")}
+                        <Typography
+                          variant="caption"
+                          weight="bold"
+                          style={{
+                            color:
+                              blockData.exercises.length > 1
+                                ? "white"
+                                : colors.text,
+                          }}
+                        >
+                          {exerciseIndex + 1}
                         </Typography>
                       </View>
                     </View>
 
-                    {/* Sets Table */}
-                    <View style={{ marginTop: 12 }}>
-                      {/* Table Headers */}
+                    {/* Exercise Details */}
+                    <TouchableOpacity
+                      style={{ flex: 1 }}
+                      onLongPress={
+                        blockData.exercises.length > 1
+                          ? handleLongPressExercise
+                          : undefined
+                      }
+                      delayLongPress={500}
+                      activeOpacity={blockData.exercises.length > 1 ? 0.8 : 1}
+                    >
                       <View
                         style={{
                           flexDirection: "row",
                           alignItems: "center",
-                          paddingVertical: 8,
-                          borderBottomWidth: 1,
-                          borderBottomColor: colors.border,
-                          marginBottom: 8,
+                          gap: 8,
                         }}
                       >
-                        <View style={{ width: 40 }}>
-                          <Typography
-                            variant="caption"
-                            weight="medium"
-                            color="textMuted"
-                          >
-                            SET
-                          </Typography>
-                        </View>
-                        <View style={{ flex: 1, paddingHorizontal: 8 }}>
-                          <Typography
-                            variant="caption"
-                            weight="medium"
-                            color="textMuted"
-                          >
-                            KG
-                          </Typography>
-                        </View>
-                        <View style={{ flex: 1, paddingHorizontal: 8 }}>
-                          <TouchableOpacity
-                            onPress={onChangeGlobalRepsType}
+                        <ExercisePlaceholderImage size={40} />
+                        <View style={{ flex: 1 }}>
+                          <View
                             style={{
                               flexDirection: "row",
                               alignItems: "center",
                               gap: 4,
                             }}
                           >
+                            <Typography variant="body1" weight="semibold">
+                              {exerciseInBlock.exercise.name}
+                            </Typography>
+                            {/* Drag indicator for multi-exercise blocks */}
+                            {blockData.exercises.length > 1 &&
+                              onLongPressReorderExercises && (
+                                <GripVertical
+                                  size={12}
+                                  color={colors.textMuted}
+                                  style={{ opacity: 0.5 }}
+                                />
+                              )}
+                          </View>
+                          <Typography variant="caption" color="textMuted">
+                            {exerciseInBlock.exercise.muscleGroups.join(", ")}
+                          </Typography>
+                        </View>
+                      </View>
+
+                      {/* Sets Table */}
+                      <View style={{ marginTop: 12 }}>
+                        {/* Table Headers */}
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            paddingVertical: 8,
+                            borderBottomWidth: 1,
+                            borderBottomColor: colors.border,
+                            marginBottom: 8,
+                          }}
+                        >
+                          <View style={{ width: 40 }}>
                             <Typography
                               variant="caption"
                               weight="medium"
                               color="textMuted"
                             >
-                              {getRepsColumnTitle()}
+                              SET
                             </Typography>
-                            <ChevronDown size={12} color={colors.textMuted} />
-                          </TouchableOpacity>
-                        </View>
-                      </View>
-
-                      {/* Set Rows */}
-                      {exerciseInBlock.sets.map((set, setIndex) => (
-                        <View
-                          key={set.id}
-                          style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            paddingVertical: 6,
-                            backgroundColor: set.completed
-                              ? blockColors.light
-                              : "transparent",
-                            borderRadius: 4,
-                            marginBottom: 4,
-                          }}
-                        >
-                          {/* Set Number */}
-                          <View style={{ width: 40, alignItems: "center" }}>
+                          </View>
+                          <View style={{ flex: 1, paddingHorizontal: 8 }}>
+                            <Typography
+                              variant="caption"
+                              weight="medium"
+                              color="textMuted"
+                            >
+                              KG
+                            </Typography>
+                          </View>
+                          <View style={{ flex: 1, paddingHorizontal: 8 }}>
                             <TouchableOpacity
-                              onPress={() =>
-                                onShowSetTypeBottomSheet(
-                                  set.id,
-                                  exerciseInBlock.id
-                                )
-                              }
+                              onPress={onChangeGlobalRepsType}
                               style={{
-                                width: 28,
-                                height: 28,
-                                borderRadius: 14,
-                                backgroundColor:
-                                  set.type !== "normal"
-                                    ? getSetTypeColor(set.type)
-                                    : colors.border,
+                                flexDirection: "row",
                                 alignItems: "center",
-                                justifyContent: "center",
+                                gap: 4,
                               }}
                             >
                               <Typography
                                 variant="caption"
                                 weight="medium"
-                                style={{
-                                  color:
-                                    set.type !== "normal"
-                                      ? "white"
-                                      : colors.text,
-                                  fontSize: 10,
-                                }}
+                                color="textMuted"
                               >
-                                {getSetTypeLabel(set.type) ||
-                                  (setIndex + 1).toString()}
+                                {getRepsColumnTitle()}
                               </Typography>
+                              <ChevronDown size={12} color={colors.textMuted} />
                             </TouchableOpacity>
                           </View>
-
-                          {/* Weight Input */}
-                          <View style={{ flex: 1, paddingHorizontal: 8 }}>
-                            <TextInput
-                              value={set.weight}
-                              onChangeText={(value) =>
-                                updateSet(exerciseInBlock.id, set.id, {
-                                  weight: value,
-                                })
-                              }
-                              placeholder="0"
-                              keyboardType="numeric"
-                              style={{
-                                backgroundColor: colors.background,
-                                borderWidth: 1,
-                                borderColor: colors.border,
-                                borderRadius: 4,
-                                paddingHorizontal: 8,
-                                paddingVertical: 6,
-                                textAlign: "center",
-                                color: colors.text,
-                                fontSize: 14,
-                              }}
-                            />
-                          </View>
-
-                          {/* Reps Input */}
-                          <View style={{ flex: 1, paddingHorizontal: 8 }}>
-                            <TextInput
-                              value={set.reps}
-                              onChangeText={(value) =>
-                                updateSet(exerciseInBlock.id, set.id, {
-                                  reps: value,
-                                })
-                              }
-                              placeholder="0"
-                              keyboardType="numeric"
-                              style={{
-                                backgroundColor: colors.background,
-                                borderWidth: 1,
-                                borderColor: colors.border,
-                                borderRadius: 4,
-                                paddingHorizontal: 8,
-                                paddingVertical: 6,
-                                textAlign: "center",
-                                color: colors.text,
-                                fontSize: 14,
-                              }}
-                            />
-                          </View>
                         </View>
-                      ))}
 
-                      {/* Add Set Button */}
-                      <TouchableOpacity
-                        onPress={() => addSetToExercise(exerciseInBlock.id)}
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          paddingVertical: 8,
-                          marginTop: 4,
-                          borderWidth: 1,
-                          borderColor: blockColors.primary,
-                          borderStyle: "dashed",
-                          borderRadius: 4,
-                          backgroundColor: blockColors.light,
-                        }}
-                      >
-                        <Plus size={14} color={blockColors.primary} />
-                        <Typography
-                          variant="caption"
-                          weight="medium"
-                          style={{ color: blockColors.primary, marginLeft: 4 }}
+                        {/* Set Rows */}
+                        {exerciseInBlock.sets.map((set, setIndex) => (
+                          <View
+                            key={set.id}
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "center",
+                              paddingVertical: 6,
+                              backgroundColor: set.completed
+                                ? blockColors.light
+                                : "transparent",
+                              borderRadius: 4,
+                              marginBottom: 4,
+                            }}
+                          >
+                            {/* Set Number */}
+                            <View style={{ width: 40, alignItems: "center" }}>
+                              <TouchableOpacity
+                                onPress={() =>
+                                  onShowSetTypeBottomSheet(
+                                    set.id,
+                                    exerciseInBlock.id
+                                  )
+                                }
+                                style={{
+                                  width: 28,
+                                  height: 28,
+                                  borderRadius: 14,
+                                  backgroundColor:
+                                    set.type !== "normal"
+                                      ? getSetTypeColor(set.type)
+                                      : colors.border,
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <Typography
+                                  variant="caption"
+                                  weight="medium"
+                                  style={{
+                                    color:
+                                      set.type !== "normal"
+                                        ? "white"
+                                        : colors.text,
+                                    fontSize: 10,
+                                  }}
+                                >
+                                  {getSetTypeLabel(set.type) ||
+                                    (setIndex + 1).toString()}
+                                </Typography>
+                              </TouchableOpacity>
+                            </View>
+
+                            {/* Weight Input */}
+                            <View style={{ flex: 1, paddingHorizontal: 8 }}>
+                              <TextInput
+                                value={set.weight}
+                                onChangeText={(value) =>
+                                  updateSet(exerciseInBlock.id, set.id, {
+                                    weight: value,
+                                  })
+                                }
+                                placeholder="0"
+                                keyboardType="numeric"
+                                style={{
+                                  backgroundColor: colors.background,
+                                  borderWidth: 1,
+                                  borderColor: colors.border,
+                                  borderRadius: 4,
+                                  paddingHorizontal: 8,
+                                  paddingVertical: 6,
+                                  textAlign: "center",
+                                  color: colors.text,
+                                  fontSize: 14,
+                                }}
+                              />
+                            </View>
+
+                            {/* Reps Input */}
+                            <View style={{ flex: 1, paddingHorizontal: 8 }}>
+                              <TextInput
+                                value={set.reps}
+                                onChangeText={(value) =>
+                                  updateSet(exerciseInBlock.id, set.id, {
+                                    reps: value,
+                                  })
+                                }
+                                placeholder="0"
+                                keyboardType="numeric"
+                                style={{
+                                  backgroundColor: colors.background,
+                                  borderWidth: 1,
+                                  borderColor: colors.border,
+                                  borderRadius: 4,
+                                  paddingHorizontal: 8,
+                                  paddingVertical: 6,
+                                  textAlign: "center",
+                                  color: colors.text,
+                                  fontSize: 14,
+                                }}
+                              />
+                            </View>
+                          </View>
+                        ))}
+
+                        {/* Add Set Button */}
+                        <TouchableOpacity
+                          onPress={() => addSetToExercise(exerciseInBlock.id)}
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            paddingVertical: 8,
+                            marginTop: 4,
+                            borderWidth: 1,
+                            borderColor: blockColors.primary,
+                            borderStyle: "dashed",
+                            borderRadius: 4,
+                            backgroundColor: blockColors.light,
+                          }}
                         >
-                          Agregar Serie
-                        </Typography>
-                      </TouchableOpacity>
-                    </View>
+                          <Plus size={14} color={blockColors.primary} />
+                          <Typography
+                            variant="caption"
+                            weight="medium"
+                            style={{
+                              color: blockColors.primary,
+                              marginLeft: 4,
+                            }}
+                          >
+                            Agregar Serie
+                          </Typography>
+                        </TouchableOpacity>
+                      </View>
+                    </TouchableOpacity>
                   </View>
                 </View>
-              </View>
 
-              {/* Rest Between Exercises (for circuits) */}
-              {blockData.type === "circuit" &&
-                exerciseIndex < blockData.exercises.length - 1 &&
-                blockData.restBetweenExercisesSeconds > 0 && (
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      paddingVertical: 8,
-                      marginHorizontal: 16,
-                      backgroundColor: blockColors.light,
-                      borderRadius: 8,
-                      marginBottom: 8,
-                      position: "relative",
-                    }}
-                  >
-                    {/* Rest indicator on the line */}
+                {/* Rest Between Exercises (for circuits) */}
+                {blockData.type === "circuit" &&
+                  exerciseIndex < blockData.exercises.length - 1 &&
+                  blockData.restBetweenExercisesSeconds > 0 && (
                     <View
                       style={{
-                        position: "absolute",
-                        left: 16,
-                        width: 3,
-                        height: "100%",
-                        backgroundColor: blockColors.primary,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        paddingVertical: 8,
+                        marginHorizontal: 16,
+                        backgroundColor: blockColors.light,
+                        borderRadius: 8,
+                        marginBottom: 8,
+                        position: "relative",
                       }}
-                    />
-                    <Timer size={14} color={blockColors.primary} />
-                    <Typography
-                      variant="caption"
-                      style={{ color: blockColors.primary, marginLeft: 4 }}
                     >
-                      Descanso:{" "}
-                      {formatRestTime(blockData.restBetweenExercisesSeconds)}
-                    </Typography>
-                  </View>
-                )}
-            </View>
-          ))}
-        </View>
-      )}
-    </Card>
+                      {/* Rest indicator on the line */}
+                      <View
+                        style={{
+                          position: "absolute",
+                          left: 16,
+                          width: 3,
+                          height: "100%",
+                          backgroundColor: blockColors.primary,
+                        }}
+                      />
+                      <Timer size={14} color={blockColors.primary} />
+                      <Typography
+                        variant="caption"
+                        style={{ color: blockColors.primary, marginLeft: 4 }}
+                      >
+                        Descanso:{" "}
+                        {formatRestTime(blockData.restBetweenExercisesSeconds)}
+                      </Typography>
+                    </View>
+                  )}
+              </View>
+            ))}
+          </View>
+        )}
+      </Card>
+    </TouchableOpacity>
   );
 };
