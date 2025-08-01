@@ -1,23 +1,43 @@
 import React from "react";
 import { View } from "react-native";
-import { Trash2 } from "lucide-react-native";
+import { Trash2, Plus } from "lucide-react-native";
 import { Typography, Card, Button } from "@/components/ui";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { getThemeColors } from "@/constants/Colors";
+import { ExerciseCard } from "../exercise-card";
+
+interface ExerciseInBlock {
+  id: string;
+  exercise: any;
+  sets: number;
+  reps: string;
+  weight?: string;
+  restSeconds: number;
+  notes?: string;
+}
 
 interface Block {
   id: string;
   type: string;
   name: string;
-  exerciseCount: number;
+  exercises: ExerciseInBlock[];
 }
 
 interface BlockCardProps {
   block: Block;
   onDelete: (blockId: string) => void;
+  onAddExercises: (blockId: string) => void;
+  onEditExercise: (blockId: string, exerciseId: string) => void;
+  onDeleteExercise: (blockId: string, exerciseId: string) => void;
 }
 
-export const BlockCard: React.FC<BlockCardProps> = ({ block, onDelete }) => {
+export const BlockCard: React.FC<BlockCardProps> = ({
+  block,
+  onDelete,
+  onAddExercises,
+  onEditExercise,
+  onDeleteExercise,
+}) => {
   const colorScheme = useColorScheme();
   const colors = getThemeColors(colorScheme === "dark");
 
@@ -42,6 +62,19 @@ export const BlockCard: React.FC<BlockCardProps> = ({ block, onDelete }) => {
     }
   };
 
+  const getBlockIcon = (type: string) => {
+    switch (type) {
+      case "superset":
+        return "🔥";
+      case "circuit":
+        return "🔄";
+      case "dropset":
+        return "⬇️";
+      default:
+        return "💪";
+    }
+  };
+
   return (
     <Card
       variant="outlined"
@@ -56,6 +89,7 @@ export const BlockCard: React.FC<BlockCardProps> = ({ block, onDelete }) => {
           flexDirection: "row",
           alignItems: "flex-start",
           justifyContent: "space-between",
+          marginBottom: 16,
         }}
       >
         <View style={{ flex: 1 }}>
@@ -69,12 +103,17 @@ export const BlockCard: React.FC<BlockCardProps> = ({ block, onDelete }) => {
             <View
               style={{
                 backgroundColor: colors.gray[100],
-                paddingHorizontal: 8,
+                paddingHorizontal: 10,
                 paddingVertical: 4,
-                borderRadius: 6,
+                borderRadius: 8,
                 marginRight: 8,
+                flexDirection: "row",
+                alignItems: "center",
               }}
             >
+              <Typography variant="caption" style={{ marginRight: 4 }}>
+                {getBlockIcon(block.type)}
+              </Typography>
               <Typography variant="caption" color="textMuted" weight="medium">
                 {getBlockTypeDisplay(block.type)}
               </Typography>
@@ -90,7 +129,8 @@ export const BlockCard: React.FC<BlockCardProps> = ({ block, onDelete }) => {
           </Typography>
 
           <Typography variant="body2" color="textMuted">
-            {block.exerciseCount} ejercicios • Sin configurar
+            {block.exercises.length} ejercicios
+            {block.exercises.length === 0 && " • Sin configurar"}
           </Typography>
         </View>
 
@@ -104,11 +144,33 @@ export const BlockCard: React.FC<BlockCardProps> = ({ block, onDelete }) => {
         </Button>
       </View>
 
-      <View style={{ marginTop: 12, gap: 8 }}>
-        <Button variant="outline" size="sm" fullWidth>
-          Agregar Ejercicios
-        </Button>
-      </View>
+      {/* Exercises List */}
+      {block.exercises.length > 0 && (
+        <View style={{ gap: 12, marginBottom: 16 }}>
+          {block.exercises.map((exerciseInBlock, index) => (
+            <ExerciseCard
+              key={exerciseInBlock.id}
+              exerciseInBlock={exerciseInBlock}
+              orderIndex={index}
+              onEdit={() => onEditExercise(block.id, exerciseInBlock.id)}
+              onDelete={() => onDeleteExercise(block.id, exerciseInBlock.id)}
+            />
+          ))}
+        </View>
+      )}
+
+      {/* Add Exercises Button */}
+      <Button
+        variant="outline"
+        size="sm"
+        fullWidth
+        onPress={() => onAddExercises(block.id)}
+        icon={<Plus size={16} color={colors.primary[500]} />}
+      >
+        {block.exercises.length === 0
+          ? "Agregar Ejercicios"
+          : "Agregar Más Ejercicios"}
+      </Button>
     </Card>
   );
 };
