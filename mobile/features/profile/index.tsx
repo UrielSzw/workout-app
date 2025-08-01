@@ -1,5 +1,5 @@
 import React from "react";
-import { View, ScrollView, SafeAreaView, Switch } from "react-native";
+import { View, ScrollView, SafeAreaView, Switch, Alert } from "react-native";
 import {
   User,
   Settings,
@@ -14,6 +14,7 @@ import {
 import { Typography, Card, Button } from "@/components/ui";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { getThemeColors } from "@/constants/Colors";
+import { useAuth } from "@/contexts/AuthContext";
 import { ProfileSection } from "./profile-section";
 import { SettingItem } from "./setting-item";
 import { StatItem } from "./stat-item";
@@ -21,10 +22,25 @@ import { StatItem } from "./stat-item";
 export const ProfileFeature = () => {
   const colorScheme = useColorScheme();
   const colors = getThemeColors(colorScheme === "dark");
+  const { user, logout } = useAuth();
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
   const [darkModeEnabled, setDarkModeEnabled] = React.useState(
     colorScheme === "dark"
   );
+
+  const handleLogout = () => {
+    Alert.alert("Cerrar Sesión", "¿Estás seguro que quieres cerrar sesión?", [
+      {
+        text: "Cancelar",
+        style: "cancel",
+      },
+      {
+        text: "Cerrar Sesión",
+        style: "destructive",
+        onPress: logout,
+      },
+    ]);
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
@@ -57,7 +73,14 @@ export const ProfileFeature = () => {
             </View>
 
             <Typography variant="h4" weight="bold" style={{ marginBottom: 4 }}>
-              Uriel Szwarcberg
+              {user?.name || "Usuario"}
+            </Typography>
+            <Typography
+              variant="body2"
+              color="textMuted"
+              style={{ marginBottom: 4 }}
+            >
+              {user?.email}
             </Typography>
             <Typography
               variant="body2"
@@ -246,7 +269,7 @@ export const ProfileFeature = () => {
           <SettingItem
             icon={<LogOut size={20} color={colors.error[500]} />}
             title="Cerrar Sesión"
-            onPress={() => {}}
+            onPress={handleLogout}
           />
         </View>
 
