@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { router, useLocalSearchParams } from "expo-router";
-import { ReorderExercisesScreen } from "@/features/create-routine/ReorderExercisesScreen";
+import { ReorderExercisesScreen } from "@/features/create-routinea/ReorderExercisesScreen";
 
 export default function ReorderExercisesPage() {
   const { blockData } = useLocalSearchParams();
