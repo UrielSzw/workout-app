@@ -2,25 +2,25 @@ import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
-} from "@react-navigation/native";
-import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import "react-native-reanimated";
-import "./globals.css";
+} from '@react-navigation/native';
+import { useFonts } from 'expo-font';
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import 'react-native-reanimated';
+import './globals.css';
 
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { useAppStore } from "@/store/useAppStore";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { useAppStore } from '@/store/useAppStore';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const { loadFromStorage } = useAppStore();
 
   const [loaded] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AuthProvider>
         <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+          value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
         >
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -47,54 +47,56 @@ export default function RootLayout() {
             <Stack.Screen
               name="workout/active"
               options={{
-                presentation: "fullScreenModal",
+                presentation: 'fullScreenModal',
                 headerShown: false,
               }}
             />
             <Stack.Screen
               name="routines/create"
               options={{
-                presentation: "modal",
+                presentation: 'modal',
                 headerShown: false,
               }}
             />
             <Stack.Screen
               name="folders/create"
               options={{
-                presentation: "modal",
+                presentation: 'modal',
                 headerShown: false,
               }}
             />
             <Stack.Screen
               name="reorder-blocks"
               options={{
-                presentation: "modal",
+                presentation: 'fullScreenModal',
                 headerShown: false,
-                title: "Reordenar Bloques",
+                title: 'Reordenar Bloques',
                 gestureEnabled: false,
               }}
             />
             <Stack.Screen
               name="reorder-exercises"
               options={{
-                presentation: "modal",
+                presentation: 'fullScreenModal',
                 headerShown: false,
-                title: "Reordenar Ejercicios",
+                title: 'Reordenar Ejercicios',
                 gestureEnabled: false,
+                gestureDirection: 'horizontal',
+                fullScreenGestureEnabled: false,
               }}
             />
             <Stack.Screen
               name="login"
               options={{
                 headerShown: false,
-                presentation: "modal",
+                presentation: 'modal',
               }}
             />
             <Stack.Screen
               name="register"
               options={{
                 headerShown: false,
-                presentation: "modal",
+                presentation: 'modal',
               }}
             />
           </Stack>

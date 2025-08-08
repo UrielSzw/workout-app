@@ -1,17 +1,17 @@
-import React from "react";
-import { View, Modal, TouchableOpacity, ScrollView, Alert } from "react-native";
-import * as Haptics from "expo-haptics";
-import { X, Folder, FolderMinus } from "lucide-react-native";
-import { Typography, Button } from "@/components/ui";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { getThemeColors } from "@/constants/Colors";
-import { Folder as FolderType, Routine } from "@/store/useAppStore";
+import React from 'react';
+import { View, Modal, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import * as Haptics from 'expo-haptics';
+import { X, Folder, FolderMinus } from 'lucide-react-native';
+import { Typography, Button } from '@/components/ui';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { getThemeColors } from '@/constants/Colors';
+import { IFolder, IRoutine } from '@/types/routine';
 
 interface MoveRoutineModalProps {
   visible: boolean;
   onClose: () => void;
-  routine: Routine | null;
-  folders: FolderType[];
+  routine: IRoutine | null;
+  folders: IFolder[];
   onMoveToFolder: (routineId: string, folderId?: string) => void;
   currentFolderId?: string;
 }
@@ -25,32 +25,32 @@ export const MoveRoutineModal = ({
   currentFolderId,
 }: MoveRoutineModalProps) => {
   const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === "dark");
+  const colors = getThemeColors(colorScheme === 'dark');
 
   if (!routine) return null;
 
   const handleMoveToFolder = (folderId?: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     Alert.alert(
-      "Mover Rutina",
+      'Mover Rutina',
       folderId
         ? `¿Mover "${routine.name}" a la carpeta "${folders.find((f) => f.id === folderId)?.name}"?`
         : `¿Sacar "${routine.name}" de la carpeta actual?`,
       [
-        { text: "Cancelar", style: "cancel" },
+        { text: 'Cancelar', style: 'cancel' },
         {
-          text: "Mover",
+          text: 'Mover',
           onPress: () => {
             onMoveToFolder(routine.id, folderId);
             onClose();
           },
         },
-      ]
+      ],
     );
   };
 
   const availableFolders = folders.filter(
-    (folder) => folder.id !== currentFolderId
+    (folder) => folder.id !== currentFolderId,
   );
 
   return (
@@ -64,9 +64,9 @@ export const MoveRoutineModal = ({
         {/* Header */}
         <View
           style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
             paddingHorizontal: 20,
             paddingVertical: 16,
             borderBottomWidth: 1,
@@ -107,7 +107,7 @@ export const MoveRoutineModal = ({
                 color="textMuted"
                 style={{ marginTop: 4 }}
               >
-                Actualmente en:{" "}
+                Actualmente en:{' '}
                 {folders.find((f) => f.id === currentFolderId)?.name}
               </Typography>
             )}
@@ -117,8 +117,8 @@ export const MoveRoutineModal = ({
           {currentFolderId && (
             <TouchableOpacity
               style={{
-                flexDirection: "row",
-                alignItems: "center",
+                flexDirection: 'row',
+                alignItems: 'center',
                 backgroundColor: colors.background,
                 borderWidth: 1,
                 borderColor: colors.border,
@@ -134,8 +134,8 @@ export const MoveRoutineModal = ({
                   height: 40,
                   borderRadius: 20,
                   backgroundColor: colors.gray[100],
-                  alignItems: "center",
-                  justifyContent: "center",
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   marginRight: 12,
                 }}
               >
@@ -154,7 +154,7 @@ export const MoveRoutineModal = ({
 
           {/* Available folders */}
           <Typography variant="h6" weight="medium" style={{ marginBottom: 16 }}>
-            {currentFolderId ? "Mover a otra carpeta:" : "Mover a carpeta:"}
+            {currentFolderId ? 'Mover a otra carpeta:' : 'Mover a carpeta:'}
           </Typography>
 
           {availableFolders.length > 0 ? (
@@ -162,8 +162,8 @@ export const MoveRoutineModal = ({
               <TouchableOpacity
                 key={folder.id}
                 style={{
-                  flexDirection: "row",
-                  alignItems: "center",
+                  flexDirection: 'row',
+                  alignItems: 'center',
                   backgroundColor: colors.background,
                   borderWidth: 1,
                   borderColor: colors.border,
@@ -179,8 +179,8 @@ export const MoveRoutineModal = ({
                     height: 40,
                     borderRadius: 20,
                     backgroundColor: folder.color,
-                    alignItems: "center",
-                    justifyContent: "center",
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     marginRight: 12,
                   }}
                 >
@@ -201,7 +201,7 @@ export const MoveRoutineModal = ({
           ) : (
             <View
               style={{
-                alignItems: "center",
+                alignItems: 'center',
                 paddingVertical: 32,
               }}
             >
@@ -212,8 +212,8 @@ export const MoveRoutineModal = ({
               />
               <Typography variant="body1" color="textMuted">
                 {currentFolderId
-                  ? "No hay otras carpetas disponibles"
-                  : "No hay carpetas disponibles"}
+                  ? 'No hay otras carpetas disponibles'
+                  : 'No hay carpetas disponibles'}
               </Typography>
             </View>
           )}

@@ -1,31 +1,18 @@
-import React from "react";
-import { ReorderBlocksScreen } from "@/features/create-routinea/ReorderBlocksScreen";
-import { router, useLocalSearchParams } from "expo-router";
-
-// Declare global variable for temporary storage
-declare global {
-  var reorderedBlocks: any;
-}
+import React from 'react';
+import { router } from 'expo-router';
+import { ReorderBlocksScreen } from '@/features/create-routine/reorder-blocks';
+import { createRoutineStore } from '@/store/create-routine-store';
+import { IBlock } from '@/types/routine';
 
 export default function ReorderBlocksPage() {
-  const params = useLocalSearchParams();
+  const { blocks, setBlocks } = createRoutineStore((state) => state);
 
-  // Parse blocks from navigation params
-  const blocks = JSON.parse((params.blocks as string) || "[]");
-
-  const handleReorder = (reorderedBlocks: any[]) => {
-    console.log("Blocks reordered:", reorderedBlocks);
-
-    // Store reordered blocks in global storage temporarily
-    // In a real app, you'd use a proper state management solution
-    global.reorderedBlocks = reorderedBlocks;
-
-    // Navigate back
+  const handleReorder = (reorderedBlocks: IBlock[]) => {
+    setBlocks(reorderedBlocks);
     router.back();
   };
 
   const handleCancel = () => {
-    // Simply go back without changes
     router.back();
   };
 

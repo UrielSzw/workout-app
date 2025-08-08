@@ -1,26 +1,25 @@
-import React, { useEffect } from "react";
-import { router, useLocalSearchParams } from "expo-router";
-import { ReorderExercisesScreen } from "@/features/create-routinea/ReorderExercisesScreen";
+import React from 'react';
+import { router } from 'expo-router';
+import { createRoutineStore } from '@/store/create-routine-store';
+import { IBlock } from '@/types/routine';
+import { ReorderExercisesScreen } from '@/features/create-routine/reorder-exercises';
 
 export default function ReorderExercisesPage() {
-  const { blockData } = useLocalSearchParams();
+  const { reorderedBlock, setReorderedBlock, blocks, setBlocks } =
+    createRoutineStore((state) => state);
 
-  // Parse the blockData from the navigation params
-  const parsedBlockData = blockData ? JSON.parse(blockData as string) : null;
-
-  useEffect(() => {
-    if (!parsedBlockData) {
-      router.back();
-    }
-  }, [parsedBlockData]);
-
-  if (!parsedBlockData) {
+  if (!reorderedBlock) {
     return null;
   }
 
-  const handleReorder = (reorderedBlock: any) => {
+  const handleReorder = (reorderedBlock: IBlock) => {
     // Save reordered block to global state for the parent to pick up
-    (global as any).reorderedBlock = reorderedBlock;
+    const updatedBlocks = blocks.map((block) =>
+      block.id === reorderedBlock.id ? reorderedBlock : block,
+    );
+
+    setBlocks(updatedBlocks);
+    setReorderedBlock(null);
     router.back();
   };
 
@@ -30,7 +29,7 @@ export default function ReorderExercisesPage() {
 
   return (
     <ReorderExercisesScreen
-      blockData={parsedBlockData}
+      block={reorderedBlock}
       onReorder={handleReorder}
       onCancel={handleCancel}
     />

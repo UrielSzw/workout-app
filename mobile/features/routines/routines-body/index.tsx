@@ -1,25 +1,25 @@
-import { Button, Typography } from "@/components/ui";
-import { FolderPlus } from "lucide-react-native";
-import React from "react";
-import { Alert, RefreshControl, ScrollView, View } from "react-native";
-import { DraggableFolderList } from "../draggable-folder-list";
-import { RoutineCard } from "../routine-card";
-import { Folder, Routine } from "@/store/useAppStore";
-import { useColorScheme } from "@/hooks/useColorScheme.web";
-import { getThemeColors } from "@/constants/Colors";
+import { Button, Typography } from '@/components/ui';
+import { FolderPlus } from 'lucide-react-native';
+import React from 'react';
+import { Alert, RefreshControl, ScrollView, View } from 'react-native';
+import { DraggableFolderList } from '../draggable-folder-list';
+import { RoutineCard } from '../routine-card';
+import { useColorScheme } from '@/hooks/useColorScheme.web';
+import { getThemeColors } from '@/constants/Colors';
+import { IFolder, IRoutine } from '@/types/routine';
 
 type Props = {
   refreshing: boolean;
   onRefresh: () => Promise<void>;
-  folders: Folder[];
-  routines: Routine[];
-  filteredRoutines?: Routine[];
-  reorderFolders: (folders: Folder[]) => void;
+  folders: IFolder[];
+  routines: IRoutine[];
+  filteredRoutines?: IRoutine[];
+  reorderFolders: (folders: IFolder[]) => void;
   handleCreateFolder: () => void;
-  handleEditRoutine: (routine: Routine) => void;
-  handleDeleteRoutine: (routine: Routine) => void;
-  handleStartWorkout: (routine: Routine) => void;
-  handleRoutineLongPress: (routine: Routine) => void;
+  handleEditRoutine: (routine: IRoutine) => void;
+  handleDeleteRoutine: (routine: IRoutine) => void;
+  handleStartWorkout: (routine: IRoutine) => void;
+  handleRoutineLongPress: (routine: IRoutine) => void;
   setSelectedFolder: (folderId: string | null) => void;
 };
 
@@ -38,7 +38,7 @@ export const RoutinesBody: React.FC<Props> = ({
   setSelectedFolder,
 }) => {
   const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === "dark");
+  const colors = getThemeColors(colorScheme === 'dark');
 
   const handleReorderFolders = (newFolders: typeof folders) => {
     reorderFolders(newFolders);
@@ -50,20 +50,20 @@ export const RoutinesBody: React.FC<Props> = ({
 
   const handleEditFolder = (folderId: string) => {
     const folder = folders.find((f) => f.id === folderId);
-    Alert.alert("Editar Carpeta", `Editar "${folder?.name}" (mock)`, [
-      { text: "OK" },
+    Alert.alert('Editar Carpeta', `Editar "${folder?.name}" (mock)`, [
+      { text: 'OK' },
     ]);
   };
 
   const handleDeleteFolder = (folderId: string) => {
     const folder = folders.find((f) => f.id === folderId);
     Alert.alert(
-      "Eliminar Carpeta",
+      'Eliminar Carpeta',
       `¿Estás seguro que quieres eliminar "${folder?.name}"? (mock)`,
       [
-        { text: "Cancelar", style: "cancel" },
-        { text: "Eliminar", style: "destructive" },
-      ]
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Eliminar', style: 'destructive' },
+      ],
     );
   };
 
@@ -80,9 +80,9 @@ export const RoutinesBody: React.FC<Props> = ({
         <View style={{ marginBottom: 24 }}>
           <View
             style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
               marginBottom: 16,
             }}
           >
@@ -114,9 +114,9 @@ export const RoutinesBody: React.FC<Props> = ({
         <View style={{ marginBottom: 24 }}>
           <View
             style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
               marginBottom: 16,
             }}
           >

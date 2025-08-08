@@ -1,18 +1,17 @@
-import { Button } from "@/components/ui";
-import React from "react";
-import { RefreshControl, ScrollView, View } from "react-native";
-import { RoutineCard } from "../routine-card";
-import { Routine } from "@/store/useAppStore";
+import { Button } from '@/components/ui';
+import React from 'react';
+import { RefreshControl, ScrollView, View } from 'react-native';
+import { RoutineCard } from '../routine-card';
+import { IRoutine } from '@/types/routine';
 
 type Props = {
   setSelectedFolder: (folderId: string | null) => void;
   refreshing: boolean;
   onRefresh: () => Promise<void>;
-  filteredRoutines: Routine[];
-  onEditRoutine: (routine: Routine) => void;
-  onDeleteRoutine: (routine: Routine) => void;
-  onStartWorkout: (routine: Routine) => void;
-  onLongPressRoutine: (routine: Routine) => void;
+  filteredRoutines: IRoutine[];
+  onEditRoutine: (routine: IRoutine) => void;
+  onDeleteRoutine: (routine: IRoutine) => void;
+  onLongPressRoutine: (routine: IRoutine) => void;
 };
 
 export const FoldersBody: React.FC<Props> = ({
@@ -23,7 +22,6 @@ export const FoldersBody: React.FC<Props> = ({
   onDeleteRoutine,
   onEditRoutine,
   onLongPressRoutine,
-  onStartWorkout,
 }) => {
   return (
     <>
@@ -31,7 +29,7 @@ export const FoldersBody: React.FC<Props> = ({
         variant="ghost"
         size="sm"
         onPress={() => setSelectedFolder(null)}
-        style={{ alignSelf: "flex-start", marginBottom: 16 }}
+        style={{ alignSelf: 'flex-start', marginBottom: 16 }}
       >
         ← Volver a carpetas
       </Button>
@@ -49,7 +47,7 @@ export const FoldersBody: React.FC<Props> = ({
               routine={routine}
               onEdit={onEditRoutine}
               onDelete={onDeleteRoutine}
-              onStart={onStartWorkout}
+              onStart={() => {}}
               onLongPress={onLongPressRoutine}
             />
           ))}
