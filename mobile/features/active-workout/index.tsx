@@ -9,8 +9,8 @@ import { ActiveWorkoutHeader } from './active-workout-header';
 import { WorkoutProgress } from './workout-progress/index';
 import { BlockList } from './block-list/index';
 import { RestTimerSheet } from './rest-timer-sheet/index';
-import { RepsTypeBottomSheet } from '../create-routine/reps-type-sheet';
-import { SetTypeBottomSheet } from '../create-routine/set-type-sheet';
+import { RepsTypeBottomSheet } from '../form-routine/reps-type-sheet';
+import { SetTypeBottomSheet } from '../form-routine/set-type-sheet';
 import { useActiveWorkout } from './hook';
 
 export const ActiveWorkoutFeature = () => {

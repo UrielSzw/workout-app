@@ -10,7 +10,6 @@ import { FolderPlus } from 'lucide-react-native';
 import { useColorScheme } from '@/hooks/useColorScheme.web';
 import { getThemeColors } from '@/constants/Colors';
 import { RoutineCard } from '../routine-card';
-import { Dispatch, SetStateAction } from 'react';
 
 type Props = {
   folders?: IFolder[];
@@ -18,10 +17,9 @@ type Props = {
   onReorder: (folders: IFolder[]) => void;
   filteredRoutines?: IRoutine[];
   onCreateFolder: () => void;
-  onEditRoutine: (routine: IRoutine) => void;
-  onDeleteRoutine: (routine: IRoutine) => void;
   onLongPressRoutine: (routine: IRoutine) => void;
-  setSelectedFolder: Dispatch<SetStateAction<IFolder | null>>;
+  setSelectedFolder: (folder: IFolder | null) => void;
+  onPressRoutine: (routine: IRoutine | null) => void;
 };
 
 export const DraggableList: React.FC<Props> = ({
@@ -30,10 +28,9 @@ export const DraggableList: React.FC<Props> = ({
   onReorder,
   filteredRoutines = [],
   onCreateFolder,
-  onEditRoutine,
-  onDeleteRoutine,
   onLongPressRoutine,
   setSelectedFolder,
+  onPressRoutine,
 }) => {
   const colorScheme = useColorScheme();
   const colors = getThemeColors(colorScheme === 'dark');
@@ -116,10 +113,9 @@ export const DraggableList: React.FC<Props> = ({
                   <RoutineCard
                     key={routine.id}
                     routine={routine}
-                    onEdit={onEditRoutine}
-                    onDelete={onDeleteRoutine}
                     onStart={() => {}}
                     onLongPress={onLongPressRoutine}
+                    onPress={onPressRoutine}
                   />
                 ))}
               </View>

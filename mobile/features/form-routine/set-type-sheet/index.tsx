@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import { Typography } from '@/components/ui';
 import { useColorScheme } from '@/hooks/useColorScheme';

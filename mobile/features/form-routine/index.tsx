@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { View, SafeAreaView, ScrollView } from 'react-native';
 import {
   BottomSheetModal,
@@ -9,14 +9,18 @@ import { getThemeColors } from '@/constants/Colors';
 import { CreateRoutineHeader } from './create-routine-header';
 import { RoutineInfo } from './routine-info';
 import { ExerciseList } from './exercise-list';
-import { useCreateRoutine } from './hook';
+import { useFormRoutine } from './hook';
 import { ExerciseSelectorModal } from './exercise-selector-modal';
 import { SetTypeBottomSheet } from './set-type-sheet';
 import { IRepsType, ISetType } from '@/types/routine';
 import { RepsTypeBottomSheet } from './reps-type-sheet';
 import { RestTimeBottomSheet } from './rest-time-sheet';
 
-export const CreateRoutineFeature = () => {
+type Props = {
+  isEditMode?: boolean;
+};
+
+export const FormRoutineFeature = ({ isEditMode }: Props) => {
   const colorScheme = useColorScheme();
   const colors = getThemeColors(colorScheme === 'dark');
 
@@ -50,7 +54,7 @@ export const CreateRoutineFeature = () => {
     currentSetType,
     setCurrentSetType,
     handleClearRoutine,
-  } = useCreateRoutine();
+  } = useFormRoutine({ isEditMode });
 
   // Bottom sheet refs
   const setTypeBottomSheetRef = useRef<BottomSheetModal>(null);
@@ -111,6 +115,7 @@ export const CreateRoutineFeature = () => {
         <CreateRoutineHeader
           onSaveRoutine={handleSaveRoutine}
           onClearRoutine={handleClearRoutine}
+          isEditMode={!!isEditMode}
         />
 
         {/* Scrollable Content */}

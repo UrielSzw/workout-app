@@ -1,7 +1,7 @@
 import React from 'react';
 import { router } from 'expo-router';
-import { ReorderBlocksScreen } from '@/features/create-routine/reorder-blocks';
-import { createRoutineStore } from '@/store/create-routine-store';
+import { ReorderBlocksScreen } from '@/features/form-routine/reorder-blocks';
+import { createRoutineStore } from '@/store/form-routine-store';
 import { IBlock } from '@/types/routine';
 
 export default function ReorderBlocksPage() {

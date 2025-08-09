@@ -13,13 +13,12 @@ export const useFormFolder = ({ isEditMode }: Params) => {
   const [folderIcon, setFolderIcon] = useState('');
   const [folderColor, setFolderColor] = useState('');
 
-  const { addFolder, updateFolder, setFolderToEdit, folderToEdit } = mainStore(
-    (state) => state,
-  );
+  const { addFolder, updateFolder, setSelectedFolder, selectedFolder } =
+    mainStore((state) => state);
 
-  const defaultFolderName = folderName || folderToEdit?.name || '';
-  const defaultFolderIcon = folderIcon || folderToEdit?.icon || '📁';
-  const defaultFolderColor = folderColor || folderToEdit?.color || '#3b82f6';
+  const defaultFolderName = folderName || selectedFolder?.name || '';
+  const defaultFolderIcon = folderIcon || selectedFolder?.icon || '';
+  const defaultFolderColor = folderColor || selectedFolder?.color || '#3b82f6';
 
   const handleSaveFolder = () => {
     if (!defaultFolderName.trim()) {
@@ -27,13 +26,17 @@ export const useFormFolder = ({ isEditMode }: Params) => {
       return;
     }
 
-    if (isEditMode && folderToEdit) {
-      updateFolder(folderToEdit.id, {
+    if (isEditMode && selectedFolder) {
+      const updatedFolder: IFolder = {
+        ...selectedFolder,
         name: defaultFolderName,
         icon: defaultFolderIcon,
         color: defaultFolderColor,
-      });
-      setFolderToEdit(null);
+        updatedAt: new Date().toISOString(),
+      };
+
+      updateFolder(selectedFolder.id, updatedFolder);
+      setSelectedFolder(updatedFolder);
     } else {
       const newFolder: IFolder = {
         id: Date.now().toString(),

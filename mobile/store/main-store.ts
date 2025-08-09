@@ -7,8 +7,10 @@ type MainStore = {
   folders: IFolder[];
 
   // Edit
-  folderToEdit: IFolder | null;
-  setFolderToEdit: (folder: IFolder | null) => void;
+  selectedFolder: IFolder | null;
+  setSelectedFolder: (folder: IFolder | null) => void;
+  selectedRoutine: IRoutine | null;
+  setSelectedRoutine: (routine: IRoutine | null) => void;
 
   // UI State
   isLoading: boolean;
@@ -44,8 +46,10 @@ export const mainStore = create<MainStore>((set, get) => ({
   folders: [],
 
   // Edit
-  folderToEdit: null,
-  setFolderToEdit: (folder) => set({ folderToEdit: folder }),
+  selectedFolder: null,
+  setSelectedFolder: (folder) => set({ selectedFolder: folder }),
+  selectedRoutine: null,
+  setSelectedRoutine: (routine) => set({ selectedRoutine: routine }),
 
   isLoading: false,
 

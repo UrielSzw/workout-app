@@ -1,8 +1,8 @@
 import React from 'react';
 import { router } from 'expo-router';
-import { createRoutineStore } from '@/store/create-routine-store';
+import { createRoutineStore } from '@/store/form-routine-store';
 import { IBlock } from '@/types/routine';
-import { ReorderExercisesScreen } from '@/features/create-routine/reorder-exercises';
+import { ReorderExercisesScreen } from '@/features/form-routine/reorder-exercises';
 
 export default function ReorderExercisesPage() {
   const { reorderedBlock, setReorderedBlock, blocks, setBlocks } =

@@ -1,4 +1,4 @@
-import { createRoutineStore } from '@/store/create-routine-store';
+import { formRoutineStore } from '@/store/form-routine-store';
 import { mainStore } from '@/store/main-store';
 import {
   IBlock,
@@ -11,11 +11,17 @@ import {
 import { router } from 'expo-router';
 import { useState } from 'react';
 
-export const useCreateRoutine = () => {
-  const { blocks, setBlocks, setReorderedBlock } = createRoutineStore(
+type Params = {
+  isEditMode?: boolean;
+};
+
+export const useFormRoutine = ({ isEditMode }: Params) => {
+  const { blocks, setBlocks, setReorderedBlock } = formRoutineStore(
     (state) => state,
   );
-  const { addRoutine } = mainStore((state) => state);
+  const { addRoutine, updateRoutine, selectedRoutine } = mainStore(
+    (state) => state,
+  );
 
   // Routine information state
   const [routineName, setRoutineName] = useState('');
@@ -33,23 +39,38 @@ export const useCreateRoutine = () => {
   const [selectedExercises, setSelectedExercises] = useState<IExercise[]>([]);
   const [currentSetType, setCurrentSetType] = useState<ISetType | null>(null);
 
+  const defaultRoutineName = routineName || selectedRoutine?.name || '';
+  const defaultBlocks =
+    blocks.length > 0 ? blocks : selectedRoutine?.blocks || [];
+
   const handleSaveRoutine = () => {
-    if (!routineName.trim()) {
+    if (!defaultRoutineName.trim()) {
       alert('Por favor, ingresa un nombre para la rutina.');
       return;
     }
 
-    const newRoutine: IRoutine = {
-      id: Date.now().toString(),
-      name: routineName,
-      description: '',
-      folderId: undefined,
-      blocks,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    if (isEditMode && selectedRoutine) {
+      const updatedRoutine: IRoutine = {
+        ...selectedRoutine,
+        blocks: defaultBlocks,
+        name: defaultRoutineName,
+      };
 
-    addRoutine(newRoutine);
+      updateRoutine(selectedRoutine.id, updatedRoutine);
+    } else {
+      const newRoutine: IRoutine = {
+        id: Date.now().toString(),
+        name: defaultRoutineName,
+        description: '',
+        folderId: undefined,
+        blocks: defaultBlocks,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      addRoutine(newRoutine);
+    }
+
     router.back();
   };
 
@@ -60,17 +81,17 @@ export const useCreateRoutine = () => {
   };
 
   const handleDeleteBlock = (blockId: string) => {
-    const updatedBlocks = blocks.filter((block) => block.id !== blockId);
+    const updatedBlocks = defaultBlocks.filter((block) => block.id !== blockId);
     setBlocks(updatedBlocks);
   };
 
   const handleConvertToIndividual = (blockId: string) => {
-    const blockToConvert = blocks.find((block) => block.id === blockId);
+    const blockToConvert = defaultBlocks.find((block) => block.id === blockId);
 
     if (!blockToConvert) return;
 
     // Remove the original block and add individual blocks for each exercise
-    const otherBlocks = blocks.filter((block) => block.id !== blockId);
+    const otherBlocks = defaultBlocks.filter((block) => block.id !== blockId);
 
     const individualBlocks: IBlock[] = blockToConvert.exercises.map(
       (exerciseInBlock, index) => ({
@@ -158,7 +179,7 @@ export const useCreateRoutine = () => {
     const newBlocks = selectedExercises.map((exercise, i) => ({
       id: `block_${Date.now()}_${i}`,
       type: 'individual' as const,
-      orderIndex: blocks.length + i,
+      orderIndex: defaultBlocks.length + i,
       exercises: [
         {
           id: `exercise_${Date.now()}_${i}`,
@@ -171,7 +192,7 @@ export const useCreateRoutine = () => {
       restBetweenExercisesSeconds: 0,
     }));
 
-    setBlocks([...blocks, ...newBlocks]);
+    setBlocks([...defaultBlocks, ...newBlocks]);
     setSelectedExercises([]);
     setExerciseSelectorVisible(false);
   };
@@ -182,7 +203,7 @@ export const useCreateRoutine = () => {
     const newBlock: IBlock = {
       id: `block_${Date.now()}`,
       type: 'superset', // Always start as superset
-      orderIndex: blocks.length,
+      orderIndex: defaultBlocks.length,
       exercises: selectedExercises.map((exercise, i) => ({
         id: `exercise_${Date.now()}_${i}`,
         exercise,
@@ -194,7 +215,7 @@ export const useCreateRoutine = () => {
       name: 'Superserie',
     };
 
-    setBlocks([...blocks, newBlock]);
+    setBlocks([...defaultBlocks, newBlock]);
     setSelectedExercises([]);
     setExerciseSelectorVisible(false);
   };
@@ -202,7 +223,7 @@ export const useCreateRoutine = () => {
   // Sets modal functions
   const handleSetTypeSelect = (setType: ISetType) => {
     if (currentSetId && currentExerciseId) {
-      const updatedBlocks = blocks.map((block) => ({
+      const updatedBlocks = defaultBlocks.map((block) => ({
         ...block,
         exercises: block.exercises.map((ex) => {
           if (ex.id === currentExerciseId) {
@@ -221,7 +242,7 @@ export const useCreateRoutine = () => {
 
   const handleDeleteSet = () => {
     if (currentSetId && currentExerciseId) {
-      const updatedBlocks = blocks.map((block) => ({
+      const updatedBlocks = defaultBlocks.map((block) => ({
         ...block,
         exercises: block.exercises.map((ex) => {
           if (ex.id === currentExerciseId) {
@@ -275,9 +296,9 @@ export const useCreateRoutine = () => {
   };
 
   return {
-    routineName,
+    routineName: defaultRoutineName,
     setRoutineName,
-    blocks,
+    blocks: defaultBlocks,
     setBlocks,
     handleSaveRoutine,
     globalRepsType,

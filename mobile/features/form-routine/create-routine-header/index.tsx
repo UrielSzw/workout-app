@@ -6,11 +6,13 @@ import { useColorScheme, View } from 'react-native';
 type Props = {
   onSaveRoutine: () => void;
   onClearRoutine: () => void;
+  isEditMode: boolean;
 };
 
 export const CreateRoutineHeader: React.FC<Props> = ({
   onSaveRoutine,
   onClearRoutine,
+  isEditMode,
 }) => {
   const colorScheme = useColorScheme();
   const colors = getThemeColors(colorScheme === 'dark');
@@ -39,7 +41,7 @@ export const CreateRoutineHeader: React.FC<Props> = ({
       </Button>
 
       <Typography variant="h6" weight="semibold">
-        Crear Rutina
+        {isEditMode ? 'Editar Rutina' : 'Crear Rutina'}
       </Typography>
 
       <Button variant="primary" size="sm" onPress={onSaveRoutine}>

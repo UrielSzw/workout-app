@@ -54,6 +54,13 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
+            name="routines/edit"
+            options={{
+              presentation: 'modal',
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
             name="folders/create"
             options={{
               presentation: 'modal',

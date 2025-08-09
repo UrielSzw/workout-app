@@ -1,5 +1,5 @@
 import { mainStore } from '@/store/main-store';
-import { IFolder, IRoutine } from '@/types/routine';
+import { IRoutine } from '@/types/routine';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert } from 'react-native';
@@ -13,10 +13,12 @@ export const useHandleRoutines = () => {
     setFolders,
     reorderFolders,
     moveRoutineToFolder,
-    setFolderToEdit,
+    selectedFolder,
+    setSelectedFolder,
+    setSelectedRoutine,
+    selectedRoutine,
   } = mainStore();
 
-  const [selectedFolder, setSelectedFolder] = useState<IFolder | null>(null);
   const [moveRoutineModalVisible, setMoveRoutineModalVisible] = useState(false);
   const [selectedRoutineForMove, setSelectedRoutineForMove] =
     useState<IRoutine | null>(null);
@@ -28,20 +30,24 @@ export const useHandleRoutines = () => {
   const handleEditFolder = () => {
     if (!selectedFolder) return;
 
-    setFolderToEdit(selectedFolder);
     router.push('/folders/edit');
   };
 
-  const handleDeleteRoutine = (routine: IRoutine) => {
+  const handleDeleteRoutine = () => {
+    if (!selectedRoutine) return;
+
     Alert.alert(
       'Eliminar Rutina',
-      `¿Estás seguro que quieres eliminar "${routine.name}"?`,
+      `¿Estás seguro que quieres eliminar "${selectedRoutine.name}"?`,
       [
         { text: 'Cancelar', style: 'cancel' },
         {
           text: 'Eliminar',
           style: 'destructive',
-          onPress: () => deleteRoutine(routine.id),
+          onPress: () => {
+            deleteRoutine(selectedRoutine.id);
+            setSelectedRoutine(null);
+          },
         },
       ],
     );
@@ -91,5 +97,7 @@ export const useHandleRoutines = () => {
     setMoveRoutineModalVisible,
     setSelectedRoutineForMove,
     getRoutinesFiltered,
+    setSelectedRoutine,
+    selectedRoutine,
   };
 };
