@@ -1,5 +1,5 @@
 import { mainStore } from '@/store/main-store';
-import { IRoutine } from '@/types/routine';
+import { IFolder, IRoutine } from '@/types/routine';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert } from 'react-native';
@@ -16,7 +16,7 @@ export const useHandleRoutines = () => {
     setFolderToEdit,
   } = mainStore();
 
-  const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
+  const [selectedFolder, setSelectedFolder] = useState<IFolder | null>(null);
   const [moveRoutineModalVisible, setMoveRoutineModalVisible] = useState(false);
   const [selectedRoutineForMove, setSelectedRoutineForMove] =
     useState<IRoutine | null>(null);
@@ -26,11 +26,9 @@ export const useHandleRoutines = () => {
   };
 
   const handleEditFolder = () => {
-    const folderToEdit = folders.find((folder) => folder.id === selectedFolder);
+    if (!selectedFolder) return;
 
-    if (!folderToEdit) return;
-
-    setFolderToEdit(folderToEdit);
+    setFolderToEdit(selectedFolder);
     router.push('/folders/edit');
   };
 
@@ -64,7 +62,9 @@ export const useHandleRoutines = () => {
 
   const getRoutinesFiltered = () => {
     if (selectedFolder) {
-      return routines.filter((routine) => routine.folderId === selectedFolder);
+      return routines.filter(
+        (routine) => routine.folderId === selectedFolder.id,
+      );
     }
 
     return routines.filter((routine) => !routine.folderId);

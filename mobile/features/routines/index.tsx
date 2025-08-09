@@ -33,7 +33,6 @@ export const RoutinesFeature = () => {
     <ScreenWrapper>
       <RoutinesHeader
         filteredRoutines={filteredRoutines}
-        folders={folders}
         routines={routines}
         selectedFolder={selectedFolder}
       />

@@ -21,7 +21,7 @@ type Props = {
   onEditRoutine: (routine: IRoutine) => void;
   onDeleteRoutine: (routine: IRoutine) => void;
   onLongPressRoutine: (routine: IRoutine) => void;
-  setSelectedFolder: Dispatch<SetStateAction<string | null>>;
+  setSelectedFolder: Dispatch<SetStateAction<IFolder | null>>;
 };
 
 export const DraggableList: React.FC<Props> = ({
@@ -44,7 +44,7 @@ export const DraggableList: React.FC<Props> = ({
     isActive,
   }: RenderItemParams<IFolder>) => {
     const handleSelect = () => {
-      setSelectedFolder(item.id);
+      setSelectedFolder(item);
     };
 
     const routinesCount =

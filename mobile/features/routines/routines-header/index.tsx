@@ -6,15 +6,13 @@ import React from 'react';
 import { View } from 'react-native';
 
 type Props = {
-  folders: IFolder[];
   filteredRoutines: IRoutine[];
   routines: IRoutine[];
-  selectedFolder: string | null;
+  selectedFolder: IFolder | null;
 };
 
 export const RoutinesHeader: React.FC<Props> = ({
   filteredRoutines,
-  folders,
   routines,
   selectedFolder,
 }) => {
@@ -34,7 +32,7 @@ export const RoutinesHeader: React.FC<Props> = ({
       <View>
         <Typography variant="h2" weight="bold">
           {selectedFolder
-            ? folders.find((f) => f.id === selectedFolder)?.name
+            ? selectedFolder.icon + ' ' + selectedFolder?.name
             : 'Mis Rutinas'}
         </Typography>
         <Typography variant="body2" color="textMuted">

@@ -2,13 +2,13 @@ import { Button } from '@/components/ui';
 import React from 'react';
 import { ScrollView, View } from 'react-native';
 import { RoutineCard } from '../routine-card';
-import { IRoutine } from '@/types/routine';
+import { IFolder, IRoutine } from '@/types/routine';
 import { FolderEdit } from 'lucide-react-native';
 import { useColorScheme } from '@/hooks/useColorScheme.web';
 import { getThemeColors } from '@/constants/Colors';
 
 type Props = {
-  setSelectedFolder: (folderId: string | null) => void;
+  setSelectedFolder: (folder: IFolder | null) => void;
   filteredRoutines: IRoutine[];
   onEditRoutine: (routine: IRoutine) => void;
   onDeleteRoutine: (routine: IRoutine) => void;
