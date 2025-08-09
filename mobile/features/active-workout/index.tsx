@@ -3,7 +3,6 @@ import { View, SafeAreaView, ScrollView } from 'react-native';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { router } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { getThemeColors } from '@/constants/Colors';
 import { Typography, Button } from '@/components/ui';
 import { ActiveWorkoutHeader } from './active-workout-header';
 import { WorkoutProgress } from './workout-progress/index';
@@ -14,8 +13,7 @@ import { SetTypeBottomSheet } from '../form-routine/set-type-sheet';
 import { useActiveWorkout } from './hook';
 
 export const ActiveWorkoutFeature = () => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors } = useColorScheme();
 
   const {
     activeWorkout,

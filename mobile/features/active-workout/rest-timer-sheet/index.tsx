@@ -20,8 +20,7 @@ export const RestTimerSheet: React.FC<Props> = ({
   onAdjustTime,
   onTimerComplete,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors } = useColorScheme();
 
   const [timeRemaining, setTimeRemaining] = useState(restTimeSeconds);
   const [isRunning, setIsRunning] = useState(false);

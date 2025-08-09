@@ -1,12 +1,12 @@
 import React from 'react';
 import { router } from 'expo-router';
-import { createRoutineStore } from '@/store/form-routine-store';
+import { formRoutineStore } from '@/store/form-routine-store';
 import { IBlock } from '@/types/routine';
 import { ReorderExercisesScreen } from '@/features/form-routine/reorder-exercises';
 
 export default function ReorderExercisesPage() {
   const { reorderedBlock, setReorderedBlock, blocks, setBlocks } =
-    createRoutineStore((state) => state);
+    formRoutineStore((state) => state);
 
   if (!reorderedBlock) {
     return null;

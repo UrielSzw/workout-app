@@ -1,42 +1,40 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   ViewProps,
   TouchableOpacity,
   TouchableOpacityProps,
-} from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { getThemeColors } from "@/constants/Colors";
+} from 'react-native';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 interface CardProps extends ViewProps {
-  variant?: "default" | "outlined" | "elevated";
-  padding?: "none" | "sm" | "md" | "lg";
+  variant?: 'default' | 'outlined' | 'elevated';
+  padding?: 'none' | 'sm' | 'md' | 'lg';
   pressable?: boolean;
   onPress?: () => void;
   children: React.ReactNode;
 }
 
 export const Card: React.FC<CardProps> = ({
-  variant = "default",
-  padding = "md",
+  variant = 'default',
+  padding = 'md',
   pressable = false,
   onPress,
   style,
   children,
   ...props
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === "dark");
+  const { colors } = useColorScheme();
 
   const getPaddingStyles = () => {
     switch (padding) {
-      case "none":
+      case 'none':
         return { padding: 0 };
-      case "sm":
+      case 'sm':
         return { padding: 12 };
-      case "md":
+      case 'md':
         return { padding: 16 };
-      case "lg":
+      case 'lg':
         return { padding: 20 };
       default:
         return { padding: 16 };
@@ -50,22 +48,22 @@ export const Card: React.FC<CardProps> = ({
     };
 
     switch (variant) {
-      case "default":
+      case 'default':
         return {
           ...baseStyles,
           borderWidth: 0,
         };
-      case "outlined":
+      case 'outlined':
         return {
           ...baseStyles,
           borderWidth: 1,
           borderColor: colors.border,
         };
-      case "elevated":
+      case 'elevated':
         return {
           ...baseStyles,
           borderWidth: 0,
-          shadowColor: "#000",
+          shadowColor: '#000',
           shadowOffset: {
             width: 0,
             height: 2,

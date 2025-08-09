@@ -1,10 +1,9 @@
 import React from 'react';
-import { View, Modal, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Modal, TouchableOpacity, ScrollView } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { X, Folder, FolderMinus } from 'lucide-react-native';
 import { Typography, Button } from '@/components/ui';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { getThemeColors } from '@/constants/Colors';
 import { IFolder, IRoutine } from '@/types/routine';
 
 interface MoveRoutineModalProps {
@@ -24,8 +23,7 @@ export const MoveRoutineModal = ({
   onMoveToFolder,
   currentFolderId,
 }: MoveRoutineModalProps) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors, isDarkMode } = useColorScheme();
 
   if (!routine) return null;
 
@@ -71,7 +69,7 @@ export const MoveRoutineModal = ({
         <ScrollView style={{ flex: 1, padding: 20 }}>
           <View
             style={{
-              backgroundColor: colors.gray[50],
+              backgroundColor: isDarkMode ? colors.gray[800] : colors.gray[50],
               padding: 16,
               borderRadius: 12,
               marginBottom: 24,
@@ -150,7 +148,7 @@ export const MoveRoutineModal = ({
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  backgroundColor: colors.background,
+                  backgroundColor: colors.surface,
                   borderWidth: 1,
                   borderColor: colors.border,
                   borderRadius: 12,
@@ -164,7 +162,7 @@ export const MoveRoutineModal = ({
                     width: 40,
                     height: 40,
                     borderRadius: 20,
-                    backgroundColor: folder.color,
+                    backgroundColor: folder.color + '20',
                     alignItems: 'center',
                     justifyContent: 'center',
                     marginRight: 12,

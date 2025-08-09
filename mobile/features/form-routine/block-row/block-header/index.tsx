@@ -1,6 +1,5 @@
 import { Typography } from '@/components/ui';
-import { getThemeColors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme.web';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { IBlock } from '@/types/routine';
 import {
   ChevronDown,
@@ -46,8 +45,7 @@ export const BlockHeader: React.FC<Props> = ({
   index,
   showMenu,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors } = useColorScheme();
 
   return (
     <View

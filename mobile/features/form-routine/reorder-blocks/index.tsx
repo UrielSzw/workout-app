@@ -3,7 +3,6 @@ import { View, SafeAreaView } from 'react-native';
 import { ArrowLeft } from 'lucide-react-native';
 import { Typography, Button } from '@/components/ui';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { getThemeColors } from '@/constants/Colors';
 import { IBlock } from '@/types/routine';
 import { DraggableList } from './draggable-list';
 
@@ -18,8 +17,8 @@ export const ReorderBlocksScreen: React.FC<Props> = ({
   onReorder,
   onCancel,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors } = useColorScheme();
+
   const [reorderedBlocks, setReorderedBlocks] = useState(blocks);
 
   const handleReorder = ({ data }: { data: IBlock[] }) => {

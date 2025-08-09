@@ -1,11 +1,11 @@
-import React from "react";
-import { View, ScrollView, SafeAreaView } from "react-native";
-import { Calendar, TrendingUp, Trophy, Clock } from "lucide-react-native";
+import React from 'react';
+import { View, ScrollView, SafeAreaView } from 'react-native';
+import { Calendar, TrendingUp, Trophy, Clock } from 'lucide-react-native';
 
-import { Typography, Card } from "@/components/ui";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { getThemeColors } from "@/constants/Colors";
-import { WorkoutHistoryItem } from "./workout-history-item";
+import { Typography, Card } from '@/components/ui';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { getThemeColors } from '@/constants/Colors';
+import { WorkoutHistoryItem } from './workout-history-item';
 
 const StatCard: React.FC<{
   label: string;
@@ -16,15 +16,15 @@ const StatCard: React.FC<{
 }> = ({ label, value, change, icon, color }) => {
   return (
     <Card variant="outlined" padding="md" style={{ flex: 1 }}>
-      <View style={{ alignItems: "center" }}>
+      <View style={{ alignItems: 'center' }}>
         <View
           style={{
             width: 40,
             height: 40,
             borderRadius: 20,
-            backgroundColor: color + "20",
-            alignItems: "center",
-            justifyContent: "center",
+            backgroundColor: color + '20',
+            alignItems: 'center',
+            justifyContent: 'center',
             marginBottom: 8,
           }}
         >
@@ -57,37 +57,36 @@ const StatCard: React.FC<{
 };
 
 export const HistoryFeature = () => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === "dark");
+  const { colors } = useColorScheme();
 
   // Mock data
   const workoutHistory = [
     {
-      date: "Hoy • 8:30 AM",
-      name: "Push Day - Pecho y Hombros",
-      duration: "45 min",
-      volume: "8.4K kg",
+      date: 'Hoy • 8:30 AM',
+      name: 'Push Day - Pecho y Hombros',
+      duration: '45 min',
+      volume: '8.4K kg',
       exercises: 6,
     },
     {
-      date: "Ayer • 9:15 AM",
-      name: "Pull Day - Espalda y Bíceps",
-      duration: "52 min",
-      volume: "9.2K kg",
+      date: 'Ayer • 9:15 AM',
+      name: 'Pull Day - Espalda y Bíceps',
+      duration: '52 min',
+      volume: '9.2K kg',
       exercises: 5,
     },
     {
-      date: "Lun 29 Jul • 8:45 AM",
-      name: "Leg Day - Piernas Completas",
-      duration: "68 min",
-      volume: "12.1K kg",
+      date: 'Lun 29 Jul • 8:45 AM',
+      name: 'Leg Day - Piernas Completas',
+      duration: '68 min',
+      volume: '12.1K kg',
       exercises: 7,
     },
     {
-      date: "Sáb 27 Jul • 10:00 AM",
-      name: "Upper Body Power",
-      duration: "50 min",
-      volume: "7.8K kg",
+      date: 'Sáb 27 Jul • 10:00 AM',
+      name: 'Upper Body Power',
+      duration: '50 min',
+      volume: '7.8K kg',
       exercises: 4,
     },
   ];
@@ -114,7 +113,7 @@ export const HistoryFeature = () => {
           >
             Esta Semana
           </Typography>
-          <View style={{ flexDirection: "row", gap: 12, marginBottom: 12 }}>
+          <View style={{ flexDirection: 'row', gap: 12, marginBottom: 12 }}>
             <StatCard
               label="Entrenamientos"
               value="4"
@@ -130,7 +129,7 @@ export const HistoryFeature = () => {
               color={colors.secondary[500]}
             />
           </View>
-          <View style={{ flexDirection: "row", gap: 12 }}>
+          <View style={{ flexDirection: 'row', gap: 12 }}>
             <StatCard
               label="Volumen Total"
               value="37.5K kg"
@@ -160,8 +159,8 @@ export const HistoryFeature = () => {
           <Card variant="outlined" padding="lg">
             <View
               style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
+                flexDirection: 'row',
+                justifyContent: 'space-between',
                 marginBottom: 16,
               }}
             >
@@ -190,7 +189,7 @@ export const HistoryFeature = () => {
                 </Typography>
               </View>
             </View>
-            <View style={{ flexDirection: "row", gap: 8 }}>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
               <View
                 style={{
                   flex: 1,
@@ -201,8 +200,8 @@ export const HistoryFeature = () => {
               >
                 <View
                   style={{
-                    width: "80%",
-                    height: "100%",
+                    width: '80%',
+                    height: '100%',
                     backgroundColor: colors.primary[500],
                     borderRadius: 4,
                   }}
@@ -249,9 +248,9 @@ export const HistoryFeature = () => {
           <Card variant="outlined" padding="md" style={{ marginBottom: 12 }}>
             <View
               style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
               }}
             >
               <View style={{ flex: 1 }}>
@@ -266,7 +265,7 @@ export const HistoryFeature = () => {
                   Hoy • 8:30 AM
                 </Typography>
               </View>
-              <View style={{ alignItems: "flex-end" }}>
+              <View style={{ alignItems: 'flex-end' }}>
                 <Typography variant="h6" weight="bold" color="success">
                   85kg × 5
                 </Typography>
@@ -280,9 +279,9 @@ export const HistoryFeature = () => {
           <Card variant="outlined" padding="md" style={{ marginBottom: 12 }}>
             <View
               style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
               }}
             >
               <View style={{ flex: 1 }}>
@@ -297,7 +296,7 @@ export const HistoryFeature = () => {
                   Lun 29 Jul • 9:15 AM
                 </Typography>
               </View>
-              <View style={{ alignItems: "flex-end" }}>
+              <View style={{ alignItems: 'flex-end' }}>
                 <Typography variant="h6" weight="bold" color="success">
                   12 reps
                 </Typography>
@@ -311,9 +310,9 @@ export const HistoryFeature = () => {
           <Card variant="outlined" padding="md">
             <View
               style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
               }}
             >
               <View style={{ flex: 1 }}>
@@ -328,7 +327,7 @@ export const HistoryFeature = () => {
                   Sáb 27 Jul • 10:00 AM
                 </Typography>
               </View>
-              <View style={{ alignItems: "flex-end" }}>
+              <View style={{ alignItems: 'flex-end' }}>
                 <Typography variant="h6" weight="bold" color="success">
                   105kg × 6
                 </Typography>

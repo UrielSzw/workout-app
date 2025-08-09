@@ -9,18 +9,16 @@ import {
   Plus,
   Dumbbell,
 } from 'lucide-react-native';
-
 import { Typography, Button, Card } from '@/components/ui';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { getThemeColors } from '@/constants/Colors';
 import { useAppStore } from '@/store/useAppStore';
 import { QuickActionCard } from './quick-action-card';
 import { StatCard } from './stat-card';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const HomeFeature = () => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors } = useColorScheme();
+
   const { routines, activeWorkout } = useAppStore();
 
   const getGreeting = () => {

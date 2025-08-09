@@ -3,7 +3,6 @@ import { View, TouchableOpacity } from 'react-native';
 import { Play, Dumbbell, Hash, Clock } from 'lucide-react-native';
 import { Typography, Button, Card } from '@/components/ui';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { getThemeColors } from '@/constants/Colors';
 import { IRoutine } from '@/types/routine';
 
 interface RoutineCardProps {
@@ -19,8 +18,7 @@ export const RoutineCard: React.FC<RoutineCardProps> = ({
   onLongPress,
   onPress,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors } = useColorScheme();
 
   // Calcular estadísticas de la rutina
   const totalExercises = routine.blocks.reduce(

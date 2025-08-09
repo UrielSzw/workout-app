@@ -1,6 +1,5 @@
 import { Typography } from '@/components/ui';
-import { getThemeColors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme.web';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { IBlock } from '@/types/routine';
 import { View } from 'react-native';
 
@@ -19,8 +18,7 @@ export const BlockLine: React.FC<Props> = ({
   exerciseIndex,
   blockColors,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors } = useColorScheme();
 
   return (
     <View style={{ alignItems: 'center' }}>

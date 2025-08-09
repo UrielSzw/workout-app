@@ -1,6 +1,5 @@
 import { Typography } from '@/components/ui';
-import { getThemeColors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme.web';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { Plus } from 'lucide-react-native';
 import { Dispatch, SetStateAction } from 'react';
 import { TouchableOpacity } from 'react-native';
@@ -12,8 +11,7 @@ type Props = {
 export const AddExerciseButton: React.FC<Props> = ({
   setExerciseSelectorVisible,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors } = useColorScheme();
 
   return (
     <TouchableOpacity

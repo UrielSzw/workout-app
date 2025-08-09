@@ -49,8 +49,7 @@ export const ActiveSetRow: React.FC<Props> = ({
   onShowRepsTypeSheet,
   onShowSetTypeSheet,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors } = useColorScheme();
 
   const [localWeight, setLocalWeight] = useState(
     set.actualWeight || set.weight || '',

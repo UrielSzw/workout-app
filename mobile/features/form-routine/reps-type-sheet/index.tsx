@@ -3,7 +3,6 @@ import { TouchableOpacity } from 'react-native';
 import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import { Typography } from '@/components/ui';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { getThemeColors } from '@/constants/Colors';
 import { IRepsType } from '@/types/routine';
 
 type Props = {
@@ -13,8 +12,7 @@ type Props = {
 
 export const RepsTypeBottomSheet = forwardRef<BottomSheetModal, Props>(
   ({ currentRepsType, onSelectRepsType }, ref) => {
-    const colorScheme = useColorScheme();
-    const colors = getThemeColors(colorScheme === 'dark');
+    const { colors } = useColorScheme();
 
     const repsTypes = [
       { type: 'reps' as const, label: 'Repeticiones' },
@@ -28,7 +26,17 @@ export const RepsTypeBottomSheet = forwardRef<BottomSheetModal, Props>(
         ref={ref}
         snapPoints={['40%']}
         enablePanDownToClose
-        backgroundStyle={{ backgroundColor: colors.surface }}
+        backgroundStyle={{
+          backgroundColor: colors.surface,
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: -4,
+          },
+          shadowOpacity: 0.1,
+          shadowRadius: 8,
+          elevation: 8, // Para Android
+        }}
         handleIndicatorStyle={{ backgroundColor: colors.textMuted }}
       >
         <BottomSheetView style={{ padding: 16, paddingBottom: 40 }}>

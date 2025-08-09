@@ -4,28 +4,24 @@ import { ScrollView, View } from 'react-native';
 import { RoutineCard } from '../routine-card';
 import { IFolder, IRoutine } from '@/types/routine';
 import { FolderEdit } from 'lucide-react-native';
-import { useColorScheme } from '@/hooks/useColorScheme.web';
-import { getThemeColors } from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 type Props = {
   setSelectedFolder: (folder: IFolder | null) => void;
   filteredRoutines: IRoutine[];
-  onEditRoutine: (routine: IRoutine) => void;
-  onDeleteRoutine: (routine: IRoutine) => void;
   onLongPressRoutine: (routine: IRoutine) => void;
   onEditFolder: () => void;
+  onPressRoutine: (routine: IRoutine | null) => void;
 };
 
 export const FoldersBody: React.FC<Props> = ({
   setSelectedFolder,
   filteredRoutines,
-  onDeleteRoutine,
-  onEditRoutine,
   onLongPressRoutine,
   onEditFolder,
+  onPressRoutine,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors } = useColorScheme();
 
   return (
     <>
@@ -59,9 +55,8 @@ export const FoldersBody: React.FC<Props> = ({
             <RoutineCard
               key={routine.id}
               routine={routine}
-              onEdit={onEditRoutine}
-              onDelete={onDeleteRoutine}
               onStart={() => {}}
+              onPress={onPressRoutine}
               onLongPress={onLongPressRoutine}
             />
           ))}

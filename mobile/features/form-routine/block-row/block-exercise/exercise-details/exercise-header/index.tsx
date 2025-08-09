@@ -1,7 +1,6 @@
 import { Typography } from '@/components/ui';
 import { ExercisePlaceholderImage } from '@/components/ui/ExercisePlaceholderImage';
-import { getThemeColors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme.web';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { IBlock, IExerciseInBlock } from '@/types/routine';
 import { GripVertical } from 'lucide-react-native';
 import { View } from 'react-native';
@@ -17,8 +16,7 @@ export const ExerciseHeader: React.FC<Props> = ({
   exerciseInBlock,
   onLongPressReorderExercises,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors } = useColorScheme();
 
   return (
     <View

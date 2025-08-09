@@ -7,9 +7,9 @@ import DraggableFlatList, {
 import { FolderItem } from './folder-item';
 import { Button, Typography } from '@/components/ui';
 import { FolderPlus } from 'lucide-react-native';
-import { useColorScheme } from '@/hooks/useColorScheme.web';
 import { getThemeColors } from '@/constants/Colors';
 import { RoutineCard } from '../routine-card';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 type Props = {
   folders?: IFolder[];
@@ -32,8 +32,7 @@ export const DraggableList: React.FC<Props> = ({
   setSelectedFolder,
   onPressRoutine,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors } = useColorScheme();
 
   const renderFolderItem = ({
     item,

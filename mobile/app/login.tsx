@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   SafeAreaView,
@@ -7,23 +7,21 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-} from "react-native";
-import { router } from "expo-router";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Dumbbell } from "lucide-react-native";
-
-import { Typography } from "@/components/ui";
-import { FormInput } from "@/components/ui/FormInput";
-import { AuthButton } from "@/components/ui/AuthButton";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { getThemeColors } from "@/constants/Colors";
-import { useAuth } from "@/contexts/AuthContext";
-import { loginSchema, LoginFormData } from "@/lib/validation";
+} from 'react-native';
+import { router } from 'expo-router';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Dumbbell } from 'lucide-react-native';
+import { Typography } from '@/components/ui';
+import { FormInput } from '@/components/ui/FormInput';
+import { AuthButton } from '@/components/ui/AuthButton';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { useAuth } from '@/contexts/AuthContext';
+import { loginSchema, LoginFormData } from '@/lib/validation';
 
 export default function LoginScreen() {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === "dark");
+  const { colors } = useColorScheme();
+
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -34,8 +32,8 @@ export default function LoginScreen() {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
   });
 
@@ -47,13 +45,13 @@ export default function LoginScreen() {
 
       if (result.success) {
         // Navigate to main app after successful login
-        router.replace("/(tabs)");
+        router.replace('/(tabs)');
       } else {
-        Alert.alert("Error de Login", result.error || "Ocurrió un error");
+        Alert.alert('Error de Login', result.error || 'Ocurrió un error');
       }
     } catch (error) {
-      console.error("Login error:", error);
-      Alert.alert("Error", "Ocurrió un error inesperado");
+      console.error('Login error:', error);
+      Alert.alert('Error', 'Ocurrió un error inesperado');
     } finally {
       setIsLoading(false);
     }
@@ -63,7 +61,7 @@ export default function LoginScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <ScrollView
           style={{ flex: 1 }}
@@ -73,7 +71,7 @@ export default function LoginScreen() {
           <View style={{ flex: 1, padding: 24 }}>
             {/* Header */}
             <View
-              style={{ alignItems: "center", marginTop: 60, marginBottom: 40 }}
+              style={{ alignItems: 'center', marginTop: 60, marginBottom: 40 }}
             >
               <View
                 style={{
@@ -81,8 +79,8 @@ export default function LoginScreen() {
                   height: 80,
                   borderRadius: 40,
                   backgroundColor: colors.primary[500],
-                  alignItems: "center",
-                  justifyContent: "center",
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   marginBottom: 24,
                 }}
               >
@@ -100,7 +98,7 @@ export default function LoginScreen() {
               <Typography
                 variant="body1"
                 color="textMuted"
-                style={{ textAlign: "center" }}
+                style={{ textAlign: 'center' }}
               >
                 Inicia sesión para continuar con tus entrenamientos
               </Typography>
@@ -176,7 +174,7 @@ export default function LoginScreen() {
                 style={{ marginBottom: 24 }}
               />
 
-              <View style={{ alignItems: "center" }}>
+              <View style={{ alignItems: 'center' }}>
                 <Typography
                   variant="body2"
                   color="textMuted"
@@ -185,7 +183,7 @@ export default function LoginScreen() {
                   ¿No tienes una cuenta?
                 </Typography>
 
-                <TouchableOpacity onPress={() => router.push("/register")}>
+                <TouchableOpacity onPress={() => router.push('/register')}>
                   <Typography
                     variant="body2"
                     weight="semibold"

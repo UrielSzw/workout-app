@@ -1,6 +1,5 @@
 import { Button, Typography } from '@/components/ui';
-import { getThemeColors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme.web';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { Folder } from 'lucide-react-native';
 import React from 'react';
 import { ScrollView, View } from 'react-native';
@@ -14,8 +13,7 @@ export const EmptyState: React.FC<Props> = ({
   handleCreateRoutine,
   handleCreateFolder,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors } = useColorScheme();
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>

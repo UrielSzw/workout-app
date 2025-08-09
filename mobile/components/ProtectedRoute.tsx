@@ -1,10 +1,9 @@
-import React from "react";
-import { View, ActivityIndicator } from "react-native";
-import { router } from "expo-router";
-import { useAuth } from "@/contexts/AuthContext";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { getThemeColors } from "@/constants/Colors";
-import { Typography } from "@/components/ui";
+import React from 'react';
+import { View, ActivityIndicator } from 'react-native';
+import { router } from 'expo-router';
+import { useAuth } from '@/contexts/AuthContext';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { Typography } from '@/components/ui';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -12,12 +11,11 @@ interface ProtectedRouteProps {
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === "dark");
+  const { colors } = useColorScheme();
 
   React.useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.replace("/login");
+      router.replace('/login');
     }
   }, [isAuthenticated, isLoading]);
 
@@ -26,8 +24,8 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
       <View
         style={{
           flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
+          justifyContent: 'center',
+          alignItems: 'center',
           backgroundColor: colors.background,
         }}
       >

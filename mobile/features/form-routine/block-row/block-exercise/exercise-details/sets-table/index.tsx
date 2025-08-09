@@ -1,6 +1,5 @@
 import { Typography } from '@/components/ui';
-import { getThemeColors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme.web';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { ISet, ISetType } from '@/types/routine';
 import { ChevronDown, Plus } from 'lucide-react-native';
 import { TouchableOpacity, View } from 'react-native';
@@ -41,8 +40,7 @@ export const SetsTable: React.FC<Props> = ({
   onUpdateSet,
   onAddSetToExercise,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors } = useColorScheme();
 
   return (
     <View style={{ marginTop: 12 }}>

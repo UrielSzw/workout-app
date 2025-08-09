@@ -1,5 +1,4 @@
-import { getThemeColors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme.web';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { IBlock, ISet } from '@/types/routine';
 import { Link2, RotateCcw } from 'lucide-react-native';
 import { useState } from 'react';
@@ -24,8 +23,8 @@ export const useBlockRow = ({
   onConvertToIndividual,
   onLongPressReorder,
 }: Params) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors } = useColorScheme();
+
   const [isExpanded, setIsExpanded] = useState(true);
   const [showMenu, setShowMenu] = useState(false);
 

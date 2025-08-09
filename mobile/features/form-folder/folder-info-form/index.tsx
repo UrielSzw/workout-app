@@ -1,9 +1,8 @@
-import React from "react";
-import { View, TextInput, TouchableOpacity } from "react-native";
+import React from 'react';
+import { View, TextInput, TouchableOpacity } from 'react-native';
 
-import { Typography, Card } from "@/components/ui";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { getThemeColors } from "@/constants/Colors";
+import { Typography, Card } from '@/components/ui';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 interface FolderInfoFormProps {
   folderName: string;
@@ -15,21 +14,35 @@ interface FolderInfoFormProps {
 }
 
 const availableIcons = [
-  "📁", "📂", "🗂️", "📋", "💪", "🏋️", "⚡", "🔥", 
-  "💯", "🎯", "⭐", "🚀", "💎", "🏆", "⚙️", "📊"
+  '📁',
+  '📂',
+  '🗂️',
+  '📋',
+  '💪',
+  '🏋️',
+  '⚡',
+  '🔥',
+  '💯',
+  '🎯',
+  '⭐',
+  '🚀',
+  '💎',
+  '🏆',
+  '⚙️',
+  '📊',
 ];
 
 const availableColors = [
-  "#3b82f6", // blue
-  "#10b981", // green
-  "#f59e0b", // yellow
-  "#ef4444", // red
-  "#8b5cf6", // purple
-  "#06b6d4", // cyan
-  "#f97316", // orange
-  "#84cc16", // lime
-  "#ec4899", // pink
-  "#6b7280", // gray
+  '#3b82f6', // blue
+  '#10b981', // green
+  '#f59e0b', // yellow
+  '#ef4444', // red
+  '#8b5cf6', // purple
+  '#06b6d4', // cyan
+  '#f97316', // orange
+  '#84cc16', // lime
+  '#ec4899', // pink
+  '#6b7280', // gray
 ];
 
 export const FolderInfoForm: React.FC<FolderInfoFormProps> = ({
@@ -40,18 +53,13 @@ export const FolderInfoForm: React.FC<FolderInfoFormProps> = ({
   onIconChange,
   onColorChange,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === "dark");
+  const { colors } = useColorScheme();
 
   return (
     <View>
       {/* Folder Name */}
       <Card variant="outlined" padding="lg" style={{ marginBottom: 20 }}>
-        <Typography
-          variant="h6"
-          weight="semibold"
-          style={{ marginBottom: 12 }}
-        >
+        <Typography variant="h6" weight="semibold" style={{ marginBottom: 12 }}>
           Información de la Carpeta
         </Typography>
 
@@ -82,11 +90,7 @@ export const FolderInfoForm: React.FC<FolderInfoFormProps> = ({
 
       {/* Icon Selection */}
       <Card variant="outlined" padding="lg" style={{ marginBottom: 20 }}>
-        <Typography
-          variant="h6"
-          weight="semibold"
-          style={{ marginBottom: 12 }}
-        >
+        <Typography variant="h6" weight="semibold" style={{ marginBottom: 12 }}>
           Icono
         </Typography>
 
@@ -100,8 +104,8 @@ export const FolderInfoForm: React.FC<FolderInfoFormProps> = ({
 
         <View
           style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
+            flexDirection: 'row',
+            flexWrap: 'wrap',
             gap: 12,
           }}
         >
@@ -113,11 +117,12 @@ export const FolderInfoForm: React.FC<FolderInfoFormProps> = ({
                 width: 48,
                 height: 48,
                 borderRadius: 12,
-                backgroundColor: folderIcon === icon ? folderColor + "30" : colors.gray[100],
+                backgroundColor:
+                  folderIcon === icon ? folderColor + '30' : colors.gray[100],
                 borderWidth: folderIcon === icon ? 2 : 1,
                 borderColor: folderIcon === icon ? folderColor : colors.border,
-                alignItems: "center",
-                justifyContent: "center",
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
               <Typography variant="h6">{icon}</Typography>
@@ -128,11 +133,7 @@ export const FolderInfoForm: React.FC<FolderInfoFormProps> = ({
 
       {/* Color Selection */}
       <Card variant="outlined" padding="lg">
-        <Typography
-          variant="h6"
-          weight="semibold"
-          style={{ marginBottom: 12 }}
-        >
+        <Typography variant="h6" weight="semibold" style={{ marginBottom: 12 }}>
           Color
         </Typography>
 
@@ -146,8 +147,8 @@ export const FolderInfoForm: React.FC<FolderInfoFormProps> = ({
 
         <View
           style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
+            flexDirection: 'row',
+            flexWrap: 'wrap',
             gap: 12,
           }}
         >
@@ -161,7 +162,8 @@ export const FolderInfoForm: React.FC<FolderInfoFormProps> = ({
                 borderRadius: 20,
                 backgroundColor: color,
                 borderWidth: folderColor === color ? 3 : 1,
-                borderColor: folderColor === color ? colors.text : colors.border,
+                borderColor:
+                  folderColor === color ? colors.text : colors.border,
               }}
             />
           ))}

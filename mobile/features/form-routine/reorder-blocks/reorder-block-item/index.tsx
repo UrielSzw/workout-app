@@ -1,6 +1,5 @@
 import { Typography } from '@/components/ui';
-import { getThemeColors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme.web';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { IBlock, IBlockType } from '@/types/routine';
 import { GripVertical } from 'lucide-react-native';
 import { TouchableOpacity, Vibration, View } from 'react-native';
@@ -18,8 +17,7 @@ export const ReorderBlockItem: React.FC<Props> = ({
   drag,
   isActive,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors } = useColorScheme();
 
   const getBlockTypeLabel = (type: IBlockType) => {
     switch (type) {

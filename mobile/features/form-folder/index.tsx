@@ -2,10 +2,8 @@ import React from 'react';
 import { View, SafeAreaView, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
-
 import { Typography, Button, Card } from '@/components/ui';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { getThemeColors } from '@/constants/Colors';
 import { FolderInfoForm } from './folder-info-form';
 import { useFormFolder } from './hook';
 
@@ -14,8 +12,7 @@ type Props = {
 };
 
 export const FormFolderFeature = ({ isEditMode }: Props) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors } = useColorScheme();
 
   const {
     folderName,

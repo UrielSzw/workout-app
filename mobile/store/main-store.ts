@@ -1,10 +1,15 @@
 import { IFolder, IRoutine } from '@/types/routine';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
+import { ColorSchemeName } from 'react-native';
 
 type MainStore = {
   routines: IRoutine[];
   folders: IFolder[];
+
+  // Theme
+  colorScheme: ColorSchemeName;
+  setColorScheme: (scheme: ColorSchemeName) => void;
 
   // Edit
   selectedFolder: IFolder | null;
@@ -39,11 +44,27 @@ type MainStore = {
 const STORAGE_KEYS = {
   ROUTINES: '@workout-app/routines',
   FOLDERS: '@workout-app/folders',
+  COLOR_SCHEME: '@workout-app/colorScheme',
 };
 
 export const mainStore = create<MainStore>((set, get) => ({
   routines: [],
   folders: [],
+
+  // Theme
+  colorScheme: 'light',
+  setColorScheme: async (scheme) => {
+    set({ colorScheme: scheme });
+    try {
+      if (scheme) {
+        await AsyncStorage.setItem(STORAGE_KEYS.COLOR_SCHEME, scheme);
+      } else {
+        await AsyncStorage.removeItem(STORAGE_KEYS.COLOR_SCHEME);
+      }
+    } catch (error) {
+      console.error('Error saving color scheme:', error);
+    }
+  },
 
   // Edit
   selectedFolder: null,
@@ -130,17 +151,21 @@ export const mainStore = create<MainStore>((set, get) => ({
     try {
       set({ isLoading: true });
 
-      const [routinesData, foldersData] = await Promise.all([
+      const [routinesData, foldersData, colorSchemeData] = await Promise.all([
         AsyncStorage.getItem(STORAGE_KEYS.ROUTINES),
         AsyncStorage.getItem(STORAGE_KEYS.FOLDERS),
+        AsyncStorage.getItem(STORAGE_KEYS.COLOR_SCHEME),
       ]);
 
       const routines = routinesData ? JSON.parse(routinesData) : [];
       const folders = foldersData ? JSON.parse(foldersData) : [];
+      const colorScheme = (colorSchemeData as ColorSchemeName) || 'light';
+
       console.log('Loaded folders:', folders);
       set({
         routines,
         folders,
+        colorScheme,
         isLoading: false,
       });
     } catch (error) {

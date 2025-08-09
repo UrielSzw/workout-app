@@ -1,17 +1,16 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   TextInput,
   TextInputProps,
   TouchableOpacity,
   Animated,
-} from "react-native";
-import { Eye, EyeOff } from "lucide-react-native";
-import { Typography } from "@/components/ui";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { getThemeColors } from "@/constants/Colors";
+} from 'react-native';
+import { Eye, EyeOff } from 'lucide-react-native';
+import { Typography } from '@/components/ui';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
-interface FormInputProps extends Omit<TextInputProps, "style"> {
+interface FormInputProps extends Omit<TextInputProps, 'style'> {
   label: string;
   error?: string;
   isPassword?: boolean;
@@ -25,8 +24,8 @@ export const FormInput: React.FC<FormInputProps> = ({
   onChangeText,
   ...props
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === "dark");
+  const { colors } = useColorScheme();
+
   const [isFocused, setIsFocused] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [animation] = useState(new Animated.Value(value ? 1 : 0));
@@ -40,7 +39,7 @@ export const FormInput: React.FC<FormInputProps> = ({
   }, [isFocused, value, animation]);
 
   const labelStyle = {
-    position: "absolute" as const,
+    position: 'absolute' as const,
     left: 12,
     backgroundColor: colors.background,
     paddingHorizontal: 4,
@@ -63,7 +62,7 @@ export const FormInput: React.FC<FormInputProps> = ({
 
   return (
     <View style={{ marginBottom: 20 }}>
-      <View style={{ position: "relative" }}>
+      <View style={{ position: 'relative' }}>
         <TextInput
           {...props}
           value={value}
@@ -95,7 +94,7 @@ export const FormInput: React.FC<FormInputProps> = ({
           <TouchableOpacity
             onPress={() => setShowPassword(!showPassword)}
             style={{
-              position: "absolute",
+              position: 'absolute',
               right: 16,
               top: 16,
               padding: 4,

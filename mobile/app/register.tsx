@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   SafeAreaView,
@@ -7,23 +7,22 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-} from "react-native";
-import { router } from "expo-router";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Dumbbell, ArrowLeft } from "lucide-react-native";
+} from 'react-native';
+import { router } from 'expo-router';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Dumbbell, ArrowLeft } from 'lucide-react-native';
 
-import { Typography } from "@/components/ui";
-import { FormInput } from "@/components/ui/FormInput";
-import { AuthButton } from "@/components/ui/AuthButton";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { getThemeColors } from "@/constants/Colors";
-import { useAuth } from "@/contexts/AuthContext";
-import { registerSchema, RegisterFormData } from "@/lib/validation";
+import { Typography } from '@/components/ui';
+import { FormInput } from '@/components/ui/FormInput';
+import { AuthButton } from '@/components/ui/AuthButton';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { useAuth } from '@/contexts/AuthContext';
+import { registerSchema, RegisterFormData } from '@/lib/validation';
 
 export default function RegisterScreen() {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === "dark");
+  const { colors } = useColorScheme();
+
   const { register } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -34,10 +33,10 @@ export default function RegisterScreen() {
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
     },
   });
 
@@ -49,21 +48,21 @@ export default function RegisterScreen() {
 
       if (result.success) {
         Alert.alert(
-          "¡Registro Exitoso! 🎉",
-          "Tu cuenta ha sido creada. ¡Bienvenido a tu nueva aventura fitness!",
+          '¡Registro Exitoso! 🎉',
+          'Tu cuenta ha sido creada. ¡Bienvenido a tu nueva aventura fitness!',
           [
             {
-              text: "Continuar",
-              onPress: () => router.replace("/(tabs)"),
+              text: 'Continuar',
+              onPress: () => router.replace('/(tabs)'),
             },
-          ]
+          ],
         );
       } else {
-        Alert.alert("Error de Registro", result.error || "Ocurrió un error");
+        Alert.alert('Error de Registro', result.error || 'Ocurrió un error');
       }
     } catch (error) {
-      console.error("Register error:", error);
-      Alert.alert("Error", "Ocurrió un error inesperado");
+      console.error('Register error:', error);
+      Alert.alert('Error', 'Ocurrió un error inesperado');
     } finally {
       setIsLoading(false);
     }
@@ -73,7 +72,7 @@ export default function RegisterScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <ScrollView
           style={{ flex: 1 }}
@@ -84,8 +83,8 @@ export default function RegisterScreen() {
             {/* Header */}
             <View
               style={{
-                flexDirection: "row",
-                alignItems: "center",
+                flexDirection: 'row',
+                alignItems: 'center',
                 marginTop: 40,
                 marginBottom: 40,
               }}
@@ -97,23 +96,23 @@ export default function RegisterScreen() {
                   height: 40,
                   borderRadius: 20,
                   backgroundColor: colors.surface,
-                  alignItems: "center",
-                  justifyContent: "center",
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   marginRight: 16,
                 }}
               >
                 <ArrowLeft size={20} color={colors.text} />
               </TouchableOpacity>
 
-              <View style={{ flex: 1, alignItems: "center" }}>
+              <View style={{ flex: 1, alignItems: 'center' }}>
                 <View
                   style={{
                     width: 60,
                     height: 60,
                     borderRadius: 30,
                     backgroundColor: colors.primary[500],
-                    alignItems: "center",
-                    justifyContent: "center",
+                    alignItems: 'center',
+                    justifyContent: 'center',
                     marginBottom: 16,
                   }}
                 >
@@ -131,7 +130,7 @@ export default function RegisterScreen() {
                 <Typography
                   variant="body2"
                   color="textMuted"
-                  style={{ textAlign: "center" }}
+                  style={{ textAlign: 'center' }}
                 >
                   Únete y comienza tu transformación
                 </Typography>
@@ -208,7 +207,7 @@ export default function RegisterScreen() {
                 style={{ marginBottom: 24 }}
               />
 
-              <View style={{ alignItems: "center" }}>
+              <View style={{ alignItems: 'center' }}>
                 <Typography
                   variant="body2"
                   color="textMuted"

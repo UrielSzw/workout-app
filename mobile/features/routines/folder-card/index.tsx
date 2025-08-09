@@ -1,11 +1,9 @@
-import React from "react";
-import { View, TouchableOpacity, Alert } from "react-native";
-import { MoreHorizontal } from "lucide-react-native";
-
-import { Typography, Card } from "@/components/ui";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { getThemeColors } from "@/constants/Colors";
-import { Folder as FolderType, Routine } from "@/store/useAppStore";
+import React from 'react';
+import { View, TouchableOpacity, Alert } from 'react-native';
+import { MoreHorizontal } from 'lucide-react-native';
+import { Typography, Card } from '@/components/ui';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { Folder as FolderType, Routine } from '@/store/useAppStore';
 
 interface FolderCardProps {
   folder: FolderType;
@@ -22,21 +20,20 @@ export const FolderCard: React.FC<FolderCardProps> = ({
   onEdit,
   onDelete,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === "dark");
+  const { colors } = useColorScheme();
 
   const handleMenuPress = () => {
-    Alert.alert(folder.name, "¿Qué deseas hacer?", [
-      { text: "Cancelar", style: "cancel" },
+    Alert.alert(folder.name, '¿Qué deseas hacer?', [
+      { text: 'Cancelar', style: 'cancel' },
       {
-        text: "Editar",
+        text: 'Editar',
         onPress: onEdit,
-        style: "default",
+        style: 'default',
       },
       {
-        text: "Eliminar",
+        text: 'Eliminar',
         onPress: onDelete,
-        style: "destructive",
+        style: 'destructive',
       },
     ]);
   };
@@ -49,15 +46,15 @@ export const FolderCard: React.FC<FolderCardProps> = ({
       onPress={onPress}
       style={{ marginBottom: 12 }}
     >
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View
           style={{
             width: 48,
             height: 48,
             borderRadius: 12,
-            backgroundColor: folder.color + "20",
-            alignItems: "center",
-            justifyContent: "center",
+            backgroundColor: folder.color + '20',
+            alignItems: 'center',
+            justifyContent: 'center',
             marginRight: 12,
           }}
         >

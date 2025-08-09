@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, TextInput } from 'react-native';
 import { Typography, Card } from '@/components/ui';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { getThemeColors } from '@/constants/Colors';
 
 type Props = {
   routineName: string;
@@ -13,8 +12,8 @@ export const RoutineInfo: React.FC<Props> = ({
   routineName,
   onRoutineNameChange,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors } = useColorScheme();
+
   const [isNameFocused, setIsNameFocused] = useState(false);
 
   return (

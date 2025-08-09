@@ -62,10 +62,9 @@ export const RoutinesFeature = () => {
           <FoldersBody
             setSelectedFolder={setSelectedFolder}
             filteredRoutines={filteredRoutines}
-            onEditRoutine={() => {}}
-            onDeleteRoutine={handleDeleteRoutine}
             onLongPressRoutine={handleRoutineLongPress}
             onEditFolder={handleEditFolder}
+            onPressRoutine={handlePressRoutine}
           />
         ) : (
           <DraggableList

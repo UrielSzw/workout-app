@@ -1,7 +1,6 @@
 import { Typography } from '@/components/ui';
 import { ExercisePlaceholderImage } from '@/components/ui/ExercisePlaceholderImage';
-import { getThemeColors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme.web';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { IBlockType, IExerciseInBlock } from '@/types/routine';
 import { GripVertical } from 'lucide-react-native';
 import { TouchableOpacity, Vibration, View } from 'react-native';
@@ -21,8 +20,7 @@ export const ReorderExerciseItem: React.FC<Props> = ({
   isActive,
   blockType,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors } = useColorScheme();
 
   const getBlockTypeColor = (type: IBlockType) => {
     switch (type) {

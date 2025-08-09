@@ -13,18 +13,15 @@ import {
 
 import { Typography, Card, Button } from '@/components/ui';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { getThemeColors } from '@/constants/Colors';
 import { ProfileSection } from './profile-section';
 import { SettingItem } from './setting-item';
 import { StatItem } from './stat-item';
 
 export const ProfileFeature = () => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { setColorScheme, colors, isDarkMode } = useColorScheme();
+
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
-  const [darkModeEnabled, setDarkModeEnabled] = React.useState(
-    colorScheme === 'dark',
-  );
+  const [darkModeEnabled, setDarkModeEnabled] = React.useState(isDarkMode);
 
   const handleLogout = () => {
     Alert.alert('Cerrar Sesión', '¿Estás seguro que quieres cerrar sesión?', [
@@ -38,6 +35,11 @@ export const ProfileFeature = () => {
         onPress: () => {},
       },
     ]);
+  };
+
+  const handleModeChange = (value: boolean) => {
+    setDarkModeEnabled(value);
+    setColorScheme(value ? 'dark' : 'light');
   };
 
   return (
@@ -135,7 +137,7 @@ export const ProfileFeature = () => {
             rightElement={
               <Switch
                 value={darkModeEnabled}
-                onValueChange={setDarkModeEnabled}
+                onValueChange={handleModeChange}
                 trackColor={{
                   false: colors.gray[300],
                   true: colors.primary[500],

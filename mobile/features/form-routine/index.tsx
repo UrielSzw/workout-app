@@ -5,7 +5,6 @@ import {
   BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { getThemeColors } from '@/constants/Colors';
 import { CreateRoutineHeader } from './create-routine-header';
 import { RoutineInfo } from './routine-info';
 import { ExerciseList } from './exercise-list';
@@ -21,8 +20,7 @@ type Props = {
 };
 
 export const FormRoutineFeature = ({ isEditMode }: Props) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors } = useColorScheme();
 
   const {
     blocks,

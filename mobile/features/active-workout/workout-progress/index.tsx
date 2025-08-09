@@ -19,9 +19,7 @@ export const WorkoutProgress: React.FC<Props> = ({
   volume,
   averageRpe,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
-
+  const { colors } = useColorScheme();
   return (
     <View
       style={{

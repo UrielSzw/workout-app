@@ -24,8 +24,7 @@ export const ActiveWorkoutHeader: React.FC<Props> = ({
   onExit,
   onFinish,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors } = useColorScheme();
 
   return (
     <View

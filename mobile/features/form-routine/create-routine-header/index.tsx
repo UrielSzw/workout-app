@@ -1,7 +1,7 @@
 import { Button, Typography } from '@/components/ui';
-import { getThemeColors } from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { router } from 'expo-router';
-import { useColorScheme, View } from 'react-native';
+import { View } from 'react-native';
 
 type Props = {
   onSaveRoutine: () => void;
@@ -14,8 +14,7 @@ export const CreateRoutineHeader: React.FC<Props> = ({
   onClearRoutine,
   isEditMode,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors } = useColorScheme();
 
   const handleGoBack = () => {
     onClearRoutine();

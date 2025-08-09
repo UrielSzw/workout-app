@@ -1,8 +1,7 @@
-import React from "react";
-import { View } from "react-native";
-import { Typography, Card } from "@/components/ui";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { getThemeColors } from "@/constants/Colors";
+import React from 'react';
+import { View } from 'react-native';
+import { Typography, Card } from '@/components/ui';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 interface SettingItemProps {
   icon: React.ReactNode;
@@ -19,8 +18,7 @@ export const SettingItem: React.FC<SettingItemProps> = ({
   rightElement,
   onPress,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === "dark");
+  const { colors, isDarkMode } = useColorScheme();
 
   return (
     <Card
@@ -30,15 +28,15 @@ export const SettingItem: React.FC<SettingItemProps> = ({
       onPress={onPress}
       style={{ marginBottom: 8 }}
     >
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View
           style={{
             width: 40,
             height: 40,
             borderRadius: 20,
-            backgroundColor: colors.gray[100],
-            alignItems: "center",
-            justifyContent: "center",
+            backgroundColor: isDarkMode ? colors.gray[600] : colors.gray[100],
+            alignItems: 'center',
+            justifyContent: 'center',
             marginRight: 12,
           }}
         >

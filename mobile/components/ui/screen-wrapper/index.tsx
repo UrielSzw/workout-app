@@ -1,15 +1,13 @@
-import React from "react";
-import { SafeAreaView, View } from "react-native";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { getThemeColors } from "@/constants/Colors";
+import { useColorScheme } from '@/hooks/useColorScheme';
+import React from 'react';
+import { SafeAreaView, View } from 'react-native';
 
 type Props = {
   children?: React.ReactNode;
 };
 
 export const ScreenWrapper: React.FC<Props> = ({ children }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === "dark");
+  const { colors } = useColorScheme();
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>

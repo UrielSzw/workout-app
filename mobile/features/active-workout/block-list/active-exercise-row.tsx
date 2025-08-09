@@ -47,9 +47,7 @@ export const ActiveExerciseRow: React.FC<Props> = ({
   onShowSetTypeSheet,
   onAddSet,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
-
+  const { colors } = useColorScheme();
   return (
     <View
       style={{

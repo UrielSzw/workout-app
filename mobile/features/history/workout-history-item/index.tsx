@@ -1,10 +1,8 @@
-import React from "react";
-import { View } from "react-native";
-import { Clock, TrendingUp } from "lucide-react-native";
-
-import { Typography, Card } from "@/components/ui";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { getThemeColors } from "@/constants/Colors";
+import React from 'react';
+import { View } from 'react-native';
+import { Clock, TrendingUp } from 'lucide-react-native';
+import { Typography, Card } from '@/components/ui';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 interface WorkoutHistoryItemProps {
   date: string;
@@ -21,16 +19,15 @@ export const WorkoutHistoryItem: React.FC<WorkoutHistoryItemProps> = ({
   volume,
   exercises,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === "dark");
+  const { colors } = useColorScheme();
 
   return (
     <Card variant="outlined" padding="md" style={{ marginBottom: 12 }}>
       <View
         style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
         }}
       >
         <View style={{ flex: 1 }}>
@@ -48,9 +45,9 @@ export const WorkoutHistoryItem: React.FC<WorkoutHistoryItemProps> = ({
           >
             {name}
           </Typography>
-          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
             <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
             >
               <Clock size={14} color={colors.textMuted} />
               <Typography variant="caption" color="textMuted">
@@ -58,7 +55,7 @@ export const WorkoutHistoryItem: React.FC<WorkoutHistoryItemProps> = ({
               </Typography>
             </View>
             <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
             >
               <TrendingUp size={14} color={colors.textMuted} />
               <Typography variant="caption" color="textMuted">

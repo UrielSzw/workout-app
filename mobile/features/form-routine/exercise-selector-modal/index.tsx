@@ -4,7 +4,6 @@ import { X, Search, Plus, Info } from 'lucide-react-native';
 import { Typography, Button, Card } from '@/components/ui';
 import { ExercisePlaceholderImage } from '@/components/ui/ExercisePlaceholderImage';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { getThemeColors } from '@/constants/Colors';
 import {
   exerciseCategories,
   getExercisesByCategory,
@@ -28,8 +27,7 @@ export const ExerciseSelectorModal: React.FC<Props> = ({
   onAddAsIndividual,
   onAddAsBlock,
 }) => {
-  const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === 'dark');
+  const { colors, isDarkMode } = useColorScheme();
 
   const [selectedCategory, setSelectedCategory] = useState(
     exerciseCategories[0].id,
@@ -86,7 +84,7 @@ export const ExerciseSelectorModal: React.FC<Props> = ({
             style={{
               flexDirection: 'row',
               alignItems: 'center',
-              backgroundColor: colors.gray[100],
+              backgroundColor: isDarkMode ? colors.gray[800] : colors.gray[100],
               borderRadius: 12,
               paddingHorizontal: 16,
               paddingVertical: 12,
@@ -122,7 +120,9 @@ export const ExerciseSelectorModal: React.FC<Props> = ({
                     backgroundColor:
                       selectedCategory === category.id
                         ? colors.primary[500]
-                        : colors.gray[100],
+                        : isDarkMode
+                          ? colors.gray[800]
+                          : colors.gray[100],
                   }}
                 >
                   <Typography
