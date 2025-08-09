@@ -1,134 +1,106 @@
 import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
-import { ArrowLeft, Play, Pause, X, Check } from 'lucide-react-native';
-import { Typography } from '@/components/ui';
+import { Button, Typography } from '@/components/ui';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { getThemeColors } from '@/constants/Colors';
+import { X, Timer, Flag } from 'lucide-react-native';
 
-interface Props {
+interface WorkoutProgress {
+  completed: number;
+  total: number;
+  percentage: number;
+  volume: number;
+}
+
+interface ActiveWorkoutHeaderProps {
   routineName: string;
   elapsedTime: string;
   isPaused: boolean;
-  onPause: () => void;
-  onResume: () => void;
+  progress: WorkoutProgress;
   onExit: () => void;
-  onFinish: () => void;
 }
 
-export const ActiveWorkoutHeader: React.FC<Props> = ({
+export const ActiveWorkoutHeader: React.FC<ActiveWorkoutHeaderProps> = ({
   routineName,
   elapsedTime,
   isPaused,
-  onPause,
-  onResume,
+  progress,
   onExit,
-  onFinish,
 }) => {
-  const { colors } = useColorScheme();
+  const { colors, isDarkMode } = useColorScheme();
 
   return (
     <View
       style={{
-        backgroundColor: colors.surface,
+        backgroundColor: colors.background,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
         borderBottomWidth: 1,
         borderBottomColor: colors.border,
-        paddingHorizontal: 16,
-        paddingVertical: 12,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        // marginBottom: 20,
       }}
     >
-      {/* Top Row - Navigation and Actions */}
-      <View
+      {/* Top Navigation - Solo X para salir */}
+      <TouchableOpacity
+        onPress={onExit}
         style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
+          width: 40,
+          height: 40,
+          borderRadius: 20,
+          backgroundColor: isDarkMode ? colors.gray[600] : colors.gray[100],
           alignItems: 'center',
-          marginBottom: 8,
+          justifyContent: 'center',
         }}
       >
-        {/* Back Button */}
-        <TouchableOpacity
-          onPress={onExit}
+        <X size={20} color={colors.text} />
+      </TouchableOpacity>
+
+      {/* Rutina y Tiempo en el centro */}
+      <View style={{ flex: 1, alignItems: 'center' }}>
+        <Typography variant="h6" weight="semibold" align="center">
+          {routineName}
+        </Typography>
+        <View
           style={{
-            padding: 8,
-            borderRadius: 8,
-            backgroundColor: colors.gray[100],
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 4,
+            marginTop: 2,
           }}
         >
-          <ArrowLeft size={20} color={colors.text} />
-        </TouchableOpacity>
-
-        {/* Action Buttons */}
-        <View style={{ flexDirection: 'row', gap: 8 }}>
-          {/* Pause/Resume Button */}
-          <TouchableOpacity
-            onPress={isPaused ? onResume : onPause}
-            style={{
-              padding: 8,
-              borderRadius: 8,
-              backgroundColor: isPaused
-                ? colors.success[100]
-                : colors.warning[100],
-            }}
-          >
-            {isPaused ? (
-              <Play size={20} color={colors.success[600]} />
-            ) : (
-              <Pause size={20} color={colors.warning[600]} />
-            )}
-          </TouchableOpacity>
-
-          {/* Finish Button */}
-          <TouchableOpacity
-            onPress={onFinish}
-            style={{
-              padding: 8,
-              borderRadius: 8,
-              backgroundColor: colors.primary[100],
-            }}
-          >
-            <Check size={20} color={colors.primary[600]} />
-          </TouchableOpacity>
+          <Timer size={14} color={colors.textMuted} />
+          <Typography variant="body2" color="textMuted">
+            {elapsedTime}
+          </Typography>
+          {isPaused && (
+            <View
+              style={{
+                paddingHorizontal: 6,
+                paddingVertical: 1,
+                backgroundColor: colors.warning[100],
+                borderRadius: 4,
+                marginLeft: 8,
+              }}
+            >
+              <Typography
+                variant="caption"
+                style={{ color: colors.warning[700], fontSize: 10 }}
+                weight="medium"
+              >
+                PAUSADO
+              </Typography>
+            </View>
+          )}
         </View>
       </View>
 
-      {/* Bottom Row - Routine Info */}
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <View style={{ flex: 1 }}>
-          <Typography variant="h6" weight="bold" numberOfLines={1}>
-            {routineName}
-          </Typography>
-          <Typography variant="body2" color="textMuted">
-            {isPaused ? 'Pausado' : 'En progreso'}
-          </Typography>
-        </View>
-
-        {/* Timer */}
-        <View
-          style={{
-            backgroundColor: isPaused
-              ? colors.warning[100]
-              : colors.success[100],
-            paddingHorizontal: 12,
-            paddingVertical: 6,
-            borderRadius: 8,
-          }}
-        >
-          <Typography
-            variant="body1"
-            weight="bold"
-            style={{
-              color: isPaused ? colors.warning[700] : colors.success[700],
-            }}
-          >
-            ⏱️ {elapsedTime}
-          </Typography>
-        </View>
+      {/* Espacio para mantener balance */}
+      <View>
+        <Button size="sm">
+          <Flag size={20} color="#fff" />
+        </Button>
       </View>
     </View>
   );

@@ -20,6 +20,7 @@ type Props = {
   onLongPressRoutine: (routine: IRoutine) => void;
   setSelectedFolder: (folder: IFolder | null) => void;
   onPressRoutine: (routine: IRoutine | null) => void;
+  onStartRoutine: (routine: IRoutine) => void;
 };
 
 export const DraggableList: React.FC<Props> = ({
@@ -31,6 +32,7 @@ export const DraggableList: React.FC<Props> = ({
   onLongPressRoutine,
   setSelectedFolder,
   onPressRoutine,
+  onStartRoutine,
 }) => {
   const { colors } = useColorScheme();
 
@@ -112,7 +114,7 @@ export const DraggableList: React.FC<Props> = ({
                   <RoutineCard
                     key={routine.id}
                     routine={routine}
-                    onStart={() => {}}
+                    onStart={onStartRoutine}
                     onLongPress={onLongPressRoutine}
                     onPress={onPressRoutine}
                   />

@@ -1,3 +1,4 @@
+import { activeWorkoutStore } from '@/store/active-workout-store';
 import { mainStore } from '@/store/main-store';
 import { IRoutine } from '@/types/routine';
 import { router } from 'expo-router';
@@ -18,6 +19,8 @@ export const useHandleRoutines = () => {
     setSelectedRoutine,
     selectedRoutine,
   } = mainStore();
+
+  const { startWorkout } = activeWorkoutStore();
 
   const [moveRoutineModalVisible, setMoveRoutineModalVisible] = useState(false);
   const [selectedRoutineForMove, setSelectedRoutineForMove] =
@@ -51,6 +54,11 @@ export const useHandleRoutines = () => {
         },
       ],
     );
+  };
+
+  const handleStartRoutine = (routine: IRoutine) => {
+    startWorkout(routine);
+    router.push('/workout/active');
   };
 
   const handleCreateFolder = () => {
@@ -99,5 +107,6 @@ export const useHandleRoutines = () => {
     getRoutinesFiltered,
     setSelectedRoutine,
     selectedRoutine,
+    handleStartRoutine,
   };
 };

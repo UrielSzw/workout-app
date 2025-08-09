@@ -32,6 +32,7 @@ export const RoutinesFeature = () => {
     setSelectedRoutineForMove,
     getRoutinesFiltered,
     setSelectedRoutine,
+    handleStartRoutine,
   } = useHandleRoutines();
 
   // Bottom sheet refs
@@ -65,6 +66,7 @@ export const RoutinesFeature = () => {
             onLongPressRoutine={handleRoutineLongPress}
             onEditFolder={handleEditFolder}
             onPressRoutine={handlePressRoutine}
+            onStartRoutine={handleStartRoutine}
           />
         ) : (
           <DraggableList
@@ -76,6 +78,7 @@ export const RoutinesFeature = () => {
             onLongPressRoutine={handleRoutineLongPress}
             setSelectedFolder={setSelectedFolder}
             onPressRoutine={handlePressRoutine}
+            onStartRoutine={handleStartRoutine}
           />
         )}
 

@@ -12,6 +12,7 @@ type Props = {
   onLongPressRoutine: (routine: IRoutine) => void;
   onEditFolder: () => void;
   onPressRoutine: (routine: IRoutine | null) => void;
+  onStartRoutine: (routine: IRoutine) => void;
 };
 
 export const FoldersBody: React.FC<Props> = ({
@@ -20,6 +21,7 @@ export const FoldersBody: React.FC<Props> = ({
   onLongPressRoutine,
   onEditFolder,
   onPressRoutine,
+  onStartRoutine,
 }) => {
   const { colors } = useColorScheme();
 
@@ -55,7 +57,7 @@ export const FoldersBody: React.FC<Props> = ({
             <RoutineCard
               key={routine.id}
               routine={routine}
-              onStart={() => {}}
+              onStart={onStartRoutine}
               onPress={onPressRoutine}
               onLongPress={onLongPressRoutine}
             />
