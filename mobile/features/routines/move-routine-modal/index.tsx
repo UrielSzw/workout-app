@@ -31,22 +31,8 @@ export const MoveRoutineModal = ({
 
   const handleMoveToFolder = (folderId?: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    Alert.alert(
-      'Mover Rutina',
-      folderId
-        ? `¿Mover "${routine.name}" a la carpeta "${folders.find((f) => f.id === folderId)?.name}"?`
-        : `¿Sacar "${routine.name}" de la carpeta actual?`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Mover',
-          onPress: () => {
-            onMoveToFolder(routine.id, folderId);
-            onClose();
-          },
-        },
-      ],
-    );
+    onMoveToFolder(routine.id, folderId);
+    onClose();
   };
 
   const availableFolders = folders.filter(

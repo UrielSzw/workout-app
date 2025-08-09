@@ -13,26 +13,25 @@ export const useHandleRoutines = () => {
     setFolders,
     reorderFolders,
     moveRoutineToFolder,
+    setFolderToEdit,
   } = mainStore();
 
-  const [refreshing, setRefreshing] = useState(false);
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
   const [moveRoutineModalVisible, setMoveRoutineModalVisible] = useState(false);
   const [selectedRoutineForMove, setSelectedRoutineForMove] =
     useState<IRoutine | null>(null);
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    // await refetch();
-    setRefreshing(false);
-  };
-
   const handleCreateRoutine = () => {
     router.push('/routines/create');
   };
 
-  const handleEditRoutine = (routine: IRoutine) => {
-    console.log('Editar rutina:', routine.id);
+  const handleEditFolder = () => {
+    const folderToEdit = folders.find((folder) => folder.id === selectedFolder);
+
+    if (!folderToEdit) return;
+
+    setFolderToEdit(folderToEdit);
+    router.push('/folders/edit');
   };
 
   const handleDeleteRoutine = (routine: IRoutine) => {
@@ -63,6 +62,14 @@ export const useHandleRoutines = () => {
     moveRoutineToFolder(routineId, folderId);
   };
 
+  const getRoutinesFiltered = () => {
+    if (selectedFolder) {
+      return routines.filter((routine) => routine.folderId === selectedFolder);
+    }
+
+    return routines.filter((routine) => !routine.folderId);
+  };
+
   return {
     routines,
     folders,
@@ -71,13 +78,11 @@ export const useHandleRoutines = () => {
     setFolders,
     reorderFolders,
     moveRoutineToFolder,
-    refreshing,
     selectedFolder,
     moveRoutineModalVisible,
     selectedRoutineForMove,
-    onRefresh,
     handleCreateRoutine,
-    handleEditRoutine,
+    handleEditFolder,
     handleDeleteRoutine,
     handleCreateFolder,
     setSelectedFolder,
@@ -85,5 +90,6 @@ export const useHandleRoutines = () => {
     handleMoveRoutine,
     setMoveRoutineModalVisible,
     setSelectedRoutineForMove,
+    getRoutinesFiltered,
   };
 };

@@ -1,5 +1,5 @@
-import React from "react";
-import { View, ScrollView, SafeAreaView, Switch, Alert } from "react-native";
+import React from 'react';
+import { View, ScrollView, SafeAreaView, Switch, Alert } from 'react-native';
 import {
   User,
   Settings,
@@ -9,35 +9,33 @@ import {
   LogOut,
   Moon,
   Sun,
-} from "lucide-react-native";
+} from 'lucide-react-native';
 
-import { Typography, Card, Button } from "@/components/ui";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { getThemeColors } from "@/constants/Colors";
-import { useAuth } from "@/contexts/AuthContext";
-import { ProfileSection } from "./profile-section";
-import { SettingItem } from "./setting-item";
-import { StatItem } from "./stat-item";
+import { Typography, Card, Button } from '@/components/ui';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { getThemeColors } from '@/constants/Colors';
+import { ProfileSection } from './profile-section';
+import { SettingItem } from './setting-item';
+import { StatItem } from './stat-item';
 
 export const ProfileFeature = () => {
   const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === "dark");
-  const { user, logout } = useAuth();
+  const colors = getThemeColors(colorScheme === 'dark');
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true);
   const [darkModeEnabled, setDarkModeEnabled] = React.useState(
-    colorScheme === "dark"
+    colorScheme === 'dark',
   );
 
   const handleLogout = () => {
-    Alert.alert("Cerrar Sesión", "¿Estás seguro que quieres cerrar sesión?", [
+    Alert.alert('Cerrar Sesión', '¿Estás seguro que quieres cerrar sesión?', [
       {
-        text: "Cancelar",
-        style: "cancel",
+        text: 'Cancelar',
+        style: 'cancel',
       },
       {
-        text: "Cerrar Sesión",
-        style: "destructive",
-        onPress: logout,
+        text: 'Cerrar Sesión',
+        style: 'destructive',
+        onPress: () => {},
       },
     ]);
   };
@@ -57,15 +55,15 @@ export const ProfileFeature = () => {
 
         {/* Profile Card */}
         <Card variant="elevated" padding="lg" style={{ marginBottom: 24 }}>
-          <View style={{ alignItems: "center", marginBottom: 20 }}>
+          <View style={{ alignItems: 'center', marginBottom: 20 }}>
             <View
               style={{
                 width: 80,
                 height: 80,
                 borderRadius: 40,
                 backgroundColor: colors.primary[500],
-                alignItems: "center",
-                justifyContent: "center",
+                alignItems: 'center',
+                justifyContent: 'center',
                 marginBottom: 16,
               }}
             >
@@ -73,14 +71,14 @@ export const ProfileFeature = () => {
             </View>
 
             <Typography variant="h4" weight="bold" style={{ marginBottom: 4 }}>
-              {user?.name || "Usuario"}
+              {'Usuario'}
             </Typography>
             <Typography
               variant="body2"
               color="textMuted"
               style={{ marginBottom: 4 }}
             >
-              {user?.email}
+              {'usuario@ejemplo.com'}
             </Typography>
             <Typography
               variant="body2"
@@ -98,7 +96,7 @@ export const ProfileFeature = () => {
           {/* Quick Stats */}
           <View
             style={{
-              flexDirection: "row",
+              flexDirection: 'row',
               paddingTop: 20,
               borderTopWidth: 1,
               borderTopColor: colors.border,
@@ -142,7 +140,7 @@ export const ProfileFeature = () => {
                   false: colors.gray[300],
                   true: colors.primary[500],
                 }}
-                thumbColor={darkModeEnabled ? "#ffffff" : "#ffffff"}
+                thumbColor={darkModeEnabled ? '#ffffff' : '#ffffff'}
               />
             }
           />
@@ -159,7 +157,7 @@ export const ProfileFeature = () => {
                   false: colors.gray[300],
                   true: colors.primary[500],
                 }}
-                thumbColor={notificationsEnabled ? "#ffffff" : "#ffffff"}
+                thumbColor={notificationsEnabled ? '#ffffff' : '#ffffff'}
               />
             }
           />
@@ -203,13 +201,13 @@ export const ProfileFeature = () => {
         <ProfileSection title="Logros">
           <View
             style={{
-              flexDirection: "row",
-              flexWrap: "wrap",
-              justifyContent: "space-between",
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              justifyContent: 'space-between',
             }}
           >
-            <Card variant="outlined" padding="md" style={{ width: "48%" }}>
-              <View style={{ alignItems: "center" }}>
+            <Card variant="outlined" padding="md" style={{ width: '48%' }}>
+              <View style={{ alignItems: 'center' }}>
                 <Typography variant="h3" style={{ marginBottom: 8 }}>
                   💪
                 </Typography>
@@ -226,8 +224,8 @@ export const ProfileFeature = () => {
               </View>
             </Card>
 
-            <Card variant="outlined" padding="md" style={{ width: "48%" }}>
-              <View style={{ alignItems: "center" }}>
+            <Card variant="outlined" padding="md" style={{ width: '48%' }}>
+              <View style={{ alignItems: 'center' }}>
                 <Typography variant="h3" style={{ marginBottom: 8 }}>
                   🔥
                 </Typography>
@@ -244,8 +242,8 @@ export const ProfileFeature = () => {
               </View>
             </Card>
 
-            <Card variant="outlined" padding="md" style={{ width: "48%" }}>
-              <View style={{ alignItems: "center" }}>
+            <Card variant="outlined" padding="md" style={{ width: '48%' }}>
+              <View style={{ alignItems: 'center' }}>
                 <Typography variant="h3" style={{ marginBottom: 8 }}>
                   📈
                 </Typography>

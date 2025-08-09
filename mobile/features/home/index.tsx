@@ -1,6 +1,6 @@
-import React from "react";
-import { View, ScrollView, SafeAreaView } from "react-native";
-import { router } from "expo-router";
+import React from 'react';
+import { View, ScrollView, SafeAreaView } from 'react-native';
+import { router } from 'expo-router';
 import {
   Play,
   Calendar,
@@ -8,25 +8,26 @@ import {
   TrendingUp,
   Plus,
   Dumbbell,
-} from "lucide-react-native";
+} from 'lucide-react-native';
 
-import { Typography, Button, Card } from "@/components/ui";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { getThemeColors } from "@/constants/Colors";
-import { useAppStore } from "@/store/useAppStore";
-import { QuickActionCard } from "./quick-action-card";
-import { StatCard } from "./stat-card";
+import { Typography, Button, Card } from '@/components/ui';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { getThemeColors } from '@/constants/Colors';
+import { useAppStore } from '@/store/useAppStore';
+import { QuickActionCard } from './quick-action-card';
+import { StatCard } from './stat-card';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const HomeFeature = () => {
   const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === "dark");
+  const colors = getThemeColors(colorScheme === 'dark');
   const { routines, activeWorkout } = useAppStore();
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return "¡Buenos días!";
-    if (hour < 18) return "¡Buenas tardes!";
-    return "¡Buenas noches!";
+    if (hour < 12) return '¡Buenos días!';
+    if (hour < 18) return '¡Buenas tardes!';
+    return '¡Buenas noches!';
   };
 
   const getNextWorkout = () => {
@@ -36,14 +37,14 @@ export const HomeFeature = () => {
   const handleStartQuickWorkout = () => {
     const nextWorkout = getNextWorkout();
     if (nextWorkout) {
-      router.push("/workout/active");
+      router.push('/workout/active');
     } else {
-      router.push("/routines");
+      router.push('/routines');
     }
   };
 
   const handleContinueWorkout = () => {
-    router.push("/workout/active");
+    router.push('/workout/active');
   };
 
   const nextWorkout = getNextWorkout();
@@ -61,6 +62,10 @@ export const HomeFeature = () => {
           </Typography>
         </View>
 
+        <Button onPress={() => AsyncStorage.clear()}>
+          LIMPIRAR LOCAL STORAGE
+        </Button>
+
         {/* Active Workout Card */}
         {activeWorkout && (
           <Card
@@ -70,9 +75,9 @@ export const HomeFeature = () => {
           >
             <View
               style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
               }}
             >
               <View style={{ flex: 1 }}>
@@ -96,11 +101,11 @@ export const HomeFeature = () => {
                   color="white"
                   style={{ opacity: 0.9 }}
                 >
-                  Iniciado hace{" "}
+                  Iniciado hace{' '}
                   {Math.floor(
                     (Date.now() - new Date(activeWorkout.startedAt).getTime()) /
-                      60000
-                  )}{" "}
+                      60000,
+                  )}{' '}
                   min
                 </Typography>
               </View>
@@ -121,9 +126,9 @@ export const HomeFeature = () => {
           <Card variant="outlined" padding="lg" style={{ marginBottom: 24 }}>
             <View
               style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
               }}
             >
               <View style={{ flex: 1 }}>
@@ -146,7 +151,7 @@ export const HomeFeature = () => {
                   color="textMuted"
                   style={{ marginBottom: 12 }}
                 >
-                  {nextWorkout.estimatedDurationMinutes} min •{" "}
+                  {nextWorkout.estimatedDurationMinutes} min •{' '}
                   {nextWorkout.blocks.length} bloques
                 </Typography>
                 <Button
@@ -172,19 +177,19 @@ export const HomeFeature = () => {
           >
             Acciones Rápidas
           </Typography>
-          <View style={{ flexDirection: "row", gap: 12 }}>
+          <View style={{ flexDirection: 'row', gap: 12 }}>
             <QuickActionCard
               title="Nueva Rutina"
               subtitle="Crear ejercicios"
               icon={<Plus size={24} color={colors.primary[500]} />}
-              onPress={() => router.push("/routines/create")}
+              onPress={() => router.push('/routines/create')}
               color={colors.primary[500]}
             />
             <QuickActionCard
               title="Mis Rutinas"
               subtitle="Ver todas"
               icon={<Dumbbell size={24} color={colors.secondary[500]} />}
-              onPress={() => router.push("/routines")}
+              onPress={() => router.push('/routines')}
               color={colors.secondary[500]}
             />
           </View>
@@ -199,7 +204,7 @@ export const HomeFeature = () => {
           >
             Esta Semana
           </Typography>
-          <View style={{ flexDirection: "row", gap: 12, marginBottom: 12 }}>
+          <View style={{ flexDirection: 'row', gap: 12, marginBottom: 12 }}>
             <StatCard
               label="Entrenamientos"
               value="3"
@@ -213,7 +218,7 @@ export const HomeFeature = () => {
               color={colors.warning[500]}
             />
           </View>
-          <View style={{ flexDirection: "row", gap: 12 }}>
+          <View style={{ flexDirection: 'row', gap: 12 }}>
             <StatCard
               label="Nuevos PRs"
               value="2"
@@ -239,15 +244,15 @@ export const HomeFeature = () => {
             Logros Recientes
           </Typography>
           <Card variant="outlined" padding="md" style={{ marginBottom: 12 }}>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <View
                 style={{
                   width: 40,
                   height: 40,
                   borderRadius: 20,
                   backgroundColor: colors.success[100],
-                  alignItems: "center",
-                  justifyContent: "center",
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   marginRight: 12,
                 }}
               >
@@ -265,15 +270,15 @@ export const HomeFeature = () => {
           </Card>
 
           <Card variant="outlined" padding="md">
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <View
                 style={{
                   width: 40,
                   height: 40,
                   borderRadius: 20,
                   backgroundColor: colors.primary[100],
-                  alignItems: "center",
-                  justifyContent: "center",
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   marginRight: 12,
                 }}
               >
@@ -294,15 +299,15 @@ export const HomeFeature = () => {
         {/* Empty State */}
         {routines.length === 0 && (
           <Card variant="outlined" padding="lg" style={{ marginBottom: 32 }}>
-            <View style={{ alignItems: "center" }}>
+            <View style={{ alignItems: 'center' }}>
               <View
                 style={{
                   width: 60,
                   height: 60,
                   borderRadius: 30,
                   backgroundColor: colors.gray[100],
-                  alignItems: "center",
-                  justifyContent: "center",
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   marginBottom: 16,
                 }}
               >
@@ -325,7 +330,7 @@ export const HomeFeature = () => {
               </Typography>
               <Button
                 variant="primary"
-                onPress={() => router.push("/routines/create")}
+                onPress={() => router.push('/routines/create')}
                 icon={<Plus size={20} color="#ffffff" />}
                 iconPosition="left"
               >

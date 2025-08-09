@@ -1,38 +1,29 @@
-import { Button, Typography } from "@/components/ui";
-import { getThemeColors } from "@/constants/Colors";
-import { useColorScheme } from "@/hooks/useColorScheme.web";
-import { Folder } from "lucide-react-native";
-import React from "react";
-import { RefreshControl, ScrollView, View } from "react-native";
+import { Button, Typography } from '@/components/ui';
+import { getThemeColors } from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/useColorScheme.web';
+import { Folder } from 'lucide-react-native';
+import React from 'react';
+import { ScrollView, View } from 'react-native';
 
 type Props = {
-  refreshing: boolean;
-  onRefresh: () => Promise<void>;
   handleCreateRoutine: () => void;
   handleCreateFolder: () => void;
 };
 
 export const EmptyState: React.FC<Props> = ({
-  refreshing,
-  onRefresh,
   handleCreateRoutine,
   handleCreateFolder,
 }) => {
   const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === "dark");
+  const colors = getThemeColors(colorScheme === 'dark');
 
   return (
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
+    <ScrollView showsVerticalScrollIndicator={false}>
       <View
         style={{
           flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
+          alignItems: 'center',
+          justifyContent: 'center',
           paddingVertical: 60,
         }}
       >
@@ -42,8 +33,8 @@ export const EmptyState: React.FC<Props> = ({
             height: 80,
             borderRadius: 40,
             backgroundColor: colors.gray[100],
-            alignItems: "center",
-            justifyContent: "center",
+            alignItems: 'center',
+            justifyContent: 'center',
             marginBottom: 20,
           }}
         >
@@ -63,7 +54,7 @@ export const EmptyState: React.FC<Props> = ({
           Crea tu primera rutina para empezar a entrenar
         </Typography>
 
-        <View style={{ flexDirection: "row", gap: 12 }}>
+        <View style={{ flexDirection: 'row', gap: 12 }}>
           <Button variant="primary" onPress={handleCreateRoutine}>
             Crear Primera Rutina
           </Button>

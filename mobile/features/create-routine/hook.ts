@@ -1,5 +1,13 @@
 import { createRoutineStore } from '@/store/create-routine-store';
-import { IBlock, IExercise, IRepsType, ISet, ISetType } from '@/types/routine';
+import { mainStore } from '@/store/main-store';
+import {
+  IBlock,
+  IExercise,
+  IRepsType,
+  IRoutine,
+  ISet,
+  ISetType,
+} from '@/types/routine';
 import { router } from 'expo-router';
 import { useState } from 'react';
 
@@ -7,6 +15,7 @@ export const useCreateRoutine = () => {
   const { blocks, setBlocks, setReorderedBlock } = createRoutineStore(
     (state) => state,
   );
+  const { addRoutine } = mainStore((state) => state);
 
   // Routine information state
   const [routineName, setRoutineName] = useState('');
@@ -24,7 +33,25 @@ export const useCreateRoutine = () => {
   const [selectedExercises, setSelectedExercises] = useState<IExercise[]>([]);
   const [currentSetType, setCurrentSetType] = useState<ISetType | null>(null);
 
-  const handleSaveRoutine = () => {};
+  const handleSaveRoutine = () => {
+    if (!routineName.trim()) {
+      alert('Por favor, ingresa un nombre para la rutina.');
+      return;
+    }
+
+    const newRoutine: IRoutine = {
+      id: Date.now().toString(),
+      name: routineName,
+      description: '',
+      folderId: undefined,
+      blocks,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    addRoutine(newRoutine);
+    router.back();
+  };
 
   // Block management functions
   const handleClearRoutine = () => {

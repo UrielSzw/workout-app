@@ -1,45 +1,59 @@
 import { Button } from '@/components/ui';
 import React from 'react';
-import { RefreshControl, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { RoutineCard } from '../routine-card';
 import { IRoutine } from '@/types/routine';
+import { FolderEdit } from 'lucide-react-native';
+import { useColorScheme } from '@/hooks/useColorScheme.web';
+import { getThemeColors } from '@/constants/Colors';
 
 type Props = {
   setSelectedFolder: (folderId: string | null) => void;
-  refreshing: boolean;
-  onRefresh: () => Promise<void>;
   filteredRoutines: IRoutine[];
   onEditRoutine: (routine: IRoutine) => void;
   onDeleteRoutine: (routine: IRoutine) => void;
   onLongPressRoutine: (routine: IRoutine) => void;
+  onEditFolder: () => void;
 };
 
 export const FoldersBody: React.FC<Props> = ({
   setSelectedFolder,
-  refreshing,
-  onRefresh,
   filteredRoutines,
   onDeleteRoutine,
   onEditRoutine,
   onLongPressRoutine,
+  onEditFolder,
 }) => {
+  const colorScheme = useColorScheme();
+  const colors = getThemeColors(colorScheme === 'dark');
+
   return (
     <>
-      <Button
-        variant="ghost"
-        size="sm"
-        onPress={() => setSelectedFolder(null)}
-        style={{ alignSelf: 'flex-start', marginBottom: 16 }}
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 16,
+        }}
       >
-        ← Volver a carpetas
-      </Button>
-
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
+        <Button
+          variant="ghost"
+          size="sm"
+          onPress={() => setSelectedFolder(null)}
+        >
+          ← Volver a carpetas
+        </Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          onPress={onEditFolder}
+          icon={<FolderEdit size={18} color={colors.primary[500]} />}
+        >
+          Editar
+        </Button>
+      </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{ marginBottom: 24 }}>
           {filteredRoutines.map((routine) => (
             <RoutineCard

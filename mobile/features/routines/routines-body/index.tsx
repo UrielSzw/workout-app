@@ -7,6 +7,7 @@ import { RoutineCard } from '../routine-card';
 import { useColorScheme } from '@/hooks/useColorScheme.web';
 import { getThemeColors } from '@/constants/Colors';
 import { IFolder, IRoutine } from '@/types/routine';
+import DragMock from '../draggable-list';
 
 type Props = {
   refreshing: boolean;
@@ -66,8 +67,6 @@ export const RoutinesBody: React.FC<Props> = ({
       ],
     );
   };
-
-  if (!filteredRoutines) return null;
 
   return (
     <ScrollView

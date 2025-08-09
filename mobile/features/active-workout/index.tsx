@@ -1,28 +1,60 @@
-import React from "react";
-import { View, SafeAreaView } from "react-native";
-import { router } from "expo-router";
-import { X, Play, Pause, SkipForward } from "lucide-react-native";
-
-import { Typography, Button } from "@/components/ui";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { getThemeColors } from "@/constants/Colors";
-import { useAppStore } from "@/store/useAppStore";
-import { TimerCard } from "./timer-card";
-import { CurrentBlockCard } from "./current-block-card";
+import React from 'react';
+import { View, SafeAreaView, ScrollView } from 'react-native';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { router } from 'expo-router';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { getThemeColors } from '@/constants/Colors';
+import { Typography, Button } from '@/components/ui';
+import { ActiveWorkoutHeader } from './active-workout-header';
+import { WorkoutProgress } from './workout-progress/index';
+import { BlockList } from './block-list/index';
+import { RestTimerSheet } from './rest-timer-sheet/index';
+import { RepsTypeBottomSheet } from '../create-routine/reps-type-sheet';
+import { SetTypeBottomSheet } from '../create-routine/set-type-sheet';
+import { useActiveWorkout } from './hook';
 
 export const ActiveWorkoutFeature = () => {
   const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === "dark");
-  const { activeWorkout, finishWorkout } = useAppStore();
+  const colors = getThemeColors(colorScheme === 'dark');
 
-  const handleFinishWorkout = () => {
-    finishWorkout();
-    router.back();
-  };
+  const {
+    activeWorkout,
+    isLoading,
+    elapsedTime,
+    isPaused,
+    restTimer,
+    repsTypeSheetRef,
+    setTypeSheetRef,
+    currentSetData,
+    handlePauseWorkout,
+    handleResumeWorkout,
+    handleFinishWorkout,
+    handleExitWorkout,
+    handleCompleteSet,
+    handleUncompleteSet,
+    handleUpdateSetValue,
+    handleShowRepsTypeSheet,
+    handleShowSetTypeSheet,
+    handleRepsTypeSelect,
+    handleSetTypeSelect,
+    handleAddSetToExercise,
+    skipRestTimer,
+    adjustRestTimer,
+    getWorkoutStats,
+    formatTime,
+  } = useActiveWorkout();
 
-  const handlePauseWorkout = () => {
-    router.back();
-  };
+  if (isLoading) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
+          <Typography variant="body1">Cargando entrenamiento...</Typography>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   if (!activeWorkout) {
     return (
@@ -30,8 +62,8 @@ export const ActiveWorkoutFeature = () => {
         <View
           style={{
             flex: 1,
-            alignItems: "center",
-            justifyContent: "center",
+            justifyContent: 'center',
+            alignItems: 'center',
             padding: 20,
           }}
         >
@@ -42,89 +74,90 @@ export const ActiveWorkoutFeature = () => {
           >
             No hay entrenamiento activo
           </Typography>
+          <Typography
+            variant="body2"
+            color="textMuted"
+            style={{ textAlign: 'center', marginBottom: 24 }}
+          >
+            Selecciona una rutina para comenzar tu entrenamiento
+          </Typography>
           <Button variant="primary" onPress={() => router.back()}>
-            Volver
+            Volver a Rutinas
           </Button>
         </View>
       </SafeAreaView>
     );
   }
 
+  const workoutStats = getWorkoutStats();
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      {/* Header */}
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "space-between",
-          paddingHorizontal: 20,
-          paddingVertical: 16,
-          borderBottomWidth: 1,
-          borderBottomColor: colors.border,
-        }}
-      >
-        <View style={{ flex: 1 }}>
-          <Typography variant="h5" weight="semibold">
-            {activeWorkout.routineName}
-          </Typography>
-          <Typography variant="body2" color="textMuted">
-            Entrenamiento en progreso
-          </Typography>
-        </View>
+    <BottomSheetModalProvider>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+        {/* Sticky Header */}
+        <ActiveWorkoutHeader
+          routineName={activeWorkout.name}
+          elapsedTime={formatTime(elapsedTime)}
+          isPaused={isPaused}
+          onPause={handlePauseWorkout}
+          onResume={handleResumeWorkout}
+          onExit={handleExitWorkout}
+          onFinish={handleFinishWorkout}
+        />
 
-        <Button
-          variant="ghost"
-          size="sm"
-          onPress={handlePauseWorkout}
-          icon={<X size={20} color={colors.textMuted} />}
+        {/* Progress Bar */}
+        <WorkoutProgress
+          completed={workoutStats.completed}
+          total={workoutStats.total}
+          percentage={workoutStats.percentage}
+          volume={workoutStats.volume}
+          averageRpe={workoutStats.averageRpe}
+        />
+
+        {/* Blocks List */}
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{ paddingBottom: 100 }}
+          showsVerticalScrollIndicator={false}
         >
-          {""}
-        </Button>
-      </View>
+          <BlockList
+            blocks={activeWorkout.blocks}
+            onCompleteSet={handleCompleteSet}
+            onUncompleteSet={handleUncompleteSet}
+            onUpdateSetValue={handleUpdateSetValue}
+            onShowRepsTypeSheet={handleShowRepsTypeSheet}
+            onShowSetTypeSheet={handleShowSetTypeSheet}
+            onAddSet={handleAddSetToExercise}
+          />
+        </ScrollView>
 
-      {/* Content */}
-      <View style={{ flex: 1, padding: 20 }}>
-        {/* Timer Card */}
-        <TimerCard startedAt={activeWorkout.startedAt} />
+        {/* Rest Timer Bottom Sheet */}
+        <RestTimerSheet
+          isVisible={restTimer?.isActive || false}
+          restTimeSeconds={restTimer?.totalTime || 0}
+          onSkip={skipRestTimer}
+          onAdjustTime={adjustRestTimer}
+          onTimerComplete={() => {}}
+        />
 
-        {/* Current Block */}
-        <CurrentBlockCard />
+        {/* Reps Type Bottom Sheet */}
+        <RepsTypeBottomSheet
+          ref={repsTypeSheetRef}
+          currentRepsType={(currentSetData?.current as any) || 'reps'}
+          onSelectRepsType={handleRepsTypeSelect}
+        />
 
-        {/* Action Buttons */}
-        <View style={{ gap: 12 }}>
-          <Button
-            variant="primary"
-            size="lg"
-            fullWidth
-            icon={<Play size={24} color="#ffffff" />}
-            iconPosition="left"
-          >
-            Completar Set Actual
-          </Button>
-
-          <View style={{ flexDirection: "row", gap: 12 }}>
-            <Button
-              variant="outline"
-              style={{ flex: 1 }}
-              icon={<Pause size={20} color={colors.primary[500]} />}
-            >
-              Pausar
-            </Button>
-            <Button
-              variant="outline"
-              style={{ flex: 1 }}
-              icon={<SkipForward size={20} color={colors.primary[500]} />}
-            >
-              Saltar Set
-            </Button>
-          </View>
-
-          <Button variant="error" fullWidth onPress={handleFinishWorkout}>
-            Finalizar Entrenamiento
-          </Button>
-        </View>
-      </View>
-    </SafeAreaView>
+        {/* Set Type Bottom Sheet */}
+        <SetTypeBottomSheet
+          ref={setTypeSheetRef}
+          currentSetType={(currentSetData?.current as any) || 'normal'}
+          onSelectSetType={handleSetTypeSelect}
+          onDeleteSet={() => {
+            // Handle set deletion if needed
+            console.log('Delete set requested');
+          }}
+        />
+      </SafeAreaView>
+    </BottomSheetModalProvider>
   );
 };

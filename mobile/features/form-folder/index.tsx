@@ -1,57 +1,39 @@
-import React, { useState } from "react";
-import { View, SafeAreaView, ScrollView, Alert } from "react-native";
-import { router } from "expo-router";
-import { ArrowLeft } from "lucide-react-native";
+import React from 'react';
+import { View, SafeAreaView, ScrollView } from 'react-native';
+import { router } from 'expo-router';
+import { ArrowLeft } from 'lucide-react-native';
 
-import { Typography, Button, Card } from "@/components/ui";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { getThemeColors } from "@/constants/Colors";
-import { FolderInfoForm } from "./folder-info-form";
+import { Typography, Button, Card } from '@/components/ui';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { getThemeColors } from '@/constants/Colors';
+import { FolderInfoForm } from './folder-info-form';
+import { useFormFolder } from './hook';
 
-export const CreateFolderFeature = () => {
+type Props = {
+  isEditMode?: boolean;
+};
+
+export const FormFolderFeature = ({ isEditMode }: Props) => {
   const colorScheme = useColorScheme();
-  const colors = getThemeColors(colorScheme === "dark");
+  const colors = getThemeColors(colorScheme === 'dark');
 
-  const [folderName, setFolderName] = useState("");
-  const [folderIcon, setFolderIcon] = useState("📁");
-  const [folderColor, setFolderColor] = useState("#3b82f6");
-
-  const handleSaveFolder = () => {
-    if (!folderName.trim()) {
-      Alert.alert("Error", "El nombre de la carpeta es obligatorio");
-      return;
-    }
-
-    const newFolder = {
-      id: Date.now().toString(),
-      name: folderName,
-      icon: folderIcon,
-      color: folderColor,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    // Mock para cuando esté conectado el backend
-    console.log("Nueva carpeta creada:", newFolder);
-    Alert.alert(
-      "¡Carpeta creada!",
-      `La carpeta "${folderName}" se ha creado exitosamente (mock)`,
-      [
-        {
-          text: "OK",
-          onPress: () => router.back(),
-        },
-      ]
-    );
-  };
+  const {
+    folderName,
+    folderIcon,
+    folderColor,
+    setFolderName,
+    setFolderIcon,
+    setFolderColor,
+    handleSaveFolder,
+  } = useFormFolder({ isEditMode });
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       {/* Header */}
       <View
         style={{
-          flexDirection: "row",
-          alignItems: "center",
+          flexDirection: 'row',
+          alignItems: 'center',
           paddingHorizontal: 20,
           paddingVertical: 16,
           borderBottomWidth: 1,
@@ -63,18 +45,16 @@ export const CreateFolderFeature = () => {
           size="sm"
           onPress={() => router.back()}
           icon={<ArrowLeft size={20} color={colors.text} />}
-        >
-          {""}
-        </Button>
+        />
 
         <View style={{ flex: 1, paddingHorizontal: 16 }}>
           <Typography variant="h5" weight="semibold">
-            Nueva Carpeta
+            {isEditMode ? 'Editar Carpeta' : 'Nueva Carpeta'}
           </Typography>
         </View>
 
         <Button variant="primary" size="sm" onPress={handleSaveFolder}>
-          Crear
+          {isEditMode ? 'Guardar' : 'Crear'}
         </Button>
       </View>
 
@@ -104,15 +84,15 @@ export const CreateFolderFeature = () => {
           </Typography>
 
           <Card variant="outlined" padding="md">
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <View
                 style={{
                   width: 48,
                   height: 48,
                   borderRadius: 12,
-                  backgroundColor: folderColor + "20",
-                  alignItems: "center",
-                  justifyContent: "center",
+                  backgroundColor: folderColor + '20',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   marginRight: 12,
                 }}
               >
@@ -125,7 +105,7 @@ export const CreateFolderFeature = () => {
                   weight="semibold"
                   style={{ marginBottom: 2 }}
                 >
-                  {folderName || "Nombre de la carpeta"}
+                  {folderName || 'Nombre de la carpeta'}
                 </Typography>
                 <Typography variant="body2" color="textMuted">
                   0 rutinas

@@ -14,9 +14,9 @@ export type ISet = {
   setNumber: number;
   weight?: string;
   reps?: string;
+  rpe?: number; // Rate of Perceived Exertion (1-10)
   type: ISetType;
   completed: boolean;
-  notes?: string;
   repsType: IRepsType;
   repsValue?: string;
   repsRange?: { min: string; max: string };
@@ -68,4 +68,5 @@ export type IFolder = {
   color: string;
   icon: string;
   createdAt: string;
+  updatedAt: string;
 };

@@ -3,22 +3,20 @@ import { MoveRoutineModal } from './move-routine-modal';
 import { RoutinesHeader } from './routines-header';
 import { ScreenWrapper } from '@/components/ui/screen-wrapper';
 import { FoldersBody } from './folders-body';
-import { RoutinesBody } from './routines-body';
 import { EmptyState } from './empty-state';
 import { useHandleRoutines } from './hook';
+import { DraggableList } from './draggable-list';
 
 export const RoutinesFeature = () => {
   const {
     routines,
     folders,
     reorderFolders,
-    refreshing,
     selectedFolder,
     moveRoutineModalVisible,
     selectedRoutineForMove,
-    onRefresh,
     handleCreateRoutine,
-    handleEditRoutine,
+    handleEditFolder,
     handleDeleteRoutine,
     handleCreateFolder,
     setSelectedFolder,
@@ -26,12 +24,15 @@ export const RoutinesFeature = () => {
     handleMoveRoutine,
     setMoveRoutineModalVisible,
     setSelectedRoutineForMove,
+    getRoutinesFiltered,
   } = useHandleRoutines();
+
+  const filteredRoutines = getRoutinesFiltered();
 
   return (
     <ScreenWrapper>
       <RoutinesHeader
-        filteredRoutines={[]}
+        filteredRoutines={filteredRoutines}
         folders={folders}
         routines={routines}
         selectedFolder={selectedFolder}
@@ -40,34 +41,28 @@ export const RoutinesFeature = () => {
       {selectedFolder ? (
         <FoldersBody
           setSelectedFolder={setSelectedFolder}
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          filteredRoutines={[]}
-          onEditRoutine={handleEditRoutine}
+          filteredRoutines={filteredRoutines}
+          onEditRoutine={() => {}}
           onDeleteRoutine={handleDeleteRoutine}
           onLongPressRoutine={handleRoutineLongPress}
+          onEditFolder={handleEditFolder}
         />
       ) : (
-        <RoutinesBody
-          refreshing={refreshing}
-          onRefresh={onRefresh}
+        <DraggableList
           folders={folders}
+          onReorder={reorderFolders}
+          filteredRoutines={filteredRoutines}
           routines={routines}
-          filteredRoutines={[]}
-          reorderFolders={reorderFolders}
-          handleCreateFolder={handleCreateFolder}
-          handleDeleteRoutine={handleDeleteRoutine}
-          handleEditRoutine={handleEditRoutine}
-          handleStartWorkout={() => {}}
-          handleRoutineLongPress={handleRoutineLongPress}
+          onCreateFolder={handleCreateFolder}
+          onEditRoutine={() => {}}
+          onDeleteRoutine={handleDeleteRoutine}
+          onLongPressRoutine={handleRoutineLongPress}
           setSelectedFolder={setSelectedFolder}
         />
       )}
 
       {routines.length === 0 && folders.length === 0 && (
         <EmptyState
-          refreshing={refreshing}
-          onRefresh={onRefresh}
           handleCreateRoutine={handleCreateRoutine}
           handleCreateFolder={handleCreateFolder}
         />

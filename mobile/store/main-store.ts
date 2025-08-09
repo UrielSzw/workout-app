@@ -6,6 +6,10 @@ type MainStore = {
   routines: IRoutine[];
   folders: IFolder[];
 
+  // Edit
+  folderToEdit: IFolder | null;
+  setFolderToEdit: (folder: IFolder | null) => void;
+
   // UI State
   isLoading: boolean;
 
@@ -38,6 +42,11 @@ const STORAGE_KEYS = {
 export const mainStore = create<MainStore>((set, get) => ({
   routines: [],
   folders: [],
+
+  // Edit
+  folderToEdit: null,
+  setFolderToEdit: (folder) => set({ folderToEdit: folder }),
+
   isLoading: false,
 
   // Routines
@@ -124,7 +133,7 @@ export const mainStore = create<MainStore>((set, get) => ({
 
       const routines = routinesData ? JSON.parse(routinesData) : [];
       const folders = foldersData ? JSON.parse(foldersData) : [];
-
+      console.log('Loaded folders:', folders);
       set({
         routines,
         folders,
