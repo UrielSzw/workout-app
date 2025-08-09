@@ -53,7 +53,7 @@ export const FolderInfoForm: React.FC<FolderInfoFormProps> = ({
   onIconChange,
   onColorChange,
 }) => {
-  const { colors } = useColorScheme();
+  const { colors, isDarkMode } = useColorScheme();
 
   return (
     <View>
@@ -118,7 +118,11 @@ export const FolderInfoForm: React.FC<FolderInfoFormProps> = ({
                 height: 48,
                 borderRadius: 12,
                 backgroundColor:
-                  folderIcon === icon ? folderColor + '30' : colors.gray[100],
+                  folderIcon === icon
+                    ? folderColor + '30'
+                    : isDarkMode
+                      ? colors.gray[600]
+                      : colors.gray[100],
                 borderWidth: folderIcon === icon ? 2 : 1,
                 borderColor: folderIcon === icon ? folderColor : colors.border,
                 alignItems: 'center',
