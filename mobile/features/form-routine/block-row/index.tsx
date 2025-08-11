@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { Card } from '@/components/ui';
-import { IBlock, ISetType } from '@/types/routine';
+import { IBlock, IRepsType, ISetType } from '@/types/routine';
 import { useBlockRow } from './hook';
 import { BlockHeader } from './block-header';
 import { BlockOptions } from './block-options';
@@ -23,10 +23,9 @@ type Props = {
     currentRestTime: number,
     type: 'between-rounds' | 'between-exercises',
   ) => void;
-  globalRepsType: 'reps' | 'range' | 'time' | 'distance';
-  onChangeGlobalRepsType: () => void;
   onLongPressReorder?: () => void;
   onLongPressReorderExercises?: (block: IBlock) => void;
+  onShowRepsTypeBottomSheet: (exerciseId: string, current: IRepsType) => void;
 };
 
 export const BlockRow: React.FC<Props> = ({
@@ -37,10 +36,9 @@ export const BlockRow: React.FC<Props> = ({
   onUpdateBlock,
   onShowSetTypeBottomSheet,
   onShowRestTimeBottomSheet,
-  globalRepsType,
-  onChangeGlobalRepsType,
   onLongPressReorder,
   onLongPressReorderExercises,
+  onShowRepsTypeBottomSheet,
 }) => {
   const {
     isExpanded,
@@ -62,7 +60,6 @@ export const BlockRow: React.FC<Props> = ({
     setShowMenu,
   } = useBlockRow({
     block,
-    globalRepsType,
     onUpdateBlock,
     onDeleteBlock,
     onLongPressReorderExercises,
@@ -131,10 +128,10 @@ export const BlockRow: React.FC<Props> = ({
                 getRepsColumnTitle={getRepsColumnTitle}
                 onShowSetTypeBottomSheet={onShowSetTypeBottomSheet}
                 block={block}
-                onChangeGlobalRepsType={onChangeGlobalRepsType}
                 onUpdateSet={updateSet}
                 onLongPressExercise={handleLongPressExercise}
                 onLongPressReorderExercises={onLongPressReorderExercises}
+                onShowRepsTypeBottomSheet={onShowRepsTypeBottomSheet}
               />
             ))}
           </View>

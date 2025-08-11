@@ -1,6 +1,6 @@
 import { Typography } from '@/components/ui';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { ISet, ISetType } from '@/types/routine';
+import { IRepsType, ISet, ISetType } from '@/types/routine';
 import { ChevronDown, Plus } from 'lucide-react-native';
 import { TouchableOpacity, View } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
@@ -12,8 +12,7 @@ type Props = {
     border: string;
   };
   exerciseInBlock: any;
-  onChangeGlobalRepsType: () => void;
-  getRepsColumnTitle: () => string;
+  getRepsColumnTitle: (repsType: IRepsType) => string;
   getSetTypeColor: (type: string) => string;
   getSetTypeLabel: (type: string) => string;
   onShowSetTypeBottomSheet: (
@@ -27,20 +26,23 @@ type Props = {
     updatedData: Partial<any>,
   ) => void;
   onAddSetToExercise: (exerciseId: string) => void;
+  onShowRepsTypeBottomSheet: (exerciseId: string, current: IRepsType) => void;
 };
 
 export const SetsTable: React.FC<Props> = ({
   blockColors,
   exerciseInBlock,
-  onChangeGlobalRepsType,
   getRepsColumnTitle,
   getSetTypeColor,
   getSetTypeLabel,
   onShowSetTypeBottomSheet,
   onUpdateSet,
   onAddSetToExercise,
+  onShowRepsTypeBottomSheet,
 }) => {
   const { colors } = useColorScheme();
+
+  const repsType = exerciseInBlock.sets[0]?.repsType || 'reps';
 
   return (
     <View style={{ marginTop: 12 }}>
@@ -67,7 +69,9 @@ export const SetsTable: React.FC<Props> = ({
         </View>
         <View style={{ flex: 1, paddingHorizontal: 8 }}>
           <TouchableOpacity
-            onPress={onChangeGlobalRepsType}
+            onPress={() =>
+              onShowRepsTypeBottomSheet(exerciseInBlock.id, repsType)
+            }
             style={{
               flexDirection: 'row',
               alignItems: 'center',
@@ -75,7 +79,7 @@ export const SetsTable: React.FC<Props> = ({
             }}
           >
             <Typography variant="caption" weight="medium" color="textMuted">
-              {getRepsColumnTitle()}
+              {getRepsColumnTitle(repsType)}
             </Typography>
             <ChevronDown size={12} color={colors.textMuted} />
           </TouchableOpacity>

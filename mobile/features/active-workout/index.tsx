@@ -50,8 +50,6 @@ export const ActiveWorkoutFeature = () => {
             key={blockData.id}
             block={blockData}
             index={index}
-            onDeleteBlock={() => {}}
-            onConvertToIndividual={() => {}}
             onUpdateBlock={() => {}}
             onShowSetTypeBottomSheet={() => {}}
             onShowRestTimeBottomSheet={() => {}}

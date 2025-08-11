@@ -1,7 +1,7 @@
 import { TouchableOpacity } from 'react-native';
 import { ExerciseHeader } from './exercise-header';
 import { SetsTable } from './sets-table';
-import { ISetType } from '@/types/routine';
+import { IRepsType, ISetType } from '@/types/routine';
 
 type Props = {
   block: any;
@@ -11,7 +11,6 @@ type Props = {
     light: string;
     border: string;
   };
-  onChangeGlobalRepsType: () => void;
   onShowSetTypeBottomSheet: (
     setId: string,
     exerciseId: string,
@@ -24,17 +23,17 @@ type Props = {
   ) => void;
   onLongPressExercise?: () => void;
   onLongPressReorderExercises?: (block: any) => void;
-  getRepsColumnTitle: () => string;
+  getRepsColumnTitle: (repsType: IRepsType) => string;
   getSetTypeColor: (type: string) => string;
   getSetTypeLabel: (type: string) => string;
   onAddSetToExercise: (exerciseId: string) => void;
+  onShowRepsTypeBottomSheet: (exerciseId: string, current: IRepsType) => void;
 };
 
 export const ExerciseDetails: React.FC<Props> = ({
   block,
   exerciseInBlock,
   blockColors,
-  onChangeGlobalRepsType,
   onShowSetTypeBottomSheet,
   onUpdateSet,
   onLongPressExercise,
@@ -43,6 +42,7 @@ export const ExerciseDetails: React.FC<Props> = ({
   getSetTypeColor,
   getSetTypeLabel,
   onAddSetToExercise,
+  onShowRepsTypeBottomSheet,
 }) => {
   return (
     <TouchableOpacity
@@ -61,13 +61,13 @@ export const ExerciseDetails: React.FC<Props> = ({
       <SetsTable
         blockColors={blockColors}
         exerciseInBlock={exerciseInBlock}
-        onChangeGlobalRepsType={onChangeGlobalRepsType}
         getRepsColumnTitle={getRepsColumnTitle}
         getSetTypeColor={getSetTypeColor}
         getSetTypeLabel={getSetTypeLabel}
         onShowSetTypeBottomSheet={onShowSetTypeBottomSheet}
         onUpdateSet={onUpdateSet}
         onAddSetToExercise={onAddSetToExercise}
+        onShowRepsTypeBottomSheet={onShowRepsTypeBottomSheet}
       />
     </TouchableOpacity>
   );

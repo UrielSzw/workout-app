@@ -3,6 +3,7 @@ import { mainStore } from '@/store/main-store';
 import {
   IBlock,
   IExercise,
+  IExerciseInBlock,
   IRepsType,
   IRoutine,
   ISet,
@@ -25,8 +26,8 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
 
   // Routine information state
   const [routineName, setRoutineName] = useState('');
-  const [globalRepsType, setGlobalRepsType] = useState<IRepsType>('reps');
   const [currentSetId, setCurrentSetId] = useState<string | null>(null);
+  const [currentRepsType, setCurrentRepsType] = useState<IRepsType>('reps');
   const [currentExerciseId, setCurrentExerciseId] = useState<string | null>(
     null,
   );
@@ -176,7 +177,7 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
   const handleAddAsIndividual = () => {
     if (selectedExercises.length === 0) return;
 
-    const newBlocks = selectedExercises.map((exercise, i) => ({
+    const newBlocks: IBlock[] = selectedExercises.map((exercise, i) => ({
       id: `block_${Date.now()}_${i}`,
       type: 'individual' as const,
       orderIndex: defaultBlocks.length + i,
@@ -187,7 +188,7 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
           sets: createDefaultSets(),
           orderIndex: 0,
         },
-      ],
+      ] as IExerciseInBlock[],
       restTimeSeconds: 90,
       restBetweenExercisesSeconds: 0,
     }));
@@ -266,7 +267,22 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
 
   // Reps type modal function
   const handleRepsTypeSelect = (repsType: IRepsType) => {
-    setGlobalRepsType(repsType);
+    if (currentExerciseId) {
+      const updatedBlocks = defaultBlocks.map((block) => ({
+        ...block,
+        exercises: block.exercises.map((ex) => {
+          if (ex.id === currentExerciseId) {
+            return {
+              ...ex,
+              sets: ex.sets.map((set) => ({ ...set, repsType })),
+            };
+          }
+          return ex;
+        }),
+      }));
+
+      setBlocks(updatedBlocks);
+    }
   };
 
   // Rest time modal function
@@ -301,8 +317,6 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
     blocks: defaultBlocks,
     setBlocks,
     handleSaveRoutine,
-    globalRepsType,
-    setGlobalRepsType,
     handleDeleteBlock,
     handleConvertToIndividual,
     handleUpdateBlock,
@@ -327,5 +341,7 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
     currentSetType,
     setCurrentSetType,
     handleClearRoutine,
+    currentRepsType,
+    setCurrentRepsType,
   };
 };

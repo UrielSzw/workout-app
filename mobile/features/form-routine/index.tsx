@@ -27,7 +27,6 @@ export const FormRoutineFeature = ({ isEditMode }: Props) => {
     routineName,
     setRoutineName,
     handleSaveRoutine,
-    globalRepsType,
     handleDeleteBlock,
     handleConvertToIndividual,
     handleUpdateBlock,
@@ -52,6 +51,8 @@ export const FormRoutineFeature = ({ isEditMode }: Props) => {
     currentSetType,
     setCurrentSetType,
     handleClearRoutine,
+    currentRepsType,
+    setCurrentRepsType,
   } = useFormRoutine({ isEditMode });
 
   // Bottom sheet refs
@@ -70,7 +71,12 @@ export const FormRoutineFeature = ({ isEditMode }: Props) => {
     setTypeBottomSheetRef.current?.present();
   };
 
-  const handleChangeGlobalRepsType = () => {
+  const handleShowRepsTypeBottomSheet = (
+    exerciseId: string,
+    current: IRepsType,
+  ) => {
+    setCurrentExerciseId(exerciseId);
+    setCurrentRepsType(current);
     repsTypeBottomSheetRef.current?.present();
   };
 
@@ -106,6 +112,8 @@ export const FormRoutineFeature = ({ isEditMode }: Props) => {
     restTimeBottomSheetRef.current?.dismiss();
   };
 
+  console.log('currentRepsType', currentRepsType);
+
   return (
     <BottomSheetModalProvider>
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
@@ -132,8 +140,7 @@ export const FormRoutineFeature = ({ isEditMode }: Props) => {
               onConvertToIndividual={handleConvertToIndividual}
               onUpdateBlock={handleUpdateBlock}
               setExerciseSelectorVisible={setExerciseSelectorVisible}
-              globalRepsType={globalRepsType}
-              onChangeGlobalRepsType={handleChangeGlobalRepsType}
+              onShowRepsTypeBottomSheet={handleShowRepsTypeBottomSheet}
               onShowSetTypeBottomSheet={handleShowSetTypeBottomSheet}
               onShowBlockRestTimeBottomSheet={
                 handleShowBlockRestTimeBottomSheet
@@ -164,7 +171,7 @@ export const FormRoutineFeature = ({ isEditMode }: Props) => {
 
         <RepsTypeBottomSheet
           ref={repsTypeBottomSheetRef}
-          currentRepsType={globalRepsType}
+          currentRepsType={currentRepsType}
           onSelectRepsType={handleRepsTypeSelectMethod}
         />
 

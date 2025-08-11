@@ -1,5 +1,5 @@
 import { Typography } from '@/components/ui';
-import { IBlock, IExerciseInBlock, ISetType } from '@/types/routine';
+import { IBlock, IExerciseInBlock, IRepsType, ISetType } from '@/types/routine';
 import { Timer } from 'lucide-react-native';
 import { View } from 'react-native';
 import { BlockLine } from './block-line';
@@ -14,7 +14,6 @@ type Props = {
     border: string;
   };
   exerciseIndex: number;
-  onChangeGlobalRepsType: () => void;
   onShowSetTypeBottomSheet: (
     setId: string,
     exerciseId: string,
@@ -27,11 +26,12 @@ type Props = {
   ) => void;
   onLongPressExercise?: () => void;
   onLongPressReorderExercises?: (block: IBlock) => void;
-  getRepsColumnTitle: () => string;
+  getRepsColumnTitle: (repsType: IRepsType) => string;
   getSetTypeColor: (type: string) => string;
   getSetTypeLabel: (type: string) => string;
   onAddSetToExercise: (exerciseId: string) => void;
   formatRestTime: (seconds: number) => string;
+  onShowRepsTypeBottomSheet: (exerciseId: string, current: IRepsType) => void;
 };
 
 export const BlockExercise: React.FC<Props> = ({
@@ -39,7 +39,6 @@ export const BlockExercise: React.FC<Props> = ({
   block,
   blockColors,
   exerciseIndex,
-  onChangeGlobalRepsType,
   onShowSetTypeBottomSheet,
   onUpdateSet,
   onLongPressExercise,
@@ -49,6 +48,7 @@ export const BlockExercise: React.FC<Props> = ({
   getSetTypeLabel,
   onAddSetToExercise,
   formatRestTime,
+  onShowRepsTypeBottomSheet,
 }) => {
   return (
     <View key={exerciseInBlock.id} style={{ position: 'relative' }}>
@@ -73,7 +73,6 @@ export const BlockExercise: React.FC<Props> = ({
             block={block}
             exerciseInBlock={exerciseInBlock}
             blockColors={blockColors}
-            onChangeGlobalRepsType={onChangeGlobalRepsType}
             onShowSetTypeBottomSheet={onShowSetTypeBottomSheet}
             onUpdateSet={onUpdateSet}
             onLongPressExercise={onLongPressExercise}
@@ -82,6 +81,7 @@ export const BlockExercise: React.FC<Props> = ({
             getSetTypeColor={getSetTypeColor}
             getSetTypeLabel={getSetTypeLabel}
             onAddSetToExercise={onAddSetToExercise}
+            onShowRepsTypeBottomSheet={onShowRepsTypeBottomSheet}
           />
         </View>
       </View>

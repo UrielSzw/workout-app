@@ -13,7 +13,6 @@ type Props = {
   onDeleteBlock: (blockId: string) => void;
   onConvertToIndividual: (blockId: string) => void;
   onUpdateBlock: (blockId: string, updatedData: Partial<IBlock>) => void;
-  globalRepsType: IRepsType;
   onShowSetTypeBottomSheet: (
     setId: string,
     exerciseId: string,
@@ -24,7 +23,7 @@ type Props = {
     currentRestTime: number,
     type: 'between-rounds' | 'between-exercises',
   ) => void;
-  onChangeGlobalRepsType: () => void;
+  onShowRepsTypeBottomSheet: (exerciseId: string, current: IRepsType) => void;
   onReorderBlocks: () => void;
   onReorderExercises: (block: IBlock) => void;
 };
@@ -35,12 +34,11 @@ export const ExerciseList: React.FC<Props> = ({
   onDeleteBlock,
   onConvertToIndividual,
   onUpdateBlock,
-  globalRepsType,
-  onChangeGlobalRepsType,
   onShowSetTypeBottomSheet,
   onShowBlockRestTimeBottomSheet,
   onReorderBlocks,
   onReorderExercises,
+  onShowRepsTypeBottomSheet,
 }) => {
   return (
     <View style={{ marginBottom: 24 }}>
@@ -65,10 +63,9 @@ export const ExerciseList: React.FC<Props> = ({
               onUpdateBlock={onUpdateBlock}
               onShowSetTypeBottomSheet={onShowSetTypeBottomSheet}
               onShowRestTimeBottomSheet={onShowBlockRestTimeBottomSheet}
-              globalRepsType={globalRepsType}
-              onChangeGlobalRepsType={onChangeGlobalRepsType}
               onLongPressReorder={onReorderBlocks}
               onLongPressReorderExercises={onReorderExercises}
+              onShowRepsTypeBottomSheet={onShowRepsTypeBottomSheet}
             />
           ))}
 

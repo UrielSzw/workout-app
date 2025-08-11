@@ -1,12 +1,11 @@
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { IBlock, ISet } from '@/types/routine';
+import { IBlock, IRepsType, ISet } from '@/types/routine';
 import { Link2, RotateCcw } from 'lucide-react-native';
 import { useState } from 'react';
 import { Vibration } from 'react-native';
 
 type Params = {
   block: IBlock;
-  globalRepsType: string;
   onUpdateBlock: (blockId: string, updatedData: Partial<IBlock>) => void;
   onDeleteBlock: (blockId: string) => void;
   onLongPressReorderExercises?: (block: IBlock) => void;
@@ -16,7 +15,6 @@ type Params = {
 
 export const useBlockRow = ({
   block,
-  globalRepsType,
   onUpdateBlock,
   onDeleteBlock,
   onLongPressReorderExercises,
@@ -114,8 +112,8 @@ export const useBlockRow = ({
     }
   };
 
-  const getRepsColumnTitle = () => {
-    switch (globalRepsType) {
+  const getRepsColumnTitle = (repsType: IRepsType) => {
+    switch (repsType) {
       case 'reps':
         return 'REPS';
       case 'range':
