@@ -2,7 +2,6 @@ import { Typography } from '@/components/ui';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { IBlock } from '@/types/routine';
 import { Timer } from 'lucide-react-native';
-import { Dispatch, SetStateAction } from 'react';
 import { TouchableOpacity, View } from 'react-native';
 
 type Props = {
@@ -14,17 +13,8 @@ type Props = {
     light: string;
     border: string;
   };
-  setIsExpanded: Dispatch<SetStateAction<boolean>>;
-  isExpanded: boolean;
-  setShowMenu: Dispatch<SetStateAction<boolean>>;
   formatRestTime: (seconds: number) => string;
-  onShowRestTimeBottomSheet: (
-    blockId: string,
-    currentRestTime: number,
-    type: 'between-rounds' | 'between-exercises',
-  ) => void;
   index: number;
-  showMenu: boolean;
 };
 
 export const BlockHeader: React.FC<Props> = ({
@@ -32,13 +22,8 @@ export const BlockHeader: React.FC<Props> = ({
   getBlockTypeIcon,
   getBlockTypeLabel,
   blockColors,
-  setIsExpanded,
-  isExpanded,
-  setShowMenu,
   formatRestTime,
-  onShowRestTimeBottomSheet,
   index,
-  showMenu,
 }) => {
   const { colors } = useColorScheme();
 
@@ -102,13 +87,13 @@ export const BlockHeader: React.FC<Props> = ({
             <>
               {/* Rest Between Exercises */}
               <TouchableOpacity
-                onPress={() =>
-                  onShowRestTimeBottomSheet(
-                    block.id,
-                    block.restBetweenExercisesSeconds,
-                    'between-exercises',
-                  )
-                }
+                // onPress={() =>
+                //   onShowRestTimeBottomSheet(
+                //     block.id,
+                //     block.restBetweenExercisesSeconds,
+                //     'between-exercises',
+                //   )
+                // }
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -136,13 +121,13 @@ export const BlockHeader: React.FC<Props> = ({
 
               {/* Rest Between Rounds */}
               <TouchableOpacity
-                onPress={() =>
-                  onShowRestTimeBottomSheet(
-                    block.id,
-                    block.restTimeSeconds,
-                    'between-rounds',
-                  )
-                }
+                // onPress={() =>
+                //   onShowRestTimeBottomSheet(
+                //     block.id,
+                //     block.restTimeSeconds,
+                //     'between-rounds',
+                //   )
+                // }
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -171,13 +156,13 @@ export const BlockHeader: React.FC<Props> = ({
           ) : (
             // Individual exercises: show 1 button (between sets)
             <TouchableOpacity
-              onPress={() =>
-                onShowRestTimeBottomSheet(
-                  block.id,
-                  block.restTimeSeconds,
-                  'between-rounds',
-                )
-              }
+              // onPress={() =>
+              //   onShowRestTimeBottomSheet(
+              //     block.id,
+              //     block.restTimeSeconds,
+              //     'between-rounds',
+              //   )
+              // }
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',

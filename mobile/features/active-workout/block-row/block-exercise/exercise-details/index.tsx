@@ -1,73 +1,53 @@
 import { TouchableOpacity } from 'react-native';
 import { ExerciseHeader } from './exercise-header';
 import { SetsTable } from './sets-table';
-import { ISetType } from '@/types/routine';
+import { IRepsType, ISetType } from '@/types/routine';
+import { IActiveExerciseInBlock, IActiveSet } from '@/types/active-workout';
 
 type Props = {
-  block: any;
-  exerciseInBlock: any;
+  exerciseInBlock: IActiveExerciseInBlock;
   blockColors: {
     primary: string;
     light: string;
     border: string;
   };
-  onChangeGlobalRepsType: () => void;
-  onShowSetTypeBottomSheet: (
-    setId: string,
-    exerciseId: string,
-    current: ISetType,
-  ) => void;
-  onUpdateSet: (
-    exerciseId: string,
-    setId: string,
-    updatedData: Partial<any>,
-  ) => void;
-  onLongPressExercise?: () => void;
-  onLongPressReorderExercises?: (block: any) => void;
-  getRepsColumnTitle: () => string;
+  getRepsColumnTitle: (repsType: IRepsType) => string;
   getSetTypeColor: (type: string) => string;
   getSetTypeLabel: (type: string) => string;
-  onAddSetToExercise: (exerciseId: string) => void;
+  onCompleteSet: (
+    exerciseId: string,
+    setId: string,
+    completionData: {
+      actualWeight?: string | undefined;
+      actualReps?: string | undefined;
+      actualRpe?: number | undefined;
+    },
+  ) => void;
+  onUncompleteSet: (exerciseId: string, setId: string) => void;
 };
 
 export const ExerciseDetails: React.FC<Props> = ({
-  block,
   exerciseInBlock,
   blockColors,
-  onChangeGlobalRepsType,
-  onShowSetTypeBottomSheet,
-  onUpdateSet,
-  onLongPressExercise,
-  onLongPressReorderExercises,
   getRepsColumnTitle,
   getSetTypeColor,
   getSetTypeLabel,
-  onAddSetToExercise,
+  onCompleteSet,
+  onUncompleteSet,
 }) => {
   return (
-    <TouchableOpacity
-      style={{ flex: 1 }}
-      onLongPress={block.exercises.length > 1 ? onLongPressExercise : undefined}
-      delayLongPress={500}
-      activeOpacity={block.exercises.length > 1 ? 0.8 : 1}
-    >
-      <ExerciseHeader
-        block={block}
-        exerciseInBlock={exerciseInBlock}
-        onLongPressReorderExercises={onLongPressReorderExercises}
-      />
+    <TouchableOpacity style={{ flex: 1 }}>
+      <ExerciseHeader exerciseInBlock={exerciseInBlock} />
 
       {/* Sets Table */}
       <SetsTable
         blockColors={blockColors}
         exerciseInBlock={exerciseInBlock}
-        onChangeGlobalRepsType={onChangeGlobalRepsType}
         getRepsColumnTitle={getRepsColumnTitle}
         getSetTypeColor={getSetTypeColor}
         getSetTypeLabel={getSetTypeLabel}
-        onShowSetTypeBottomSheet={onShowSetTypeBottomSheet}
-        onUpdateSet={onUpdateSet}
-        onAddSetToExercise={onAddSetToExercise}
+        onCompleteSet={onCompleteSet}
+        onUncompleteSet={onUncompleteSet}
       />
     </TouchableOpacity>
   );

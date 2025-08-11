@@ -1,37 +1,33 @@
 import { Typography } from '@/components/ui';
-import { IBlock, IExerciseInBlock, ISetType } from '@/types/routine';
+import { IRepsType, ISetType } from '@/types/routine';
 import { Timer } from 'lucide-react-native';
 import { View } from 'react-native';
-import { BlockLine } from './block-line';
 import { ExerciseDetails } from './exercise-details';
+import { IActiveBlock, IActiveExerciseInBlock } from '@/types/active-workout';
 
 type Props = {
-  exerciseInBlock: IExerciseInBlock;
-  block: IBlock;
+  exerciseInBlock: IActiveExerciseInBlock;
+  block: IActiveBlock;
   blockColors: {
     primary: string;
     light: string;
     border: string;
   };
   exerciseIndex: number;
-  onChangeGlobalRepsType: () => void;
-  onShowSetTypeBottomSheet: (
-    setId: string,
-    exerciseId: string,
-    current: ISetType,
-  ) => void;
-  onUpdateSet: (
-    exerciseId: string,
-    setId: string,
-    updatedData: Partial<IExerciseInBlock['sets'][0]>,
-  ) => void;
-  onLongPressExercise?: () => void;
-  onLongPressReorderExercises?: (block: IBlock) => void;
-  getRepsColumnTitle: () => string;
+  getRepsColumnTitle: (repsType: IRepsType) => string;
   getSetTypeColor: (type: string) => string;
   getSetTypeLabel: (type: string) => string;
-  onAddSetToExercise: (exerciseId: string) => void;
   formatRestTime: (seconds: number) => string;
+  onCompleteSet: (
+    exerciseId: string,
+    setId: string,
+    completionData: {
+      actualWeight?: string | undefined;
+      actualReps?: string | undefined;
+      actualRpe?: number | undefined;
+    },
+  ) => void;
+  onUncompleteSet: (exerciseId: string, setId: string) => void;
 };
 
 export const BlockExercise: React.FC<Props> = ({
@@ -39,16 +35,12 @@ export const BlockExercise: React.FC<Props> = ({
   block,
   blockColors,
   exerciseIndex,
-  onChangeGlobalRepsType,
-  onShowSetTypeBottomSheet,
-  onUpdateSet,
-  onLongPressExercise,
-  onLongPressReorderExercises,
   getRepsColumnTitle,
   getSetTypeColor,
   getSetTypeLabel,
-  onAddSetToExercise,
   formatRestTime,
+  onCompleteSet,
+  onUncompleteSet,
 }) => {
   return (
     <View key={exerciseInBlock.id} style={{ position: 'relative' }}>
@@ -63,18 +55,13 @@ export const BlockExercise: React.FC<Props> = ({
         >
           {/* Exercise Details */}
           <ExerciseDetails
-            block={block}
             exerciseInBlock={exerciseInBlock}
             blockColors={blockColors}
-            onChangeGlobalRepsType={onChangeGlobalRepsType}
-            onShowSetTypeBottomSheet={onShowSetTypeBottomSheet}
-            onUpdateSet={onUpdateSet}
-            onLongPressExercise={onLongPressExercise}
-            onLongPressReorderExercises={onLongPressReorderExercises}
             getRepsColumnTitle={getRepsColumnTitle}
             getSetTypeColor={getSetTypeColor}
             getSetTypeLabel={getSetTypeLabel}
-            onAddSetToExercise={onAddSetToExercise}
+            onCompleteSet={onCompleteSet}
+            onUncompleteSet={onUncompleteSet}
           />
         </View>
       </View>

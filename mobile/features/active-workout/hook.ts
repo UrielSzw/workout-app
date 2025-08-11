@@ -14,11 +14,8 @@ export const useActiveWorkout = () => {
   const {
     activeWorkout,
     isWorkoutActive,
-    isPaused,
     isLoading,
     startWorkout,
-    pauseWorkout,
-    resumeWorkout,
     finishWorkout,
     cancelWorkout,
     completeSet,
@@ -33,11 +30,11 @@ export const useActiveWorkout = () => {
   } = activeWorkoutStore();
 
   // UI State
-  const [elapsedTime, setElapsedTime] = useState(0);
   const [restTimer, setRestTimer] = useState<{
     timeRemaining: number;
     totalTime: number;
     isActive: boolean;
+    startedAt: number; // timestamp para identificar timer único
   } | null>(null);
 
   // Bottom sheet refs
@@ -57,51 +54,6 @@ export const useActiveWorkout = () => {
   // Exercise selector state
   const [exerciseSelectorVisible, setExerciseSelectorVisible] = useState(false);
 
-  // Timer effect for elapsed time
-  useEffect(() => {
-    let interval: ReturnType<typeof setInterval>;
-
-    if (activeWorkout && isWorkoutActive && !isPaused) {
-      interval = setInterval(() => {
-        const now = Date.now();
-        const started = new Date(activeWorkout.startedAt).getTime();
-        const elapsed =
-          Math.floor((now - started) / 1000) -
-          activeWorkout.totalPauseTimeSeconds;
-        setElapsedTime(Math.max(0, elapsed));
-      }, 1000);
-    }
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [activeWorkout, isWorkoutActive, isPaused]);
-
-  // Rest timer effect
-  useEffect(() => {
-    let interval: ReturnType<typeof setInterval>;
-
-    if (restTimer?.isActive && restTimer.timeRemaining > 0) {
-      interval = setInterval(() => {
-        setRestTimer((prev) => {
-          if (!prev || prev.timeRemaining <= 1) {
-            // Rest completed
-            restTimerSheetRef.current?.dismiss();
-            return null;
-          }
-          return {
-            ...prev,
-            timeRemaining: prev.timeRemaining - 1,
-          };
-        });
-      }, 1000);
-    }
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [restTimer?.isActive, restTimer?.timeRemaining]);
-
   // Load active workout on mount
   useEffect(() => {
     loadFromStorage();
@@ -116,16 +68,8 @@ export const useActiveWorkout = () => {
     }
   };
 
-  // Workout controls
-  const handlePauseWorkout = () => {
-    pauseWorkout();
-  };
-
-  const handleResumeWorkout = () => {
-    resumeWorkout();
-  };
-
-  const handleFinishWorkout = async () => {
+  // Workout contro
+  const handleFinishWorkout = async (elapsedTime: number) => {
     if (!activeWorkout) return;
 
     const completedSets = getWorkoutProgress().completed;
@@ -135,23 +79,19 @@ export const useActiveWorkout = () => {
         '¿Estás seguro de que quieres finalizar sin completar ninguna serie?',
         [
           { text: 'Cancelar', style: 'cancel' },
-          { text: 'Finalizar', onPress: performFinishWorkout },
+          {
+            text: 'Finalizar',
+            onPress: () => performFinishWorkout(elapsedTime),
+          },
         ],
       );
       return;
     }
 
-    Alert.alert(
-      'Finalizar Entrenamiento',
-      `Has completado ${completedSets} series. ¿Quieres finalizar el entrenamiento?`,
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        { text: 'Finalizar', onPress: performFinishWorkout },
-      ],
-    );
+    performFinishWorkout(elapsedTime);
   };
 
-  const performFinishWorkout = async () => {
+  const performFinishWorkout = async (elapsedTime: number) => {
     try {
       const workoutHistory = await finishWorkout();
 
@@ -184,36 +124,16 @@ export const useActiveWorkout = () => {
 
   const handleExitWorkout = () => {
     Alert.alert(
-      'Salir del Entrenamiento',
-      '¿Quieres pausar el entrenamiento? Podrás continuarlo después.',
+      'Confirmar',
+      'Esto eliminará todo el progreso del entrenamiento. ¿Estás seguro?',
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: 'No', style: 'cancel' },
         {
-          text: 'Pausar y Salir',
-          onPress: () => {
-            if (!isPaused) pauseWorkout();
-            router.back();
-          },
-        },
-        {
-          text: 'Cancelar Entrenamiento',
+          text: 'Sí, eliminar',
           style: 'destructive',
           onPress: () => {
-            Alert.alert(
-              'Confirmar',
-              'Esto eliminará todo el progreso del entrenamiento. ¿Estás seguro?',
-              [
-                { text: 'No', style: 'cancel' },
-                {
-                  text: 'Sí, eliminar',
-                  style: 'destructive',
-                  onPress: () => {
-                    cancelWorkout();
-                    router.back();
-                  },
-                },
-              ],
-            );
+            cancelWorkout();
+            router.back();
           },
         },
       ],
@@ -276,7 +196,9 @@ export const useActiveWorkout = () => {
       timeRemaining: seconds,
       totalTime: seconds,
       isActive: true,
+      startedAt: Date.now(), // timestamp único para este timer
     });
+    console.log('SHOW');
     restTimerSheetRef.current?.present();
   };
 
@@ -285,13 +207,12 @@ export const useActiveWorkout = () => {
     restTimerSheetRef.current?.dismiss();
   };
 
-  const adjustRestTimer = (seconds: number) => {
+  const adjustRestTimer = (newTimeSeconds: number) => {
     setRestTimer((prev) => {
       if (!prev) return null;
-      const newTime = Math.max(0, prev.timeRemaining + seconds);
       return {
         ...prev,
-        timeRemaining: newTime,
+        timeRemaining: Math.max(0, newTimeSeconds),
       };
     });
   };
@@ -444,24 +365,11 @@ export const useActiveWorkout = () => {
     };
   };
 
-  const formatTime = (seconds: number): string => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-
-    if (hours > 0) {
-      return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
-    return `${minutes}:${secs.toString().padStart(2, '0')}`;
-  };
-
   return {
     // State
     activeWorkout,
     isWorkoutActive,
-    isPaused,
     isLoading,
-    elapsedTime,
     restTimer,
     exerciseSelectorVisible,
 
@@ -476,8 +384,6 @@ export const useActiveWorkout = () => {
 
     // Workout controls
     handleStartWorkout,
-    handlePauseWorkout,
-    handleResumeWorkout,
     handleFinishWorkout,
     handleExitWorkout,
 
@@ -504,7 +410,6 @@ export const useActiveWorkout = () => {
 
     // Getters
     getWorkoutStats,
-    formatTime,
     getExerciseHistory,
   };
 };

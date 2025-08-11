@@ -1,8 +1,10 @@
-import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, TouchableOpacity, Dimensions } from 'react-native';
 import { Button, Typography } from '@/components/ui';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { X, Timer, Flag } from 'lucide-react-native';
+import { ElapsedTime } from './elapsed-time';
+import { IActiveWorkout } from '@/types/active-workout';
 
 interface WorkoutProgress {
   completed: number;
@@ -11,37 +13,58 @@ interface WorkoutProgress {
   volume: number;
 }
 
-interface ActiveWorkoutHeaderProps {
+type Props = {
   routineName: string;
-  elapsedTime: string;
-  isPaused: boolean;
   progress: WorkoutProgress;
   onExit: () => void;
-}
+  isWorkoutActive: boolean;
+  activeWorkout: IActiveWorkout | null;
+  onFinishWorkout: (elapsedTime: number) => void;
+};
 
-export const ActiveWorkoutHeader: React.FC<ActiveWorkoutHeaderProps> = ({
+const { width } = Dimensions.get('window');
+
+export const ActiveWorkoutHeader: React.FC<Props> = ({
   routineName,
-  elapsedTime,
-  isPaused,
   progress,
   onExit,
+  activeWorkout,
+  onFinishWorkout,
+  isWorkoutActive,
 }) => {
+  const [elapsedTime, setElapsedTime] = useState(0);
+
   const { colors, isDarkMode } = useColorScheme();
+
+  const handleFinishWorkout = () => {
+    onFinishWorkout(elapsedTime);
+  };
 
   return (
     <View
       style={{
         backgroundColor: colors.background,
         paddingHorizontal: 20,
-        paddingVertical: 10,
+        paddingTop: 10,
+        paddingBottom: 14,
         borderBottomWidth: 1,
         borderBottomColor: colors.border,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        // marginBottom: 20,
+        position: 'relative',
       }}
     >
+      <View
+        style={{
+          position: 'absolute',
+          height: 4,
+          width: (width * progress.percentage) / 100,
+          backgroundColor: colors.border,
+          bottom: 0,
+        }}
+      />
+
       {/* Top Navigation - Solo X para salir */}
       <TouchableOpacity
         onPress={onExit}
@@ -71,34 +94,18 @@ export const ActiveWorkoutHeader: React.FC<ActiveWorkoutHeaderProps> = ({
           }}
         >
           <Timer size={14} color={colors.textMuted} />
-          <Typography variant="body2" color="textMuted">
-            {elapsedTime}
-          </Typography>
-          {isPaused && (
-            <View
-              style={{
-                paddingHorizontal: 6,
-                paddingVertical: 1,
-                backgroundColor: colors.warning[100],
-                borderRadius: 4,
-                marginLeft: 8,
-              }}
-            >
-              <Typography
-                variant="caption"
-                style={{ color: colors.warning[700], fontSize: 10 }}
-                weight="medium"
-              >
-                PAUSADO
-              </Typography>
-            </View>
-          )}
+          <ElapsedTime
+            activeWorkout={activeWorkout}
+            isWorkoutActive={isWorkoutActive}
+            elapsedTime={elapsedTime}
+            setElapsedTime={setElapsedTime}
+          />
         </View>
       </View>
 
       {/* Espacio para mantener balance */}
       <View>
-        <Button size="sm">
+        <Button size="sm" onPress={handleFinishWorkout}>
           <Flag size={20} color="#fff" />
         </Button>
       </View>

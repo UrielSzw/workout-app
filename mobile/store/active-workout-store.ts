@@ -15,13 +15,10 @@ type ActiveWorkoutStore = {
   // Estado principal
   activeWorkout: IActiveWorkout | null;
   isWorkoutActive: boolean;
-  isPaused: boolean;
   isLoading: boolean;
 
   // Actions - Workout Lifecycle
   startWorkout: (routine: IRoutine) => Promise<void>;
-  pauseWorkout: () => void;
-  resumeWorkout: () => void;
   finishWorkout: () => Promise<IWorkoutHistory>;
   cancelWorkout: () => void;
 
@@ -164,7 +161,6 @@ const createActiveWorkoutFromRoutine = (routine: IRoutine): IActiveWorkout => {
 export const activeWorkoutStore = create<ActiveWorkoutStore>((set, get) => ({
   activeWorkout: null,
   isWorkoutActive: false,
-  isPaused: false,
   isLoading: false,
 
   startWorkout: async (routine: IRoutine) => {
@@ -172,51 +168,8 @@ export const activeWorkoutStore = create<ActiveWorkoutStore>((set, get) => ({
     set({
       activeWorkout,
       isWorkoutActive: true,
-      isPaused: false,
     });
     await get().saveToStorage();
-  },
-
-  pauseWorkout: () => {
-    const { activeWorkout } = get();
-    if (!activeWorkout) return;
-
-    const now = new Date().toISOString();
-    const updatedWorkout = {
-      ...activeWorkout,
-      pausedAt: now,
-    };
-
-    set({
-      activeWorkout: updatedWorkout,
-      isPaused: true,
-    });
-    get().saveToStorage();
-  },
-
-  resumeWorkout: () => {
-    const { activeWorkout } = get();
-    if (!activeWorkout || !activeWorkout.pausedAt) return;
-
-    const now = new Date();
-    const pausedAt = new Date(activeWorkout.pausedAt);
-    const pauseDuration = Math.floor(
-      (now.getTime() - pausedAt.getTime()) / 1000,
-    );
-
-    const updatedWorkout = {
-      ...activeWorkout,
-      resumedAt: now.toISOString(),
-      pausedAt: undefined,
-      totalPauseTimeSeconds:
-        activeWorkout.totalPauseTimeSeconds + pauseDuration,
-    };
-
-    set({
-      activeWorkout: updatedWorkout,
-      isPaused: false,
-    });
-    get().saveToStorage();
   },
 
   finishWorkout: async () => {
@@ -295,7 +248,6 @@ export const activeWorkoutStore = create<ActiveWorkoutStore>((set, get) => ({
     set({
       activeWorkout: null,
       isWorkoutActive: false,
-      isPaused: false,
     });
     await AsyncStorage.removeItem(STORAGE_KEYS.ACTIVE_WORKOUT);
 
@@ -306,7 +258,6 @@ export const activeWorkoutStore = create<ActiveWorkoutStore>((set, get) => ({
     set({
       activeWorkout: null,
       isWorkoutActive: false,
-      isPaused: false,
     });
     AsyncStorage.removeItem(STORAGE_KEYS.ACTIVE_WORKOUT);
   },
@@ -418,7 +369,7 @@ export const activeWorkoutStore = create<ActiveWorkoutStore>((set, get) => ({
     const completedAt = new Date().toISOString();
     let wasCompleted = false;
 
-    const updatedBlocks = activeWorkout.blocks.map((block) => ({
+    const updatedBlocks: IActiveBlock[] = activeWorkout.blocks.map((block) => ({
       ...block,
       exercises: block.exercises.map((exercise) => {
         if (exercise.id === exerciseId) {
@@ -442,7 +393,7 @@ export const activeWorkoutStore = create<ActiveWorkoutStore>((set, get) => ({
     }));
 
     if (wasCompleted) {
-      const updatedWorkout = {
+      const updatedWorkout: IActiveWorkout = {
         ...activeWorkout,
         blocks: updatedBlocks,
         stats: {
@@ -605,7 +556,6 @@ export const activeWorkoutStore = create<ActiveWorkoutStore>((set, get) => ({
         set({
           activeWorkout,
           isWorkoutActive: true,
-          isPaused: !!activeWorkout.pausedAt,
         });
       }
     } catch (error) {

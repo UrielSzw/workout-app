@@ -1,32 +1,13 @@
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { IBlock, ISet } from '@/types/routine';
+import { IActiveBlock } from '@/types/active-workout';
+import { IRepsType } from '@/types/routine';
 import { Link2, RotateCcw } from 'lucide-react-native';
-import { useState } from 'react';
-import { Vibration } from 'react-native';
-
 type Params = {
-  block: IBlock;
-  globalRepsType: string;
-  onUpdateBlock: (blockId: string, updatedData: Partial<IBlock>) => void;
-  onDeleteBlock: (blockId: string) => void;
-  onLongPressReorderExercises?: (block: IBlock) => void;
-  onLongPressReorder?: () => void;
-  onConvertToIndividual: (blockId: string) => void;
+  block: IActiveBlock;
 };
 
-export const useBlockRow = ({
-  block,
-  globalRepsType,
-  onUpdateBlock,
-  onDeleteBlock,
-  onLongPressReorderExercises,
-  onConvertToIndividual,
-  onLongPressReorder,
-}: Params) => {
+export const useBlockRow = ({ block }: Params) => {
   const { colors } = useColorScheme();
-
-  const [isExpanded, setIsExpanded] = useState(true);
-  const [showMenu, setShowMenu] = useState(false);
 
   // Block styles
   const getBlockColors = () => {
@@ -114,8 +95,8 @@ export const useBlockRow = ({
     }
   };
 
-  const getRepsColumnTitle = () => {
-    switch (globalRepsType) {
+  const getRepsColumnTitle = (repsType: IRepsType) => {
+    switch (repsType) {
       case 'reps':
         return 'REPS';
       case 'range':
@@ -139,84 +120,7 @@ export const useBlockRow = ({
       : `${mins} min`;
   };
 
-  // Inner block functions
-  const addSetToExercise = (exerciseId: string) => {
-    const exercise = block.exercises.find((ex) => ex.id === exerciseId);
-    if (!exercise) return;
-
-    const newSet: ISet = {
-      id: Date.now().toString() + Math.random(),
-      setNumber: exercise.sets.length + 1,
-      weight:
-        exercise.sets.length > 0
-          ? exercise.sets[exercise.sets.length - 1].weight
-          : '',
-      reps:
-        exercise.sets.length > 0
-          ? exercise.sets[exercise.sets.length - 1].reps
-          : '',
-      type: 'normal',
-      completed: false,
-      repsType: 'reps',
-    };
-
-    const updatedExercises = block.exercises.map((ex) =>
-      ex.id === exerciseId ? { ...ex, sets: [...ex.sets, newSet] } : ex,
-    );
-
-    onUpdateBlock(block.id, { exercises: updatedExercises });
-  };
-
-  const updateSet = (
-    exerciseId: string,
-    setId: string,
-    updates: Partial<ISet>,
-  ) => {
-    const updatedExercises = block.exercises.map((ex) =>
-      ex.id === exerciseId
-        ? {
-            ...ex,
-            sets: ex.sets.map((set) =>
-              set.id === setId ? { ...set, ...updates } : set,
-            ),
-          }
-        : ex,
-    );
-
-    onUpdateBlock(block.id, { exercises: updatedExercises });
-  };
-
-  const handleDeleteBlock = () => {
-    setShowMenu(false);
-    // Add confirmation logic here if needed
-    onDeleteBlock(block.id);
-  };
-
-  const handleConvertToIndividual = () => {
-    setShowMenu(false);
-    onConvertToIndividual(block.id);
-  };
-
-  const handleLongPress = () => {
-    if (onLongPressReorder) {
-      Vibration.vibrate(50); // Haptic feedback
-      onLongPressReorder();
-    }
-  };
-
-  const handleLongPressExercise = () => {
-    // Solo permitir reordenamiento si hay más de 1 ejercicio
-    if (onLongPressReorderExercises && block.exercises.length > 1) {
-      Vibration.vibrate(50); // Haptic feedback
-      onLongPressReorderExercises(block);
-    }
-  };
-
   return {
-    isExpanded,
-    setIsExpanded,
-    showMenu,
-    setShowMenu,
     blockColors,
     getBlockTypeLabel,
     getSetTypeLabel,
@@ -224,11 +128,5 @@ export const useBlockRow = ({
     getBlockTypeIcon,
     getRepsColumnTitle,
     formatRestTime,
-    addSetToExercise,
-    updateSet,
-    handleDeleteBlock,
-    handleConvertToIndividual,
-    handleLongPress,
-    handleLongPressExercise,
   };
 };
