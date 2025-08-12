@@ -23,6 +23,7 @@ type Props = {
   onUpdateSet: (
     exerciseId: string,
     setId: string,
+    setIndex: number,
     updatedData: Partial<any>,
   ) => void;
   onAddSetToExercise: (exerciseId: string) => void;
@@ -135,7 +136,7 @@ export const SetsTable: React.FC<Props> = ({
             <TextInput
               value={set.weight}
               onChangeText={(value) =>
-                onUpdateSet(exerciseInBlock.id, set.id, {
+                onUpdateSet(exerciseInBlock.id, set.id, setIndex, {
                   weight: value,
                 })
               }
@@ -160,7 +161,7 @@ export const SetsTable: React.FC<Props> = ({
             <TextInput
               value={set.reps}
               onChangeText={(value) =>
-                onUpdateSet(exerciseInBlock.id, set.id, {
+                onUpdateSet(exerciseInBlock.id, set.id, setIndex, {
                   reps: value,
                 })
               }

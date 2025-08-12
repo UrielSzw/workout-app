@@ -33,6 +33,7 @@ export const RoutinesFeature = () => {
     getRoutinesFiltered,
     setSelectedRoutine,
     handleStartRoutine,
+    handleEditRoutine,
   } = useHandleRoutines();
 
   // Bottom sheet refs
@@ -48,6 +49,11 @@ export const RoutinesFeature = () => {
   const handleDeleteRoutineSheet = () => {
     routineOptionsBottomSheetRef.current?.dismiss();
     handleDeleteRoutine();
+  };
+
+  const handleEditRoutineSheet = () => {
+    routineOptionsBottomSheetRef.current?.dismiss();
+    handleEditRoutine();
   };
 
   return (
@@ -104,6 +110,7 @@ export const RoutinesFeature = () => {
         <RoutineOptionsBottomSheet
           ref={routineOptionsBottomSheetRef}
           onDelete={handleDeleteRoutineSheet}
+          onEdit={handleEditRoutineSheet}
         />
       </ScreenWrapper>
     </BottomSheetModalProvider>

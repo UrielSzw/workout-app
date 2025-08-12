@@ -168,18 +168,61 @@ export const useBlockRow = ({
   const updateSet = (
     exerciseId: string,
     setId: string,
+    setIndex: number,
     updates: Partial<ISet>,
   ) => {
-    const updatedExercises = block.exercises.map((ex) =>
-      ex.id === exerciseId
-        ? {
-            ...ex,
-            sets: ex.sets.map((set) =>
-              set.id === setId ? { ...set, ...updates } : set,
-            ),
+    const exercise = block.exercises.find((ex) => ex.id === exerciseId);
+    if (!exercise) return;
+
+    // Obtener el valor anterior del set que estamos modificando para la comparación
+    const currentSet = exercise.sets[setIndex];
+
+    const updatedExercises = block.exercises.map((ex) => {
+      if (ex.id === exerciseId) {
+        const updatedSets = ex.sets.map((set, index) => {
+          // Actualizar el set actual
+          if (set.id === setId) {
+            return { ...set, ...updates };
           }
-        : ex,
-    );
+
+          // Auto-completar sets siguientes con lógica inteligente
+          if (index > setIndex) {
+            const autoUpdates: Partial<ISet> = {};
+
+            // Verificar cada campo que se está actualizando
+            Object.entries(updates).forEach(([field, value]) => {
+              if (value !== '' && value !== undefined && value !== null) {
+                const currentFieldValue = (set as any)[field];
+                const originalFieldValue = (currentSet as any)[field];
+
+                // Auto-completar solo si:
+                // 1. El campo está vacío, O
+                // 2. El campo actual es exactamente igual al valor anterior del set que estoy modificando
+                //    (esto permite que "1" → "10" funcione correctamente)
+                if (
+                  currentFieldValue === '' ||
+                  currentFieldValue === undefined ||
+                  currentFieldValue === null ||
+                  currentFieldValue === originalFieldValue
+                ) {
+                  (autoUpdates as any)[field] = value;
+                }
+              }
+            });
+
+            // Solo aplicar auto-updates si hay campos para actualizar
+            if (Object.keys(autoUpdates).length > 0) {
+              return { ...set, ...autoUpdates };
+            }
+          }
+
+          return set;
+        });
+
+        return { ...ex, sets: updatedSets };
+      }
+      return ex;
+    });
 
     onUpdateBlock(block.id, { exercises: updatedExercises });
   };

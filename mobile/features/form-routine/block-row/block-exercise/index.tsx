@@ -22,6 +22,7 @@ type Props = {
   onUpdateSet: (
     exerciseId: string,
     setId: string,
+    setIndex: number,
     updatedData: Partial<IExerciseInBlock['sets'][0]>,
   ) => void;
   onLongPressExercise?: () => void;

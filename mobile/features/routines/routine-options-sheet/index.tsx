@@ -7,10 +7,11 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 
 type Props = {
   onDelete: () => void;
+  onEdit: () => void;
 };
 
 export const RoutineOptionsBottomSheet = forwardRef<BottomSheetModal, Props>(
-  ({ onDelete }, ref) => {
+  ({ onDelete, onEdit }, ref) => {
     const { colors } = useColorScheme();
     const insets = useSafeAreaInsets();
 
@@ -22,6 +23,19 @@ export const RoutineOptionsBottomSheet = forwardRef<BottomSheetModal, Props>(
       { type: 'edit', label: 'Editar Rutina' },
       { type: 'duplicate', label: 'Duplicar Rutina' },
     ];
+
+    const handleOptionPress = (type: string) => {
+      switch (type) {
+        case 'edit':
+          onEdit();
+          break;
+        case 'duplicate':
+          console.log('Duplicate routine');
+          break;
+        default:
+          break;
+      }
+    };
 
     return (
       <BottomSheetModal
@@ -54,7 +68,7 @@ export const RoutineOptionsBottomSheet = forwardRef<BottomSheetModal, Props>(
           {routineOptions.map((option) => (
             <TouchableOpacity
               key={option.type}
-              //   onPress={() => onSelectSetType(option.type)}
+              onPress={() => handleOptionPress(option.type)}
               style={{
                 paddingVertical: 16,
                 paddingHorizontal: 16,

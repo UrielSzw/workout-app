@@ -112,8 +112,6 @@ export const FormRoutineFeature = ({ isEditMode }: Props) => {
     restTimeBottomSheetRef.current?.dismiss();
   };
 
-  console.log('currentRepsType', currentRepsType);
-
   return (
     <BottomSheetModalProvider>
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>

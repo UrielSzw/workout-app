@@ -30,6 +30,12 @@ export const useHandleRoutines = () => {
     router.push('/routines/create');
   };
 
+  const handleEditRoutine = () => {
+    if (!selectedRoutine) return;
+
+    router.push(`/routines/edit`);
+  };
+
   const handleEditFolder = () => {
     if (!selectedFolder) return;
 
@@ -108,5 +114,6 @@ export const useHandleRoutines = () => {
     setSelectedRoutine,
     selectedRoutine,
     handleStartRoutine,
+    handleEditRoutine,
   };
 };
