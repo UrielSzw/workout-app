@@ -122,6 +122,7 @@ export const SetsTable: React.FC<Props> = ({
           borderRadius: 4,
           backgroundColor: blockColors.light,
           marginHorizontal: 8,
+          opacity: 0.6,
         }}
       >
         <Plus size={14} color={blockColors.primary} />
