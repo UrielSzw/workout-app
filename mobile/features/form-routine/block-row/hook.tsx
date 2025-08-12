@@ -137,6 +137,22 @@ export const useBlockRow = ({
       : `${mins} min`;
   };
 
+  const formatRepsValue = (set: ISet) => {
+    if (set.repsType === 'range') {
+      const min = set.repsRange?.min || '';
+      const max = set.repsRange?.max || '';
+      if (min && max) {
+        return `${min}-${max}`;
+      } else if (min) {
+        return min;
+      } else if (max) {
+        return max;
+      }
+      return '';
+    }
+    return set.reps || '';
+  };
+
   // Inner block functions
   const addSetToExercise = (exerciseId: string) => {
     const exercise = block.exercises.find((ex) => ex.id === exerciseId);
@@ -227,6 +243,47 @@ export const useBlockRow = ({
     onUpdateBlock(block.id, { exercises: updatedExercises });
   };
 
+  const updateExerciseRepsType = (
+    exerciseId: string,
+    newRepsType: IRepsType,
+  ) => {
+    const updatedExercises = block.exercises.map((ex) => {
+      if (ex.id === exerciseId) {
+        const updatedSets = ex.sets.map((set) => {
+          const updatedSet: ISet = { ...set, repsType: newRepsType };
+
+          // Convertir datos según el nuevo tipo
+          if (newRepsType === 'range') {
+            // Si cambia a rango, convertir reps actual a rango si existe
+            if (set.reps && set.reps !== '') {
+              updatedSet.repsRange = { min: set.reps, max: set.reps };
+            } else {
+              updatedSet.repsRange = { min: '', max: '' };
+            }
+            // Limpiar el campo reps
+            updatedSet.reps = '';
+          } else {
+            // Si cambia de rango a otro tipo, usar el min como reps
+            if (set.repsRange && set.repsRange.min !== '') {
+              updatedSet.reps = set.repsRange.min;
+            } else {
+              updatedSet.reps = '';
+            }
+            // Limpiar el campo repsRange
+            updatedSet.repsRange = undefined;
+          }
+
+          return updatedSet;
+        });
+
+        return { ...ex, sets: updatedSets };
+      }
+      return ex;
+    });
+
+    onUpdateBlock(block.id, { exercises: updatedExercises });
+  };
+
   const handleDeleteBlock = () => {
     setShowMenu(false);
     // Add confirmation logic here if needed
@@ -265,8 +322,10 @@ export const useBlockRow = ({
     getBlockTypeIcon,
     getRepsColumnTitle,
     formatRestTime,
+    formatRepsValue,
     addSetToExercise,
     updateSet,
+    updateExerciseRepsType,
     handleDeleteBlock,
     handleConvertToIndividual,
     handleLongPress,

@@ -1,7 +1,7 @@
 import { TouchableOpacity } from 'react-native';
 import { ExerciseHeader } from './exercise-header';
 import { SetsTable } from './sets-table';
-import { IRepsType, ISetType } from '@/types/routine';
+import { IRepsType, ISet, ISetType } from '@/types/routine';
 
 type Props = {
   block: any;
@@ -20,7 +20,7 @@ type Props = {
     exerciseId: string,
     setId: string,
     setIndex: number,
-    updatedData: Partial<any>,
+    updatedData: Partial<ISet>,
   ) => void;
   onLongPressExercise?: () => void;
   onLongPressReorderExercises?: (block: any) => void;

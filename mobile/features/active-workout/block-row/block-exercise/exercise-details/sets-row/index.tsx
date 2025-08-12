@@ -1,7 +1,6 @@
 import { Typography } from '@/components/ui';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { IActiveExerciseInBlock, IActiveSet } from '@/types/active-workout';
-import { ISetType } from '@/types/routine';
 import { Check } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { TextInput, TouchableOpacity, View } from 'react-native';
@@ -53,9 +52,17 @@ export const SetRow: React.FC<Props> = ({
     } else {
       onCompleteSet(exerciseInBlock.id, setId, {
         actualWeight: setData.weight || set.weight,
-        actualReps: setData.reps || set.reps,
+        actualReps: setData.reps || set?.repsRange?.min || set.reps,
       });
     }
+  };
+
+  const getRepsPlaceholder = () => {
+    if (set.repsType === 'range') {
+      return `${set.repsRange?.min || 0}-${set.repsRange?.max || 0}`;
+    }
+
+    return set.reps;
   };
 
   const renderWeight = setData.weight || set.actualWeight || '';
@@ -143,7 +150,7 @@ export const SetRow: React.FC<Props> = ({
           onChangeText={(value) =>
             setSetData((prev) => ({ ...prev, reps: value }))
           }
-          placeholder={set.reps || '0'}
+          placeholder={getRepsPlaceholder() || '0'}
           keyboardType="numeric"
           placeholderTextColor={colors.textMuted}
           style={{

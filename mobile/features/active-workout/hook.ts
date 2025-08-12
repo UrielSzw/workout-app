@@ -155,7 +155,7 @@ export const useActiveWorkout = () => {
     if (!set) return;
 
     const weight = completionData.actualWeight || set.weight;
-    const reps = completionData.actualReps || set.reps;
+    const reps = completionData.actualReps || set?.repsRange?.min || set.reps;
 
     if (!weight || !reps) {
       Alert.alert('Datos incompletos', 'Por favor ingresa peso y repeticiones');

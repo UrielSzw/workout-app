@@ -158,27 +158,93 @@ export const SetsTable: React.FC<Props> = ({
 
           {/* Reps Input */}
           <View style={{ flex: 1, paddingHorizontal: 8 }}>
-            <TextInput
-              value={set.reps}
-              onChangeText={(value) =>
-                onUpdateSet(exerciseInBlock.id, set.id, setIndex, {
-                  reps: value,
-                })
-              }
-              placeholder="0"
-              keyboardType="numeric"
-              style={{
-                backgroundColor: colors.background,
-                borderWidth: 1,
-                borderColor: colors.border,
-                borderRadius: 4,
-                paddingHorizontal: 8,
-                paddingVertical: 6,
-                textAlign: 'center',
-                color: colors.text,
-                fontSize: 14,
-              }}
-            />
+            {repsType === 'range' ? (
+              // Rango: Dos inputs lado a lado
+              <View
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
+              >
+                <TextInput
+                  value={set.repsRange?.min || ''}
+                  onChangeText={(value) =>
+                    onUpdateSet(exerciseInBlock.id, set.id, setIndex, {
+                      repsRange: {
+                        min: value,
+                        max: set.repsRange?.max || '',
+                      },
+                    })
+                  }
+                  placeholder="0"
+                  keyboardType="numeric"
+                  style={{
+                    flex: 1,
+                    backgroundColor: colors.background,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                    borderRadius: 4,
+                    paddingHorizontal: 6,
+                    paddingVertical: 6,
+                    textAlign: 'center',
+                    color: colors.text,
+                    fontSize: 12,
+                  }}
+                />
+                <Typography
+                  variant="caption"
+                  color="textMuted"
+                  style={{ fontSize: 10 }}
+                >
+                  -
+                </Typography>
+                <TextInput
+                  value={set.repsRange?.max || ''}
+                  onChangeText={(value) =>
+                    onUpdateSet(exerciseInBlock.id, set.id, setIndex, {
+                      repsRange: {
+                        min: set.repsRange?.min || '',
+                        max: value,
+                      },
+                    })
+                  }
+                  placeholder="0"
+                  keyboardType="numeric"
+                  style={{
+                    flex: 1,
+                    backgroundColor: colors.background,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                    borderRadius: 4,
+                    paddingHorizontal: 6,
+                    paddingVertical: 6,
+                    textAlign: 'center',
+                    color: colors.text,
+                    fontSize: 12,
+                  }}
+                />
+              </View>
+            ) : (
+              // Input normal para reps, time, distance
+              <TextInput
+                value={set.reps}
+                onChangeText={(value) =>
+                  onUpdateSet(exerciseInBlock.id, set.id, setIndex, {
+                    reps: value,
+                  })
+                }
+                placeholder="0"
+                keyboardType="numeric"
+                style={{
+                  backgroundColor: colors.background,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                  borderRadius: 4,
+                  paddingHorizontal: 8,
+                  paddingVertical: 6,
+                  textAlign: 'center',
+                  color: colors.text,
+                  fontSize: 14,
+                }}
+              />
+            )}
           </View>
         </View>
       ))}
