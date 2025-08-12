@@ -1,13 +1,14 @@
-import React, { forwardRef, useCallback, useEffect, useState } from 'react';
+import React, { forwardRef, useCallback } from 'react';
 import { View, TouchableOpacity, Vibration } from 'react-native';
 import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
-import { Timer, Minus, Plus, Pause, Play } from 'lucide-react-native';
+import { Timer, Pause, Play, Minus, Plus } from 'lucide-react-native';
 import { Typography } from '@/components/ui';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { useTimer } from '@/hooks/useTimer';
 
 type Props = {
   restTimeSeconds: number;
-  timerKey?: number; // timestamp para identificar nuevo timer
+  timerKey?: number;
   onSkip: () => void;
   onAdjustTime: (newTimeSeconds: number) => void;
   onTimerComplete: () => void;
@@ -20,117 +21,104 @@ export const RestTimerBottomnSheet = forwardRef<BottomSheetModal, Props>(
   ) => {
     const { colors, isDarkMode } = useColorScheme();
 
-    const [timeRemaining, setTimeRemaining] = useState(restTimeSeconds);
-    const [isRunning, setIsRunning] = useState(true);
-
-    // Reset timer only when timerKey changes (new timer started)
-    useEffect(() => {
-      if (timerKey && restTimeSeconds > 0) {
-        setTimeRemaining(restTimeSeconds);
-        setIsRunning(true);
-      }
-    }, [timerKey, restTimeSeconds]);
-
-    console.log({ timeRemaining, isRunning });
-
-    // Función para notificar cuando termine el timer
+    // Función para la vibración de completado
     const playCompletionAlert = useCallback(() => {
-      // Vibración en patrón: corta-pausa-larga-pausa-corta
       Vibration.vibrate([100, 50, 500, 50, 100]);
-
-      // Si hay notificaciones nativas disponibles, se podría agregar aquí
       console.log('🔔 Timer completed!');
     }, []);
 
-    // Timer countdown logic
-    useEffect(() => {
-      let interval: number;
-
-      if (isRunning && timeRemaining > 0) {
-        interval = setInterval(() => {
-          setTimeRemaining((prev) => {
-            if (prev <= 1) {
-              setIsRunning(false);
-              playCompletionAlert(); // Reproducir sonido/vibración
-              onTimerComplete();
-              // Cerrar el sheet cuando termine
-              if (ref && 'current' in ref && ref.current) {
-                ref.current.dismiss();
-              }
-              return 0;
-            }
-            return prev - 1;
-          });
+    // Hook del timer con callbacks
+    const {
+      timeRemaining,
+      isRunning,
+      isPaused,
+      progress,
+      startTimer,
+      pauseTimer,
+      resumeTimer,
+      skipTimer,
+      addTime,
+      subtractTime,
+    } = useTimer({
+      onComplete: () => {
+        playCompletionAlert();
+        onTimerComplete();
+        setTimeout(() => {
+          if (ref && 'current' in ref && ref.current) {
+            ref.current.dismiss();
+          }
         }, 1000);
+      },
+    });
+
+    // Iniciar timer cuando cambia el timerKey
+    React.useEffect(() => {
+      if (timerKey && restTimeSeconds > 0) {
+        startTimer(
+          restTimeSeconds,
+          'Tiempo de descanso terminado',
+          'Tu descanso ha terminado. ¡Continúa con tu entrenamiento!',
+        );
       }
+    }, [timerKey, restTimeSeconds, startTimer]);
 
-      return () => {
-        if (interval) {
-          clearInterval(interval);
-        }
-      };
-    }, [isRunning, timeRemaining, onTimerComplete, ref, playCompletionAlert]);
-
+    // Formatear tiempo
     const formatTime = useCallback((seconds: number) => {
       const mins = Math.floor(seconds / 60);
       const secs = seconds % 60;
       return `${mins}:${secs.toString().padStart(2, '0')}`;
     }, []);
 
-    const handlePauseResume = () => {
-      setIsRunning(!isRunning);
-    };
-
-    const handleAddTime = (additionalSeconds: number) => {
-      const newTime = timeRemaining + additionalSeconds;
-      setTimeRemaining(newTime);
-      onAdjustTime(newTime);
-    };
-
-    const handleSubtractTime = (subtractSeconds: number) => {
-      const newTime = Math.max(0, timeRemaining - subtractSeconds);
-      setTimeRemaining(newTime);
-      onAdjustTime(newTime);
-
-      if (newTime === 0) {
-        setIsRunning(false);
-        playCompletionAlert(); // Reproducir sonido/vibración
-        onTimerComplete();
-        // Cerrar el sheet cuando llegue a 0
-        if (ref && 'current' in ref && ref.current) {
-          ref.current.dismiss();
-        }
+    // Handlers
+    const handlePauseResume = useCallback(() => {
+      if (isPaused) {
+        resumeTimer();
+      } else {
+        pauseTimer();
       }
-    };
+    }, [isPaused, pauseTimer, resumeTimer]);
 
-    const handleSkip = () => {
-      setIsRunning(false);
+    const handleAddTime = useCallback(
+      (additionalSeconds: number) => {
+        addTime(additionalSeconds);
+        onAdjustTime(timeRemaining + additionalSeconds);
+      },
+      [addTime, timeRemaining, onAdjustTime],
+    );
+
+    const handleSubtractTime = useCallback(
+      (subtractSeconds: number) => {
+        const newTime = Math.max(0, timeRemaining - subtractSeconds);
+        subtractTime(subtractSeconds);
+        onAdjustTime(newTime);
+      },
+      [subtractTime, timeRemaining, onAdjustTime],
+    );
+
+    const handleSkip = useCallback(() => {
+      skipTimer();
       onSkip();
-      // Cerrar el sheet cuando se salte
       if (ref && 'current' in ref && ref.current) {
         ref.current.dismiss();
       }
-    };
+    }, [skipTimer, onSkip, ref]);
 
     const handleDismiss = useCallback(() => {
-      // Si se cierra el sheet manualmente, cortar el tiempo de descanso
       if (isRunning && timeRemaining > 0) {
-        setIsRunning(false);
-        onSkip(); // Llamar a la función de saltar del hook
+        skipTimer();
+        onSkip();
       }
-    }, [isRunning, timeRemaining, onSkip]);
-
-    const progress = restTimeSeconds > 0 ? timeRemaining / restTimeSeconds : 0;
+    }, [isRunning, timeRemaining, skipTimer, onSkip]);
 
     return (
       <BottomSheetModal
         ref={ref}
         snapPoints={['60%']}
-        enablePanDownToClose
+        enablePanDownToClose={true}
         onDismiss={handleDismiss}
         backgroundStyle={{
-          backgroundColor: colors.surface,
-          shadowColor: '#000',
+          backgroundColor: colors.background,
+          shadowColor: colors.primary[500],
           shadowOffset: {
             width: 0,
             height: -4,
@@ -139,16 +127,24 @@ export const RestTimerBottomnSheet = forwardRef<BottomSheetModal, Props>(
           shadowRadius: 8,
           elevation: 8,
         }}
-        handleIndicatorStyle={{ backgroundColor: colors.textMuted }}
+        handleIndicatorStyle={{
+          backgroundColor: colors.border,
+        }}
       >
-        <BottomSheetView style={{ padding: 20, paddingBottom: 40 }}>
+        <BottomSheetView
+          style={{
+            flex: 1,
+            paddingHorizontal: 24,
+            paddingTop: 16,
+          }}
+        >
           {/* Header */}
           <View
             style={{
               flexDirection: 'row',
-              alignItems: 'center',
               justifyContent: 'space-between',
-              marginBottom: 32,
+              alignItems: 'center',
+              marginBottom: 26,
             }}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -166,7 +162,7 @@ export const RestTimerBottomnSheet = forwardRef<BottomSheetModal, Props>(
               style={{
                 paddingHorizontal: 12,
                 paddingVertical: 6,
-                backgroundColor: colors.error[100],
+                backgroundColor: colors.gray[100],
                 borderRadius: 8,
               }}
             >
@@ -180,7 +176,7 @@ export const RestTimerBottomnSheet = forwardRef<BottomSheetModal, Props>(
           <View
             style={{
               alignItems: 'center',
-              marginBottom: 32,
+              marginBottom: 26,
             }}
           >
             <View
@@ -195,7 +191,7 @@ export const RestTimerBottomnSheet = forwardRef<BottomSheetModal, Props>(
                 position: 'relative',
               }}
             >
-              {/* Progress Ring - Simple Border */}
+              {/* Progress Ring */}
               <View
                 style={{
                   position: 'absolute',
@@ -204,11 +200,13 @@ export const RestTimerBottomnSheet = forwardRef<BottomSheetModal, Props>(
                   borderRadius: 90,
                   borderWidth: 8,
                   borderColor:
-                    progress > 0.8
-                      ? colors.success[500]
-                      : progress > 0.5
-                        ? colors.warning[500]
-                        : colors.primary[500],
+                    timeRemaining === 0
+                      ? '#FFD700'
+                      : progress > 0.8
+                        ? colors.success[500]
+                        : progress > 0.5
+                          ? colors.warning[500]
+                          : colors.primary[500],
                   opacity: 0.3,
                 }}
               />
@@ -236,7 +234,7 @@ export const RestTimerBottomnSheet = forwardRef<BottomSheetModal, Props>(
                   justifyContent: 'center',
                 }}
               >
-                {isRunning ? (
+                {isRunning && !isPaused ? (
                   <Pause size={20} color="white" />
                 ) : (
                   <Play size={20} color="white" />
@@ -255,7 +253,7 @@ export const RestTimerBottomnSheet = forwardRef<BottomSheetModal, Props>(
             }}
           >
             <TouchableOpacity
-              onPress={() => handleSubtractTime(30)}
+              onPress={() => handleSubtractTime(20)}
               style={{
                 width: 60,
                 height: 60,
@@ -268,12 +266,12 @@ export const RestTimerBottomnSheet = forwardRef<BottomSheetModal, Props>(
               }}
             >
               <Typography variant="caption" weight="bold" color="textMuted">
-                -30s
+                -20s
               </Typography>
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => handleSubtractTime(15)}
+              onPress={() => handleSubtractTime(10)}
               style={{
                 width: 50,
                 height: 50,
@@ -285,11 +283,13 @@ export const RestTimerBottomnSheet = forwardRef<BottomSheetModal, Props>(
                 justifyContent: 'center',
               }}
             >
-              <Minus size={20} color={colors.textMuted} />
+              <Typography variant="caption" weight="bold" color="textMuted">
+                -10s
+              </Typography>
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => handleAddTime(15)}
+              onPress={() => handleAddTime(10)}
               style={{
                 width: 50,
                 height: 50,
@@ -301,11 +301,13 @@ export const RestTimerBottomnSheet = forwardRef<BottomSheetModal, Props>(
                 justifyContent: 'center',
               }}
             >
-              <Plus size={20} color={colors.textMuted} />
+              <Typography variant="caption" weight="bold" color="textMuted">
+                +10s
+              </Typography>
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => handleAddTime(30)}
+              onPress={() => handleAddTime(20)}
               style={{
                 width: 60,
                 height: 60,
@@ -318,7 +320,7 @@ export const RestTimerBottomnSheet = forwardRef<BottomSheetModal, Props>(
               }}
             >
               <Typography variant="caption" weight="bold" color="textMuted">
-                +30s
+                +20s
               </Typography>
             </TouchableOpacity>
           </View>
