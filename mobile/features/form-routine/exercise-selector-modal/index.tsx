@@ -1,14 +1,19 @@
-import React, { useState } from 'react';
-import { View, ScrollView, Modal, TouchableOpacity } from 'react-native';
-import { X, Search, Plus, Info } from 'lucide-react-native';
-import { Typography, Button, Card } from '@/components/ui';
-import { ExercisePlaceholderImage } from '@/components/ui/ExercisePlaceholderImage';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
-  exerciseCategories,
-  getExercisesByCategory,
-} from '@/data/mockExercises';
-import { IExercise } from '@/types/routine';
+  View,
+  FlatList,
+  Modal,
+  TouchableOpacity,
+  TextInput,
+} from 'react-native';
+import { X, Search } from 'lucide-react-native';
+import { Typography, Button } from '@/components/ui';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { IExercise, IExerciseMuscle } from '@/types/routine';
+import { useExercises } from '@/hooks/useExercises';
+import { FlashList } from '@shopify/flash-list';
+import { ExerciseCard } from './exercise-card';
+import { EXERCISE_CATEGORIES } from '@/data/exercises';
 
 type Props = {
   visible: boolean;
@@ -28,20 +33,52 @@ export const ExerciseSelectorModal: React.FC<Props> = ({
   onAddAsBlock,
 }) => {
   const { colors, isDarkMode } = useColorScheme();
+  const { allExercises } = useExercises();
 
-  const [selectedCategory, setSelectedCategory] = useState(
-    exerciseCategories[0].id,
-  );
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] =
+    useState<IExerciseMuscle | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
-  const exercises = getExercisesByCategory(selectedCategory);
-  const filteredExercises = exercises.filter((exercise) =>
-    exercise.name.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
-
-  const isExerciseSelected = (exerciseId: string) => {
-    return selectedExercises.some((ex) => ex.id === exerciseId);
+  const handlePressCategory = (category: IExerciseMuscle) => {
+    setSelectedCategory((prev) => (prev === category ? null : category));
   };
+
+  const filteredExercises = useMemo(() => {
+    let exercisesToShow = allExercises;
+
+    if (selectedCategory) {
+      exercisesToShow = exercisesToShow.filter((exercise) =>
+        exercise.muscleGroups.includes(selectedCategory),
+      );
+    }
+
+    if (searchQuery) {
+      exercisesToShow = exercisesToShow.filter((exercise) =>
+        exercise.name.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+    }
+
+    return exercisesToShow;
+  }, [allExercises, selectedCategory, searchQuery]);
+
+  const isExerciseSelected = useCallback(
+    (exerciseId: string) => {
+      return selectedExercises.some((ex) => ex.id === exerciseId);
+    },
+    [selectedExercises],
+  );
+
+  const renderExerciseCard = useCallback(
+    ({ item }: { item: IExercise }) => (
+      <ExerciseCard
+        exercise={item}
+        isSelected={isExerciseSelected(item.id)}
+        onSelectExercise={onSelectExercise}
+        colors={colors}
+      />
+    ),
+    [isExerciseSelected, onSelectExercise, colors],
+  );
 
   return (
     <Modal
@@ -91,146 +128,70 @@ export const ExerciseSelectorModal: React.FC<Props> = ({
             }}
           >
             <Search size={20} color={colors.textMuted} />
-            <Typography
-              variant="body1"
-              color="textMuted"
-              style={{ marginLeft: 12, flex: 1 }}
-            >
-              Buscar ejercicios...
-            </Typography>
+            <TextInput
+              placeholder="Buscar ejercicios..."
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholderTextColor={colors.textMuted}
+              style={{
+                marginLeft: 12,
+                flex: 1,
+                color: colors.text,
+                fontSize: 16,
+              }}
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity onPress={() => setSearchQuery('')}>
+                <X size={20} color={colors.textMuted} />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
 
         {/* Categories */}
         <View style={{ paddingHorizontal: 20, marginBottom: 16 }}>
-          <ScrollView
+          <FlatList
             horizontal
-            showsHorizontalScrollIndicator={false}
-            style={{ marginBottom: 8 }}
-          >
-            <View style={{ flexDirection: 'row', gap: 12 }}>
-              {exerciseCategories.map((category) => (
-                <TouchableOpacity
-                  key={category.id}
-                  onPress={() => setSelectedCategory(category.id)}
-                  style={{
-                    paddingHorizontal: 16,
-                    paddingVertical: 8,
-                    borderRadius: 20,
-                    backgroundColor:
-                      selectedCategory === category.id
-                        ? colors.primary[500]
-                        : isDarkMode
-                          ? colors.gray[800]
-                          : colors.gray[100],
-                  }}
+            data={EXERCISE_CATEGORIES}
+            keyExtractor={(item) => item}
+            contentContainerStyle={{ gap: 8 }}
+            renderItem={({ item: category }) => (
+              <TouchableOpacity
+                onPress={() => handlePressCategory(category)}
+                style={{
+                  paddingHorizontal: 16,
+                  paddingVertical: 8,
+                  borderRadius: 20,
+                  backgroundColor:
+                    selectedCategory === category
+                      ? colors.primary[500]
+                      : isDarkMode
+                        ? colors.gray[800]
+                        : colors.gray[100],
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  weight="medium"
+                  color={selectedCategory === category ? 'white' : 'text'}
                 >
-                  <Typography
-                    variant="body2"
-                    weight="medium"
-                    color={selectedCategory === category.id ? 'white' : 'text'}
-                  >
-                    {category.icon} {category.name}
-                  </Typography>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </ScrollView>
+                  {category}
+                </Typography>
+              </TouchableOpacity>
+            )}
+            showsHorizontalScrollIndicator={false}
+          />
         </View>
 
         {/* Exercises List */}
-        <ScrollView style={{ flex: 1, paddingHorizontal: 20 }}>
-          <View style={{ gap: 12, paddingBottom: 40 }}>
-            {filteredExercises.map((exercise) => (
-              <Card
-                key={exercise.id}
-                variant="outlined"
-                padding="md"
-                style={{
-                  opacity: isExerciseSelected(exercise.id) ? 0.6 : 1,
-                }}
-              >
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'flex-start',
-                    gap: 12,
-                  }}
-                >
-                  {/* Exercise Image */}
-                  <ExercisePlaceholderImage size={56} />
-
-                  <View style={{ flex: 1 }}>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        marginBottom: 4,
-                      }}
-                    >
-                      <Typography
-                        variant="h6"
-                        weight="semibold"
-                        style={{ flex: 1 }}
-                      >
-                        {exercise.name}
-                      </Typography>
-                    </View>
-
-                    <Typography
-                      variant="body2"
-                      color="textMuted"
-                      style={{ marginBottom: 8 }}
-                    >
-                      {exercise.equipment} •{' '}
-                      {exercise.muscleGroups.slice(0, 2).join(', ')}
-                    </Typography>
-
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: 12,
-                      }}
-                    >
-                      <Button
-                        variant={
-                          isExerciseSelected(exercise.id)
-                            ? 'secondary'
-                            : 'primary'
-                        }
-                        size="sm"
-                        onPress={() => onSelectExercise(exercise)}
-                        disabled={isExerciseSelected(exercise.id)}
-                        icon={
-                          isExerciseSelected(exercise.id) ? (
-                            <Typography variant="body2" weight="medium">
-                              ✓
-                            </Typography>
-                          ) : (
-                            <Plus size={16} color="#ffffff" />
-                          )
-                        }
-                      >
-                        {isExerciseSelected(exercise.id)
-                          ? 'Agregado'
-                          : 'Agregar'}
-                      </Button>
-
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        icon={<Info size={16} color={colors.primary[500]} />}
-                      >
-                        Info
-                      </Button>
-                    </View>
-                  </View>
-                </View>
-              </Card>
-            ))}
-          </View>
-        </ScrollView>
+        <FlashList
+          data={filteredExercises}
+          key={filteredExercises.length}
+          keyExtractor={(item) => item.id}
+          renderItem={renderExerciseCard}
+          contentContainerStyle={{ paddingBottom: 40 }}
+          style={{ flex: 1, paddingHorizontal: 20 }}
+        />
 
         {/* Footer */}
         {selectedExercises.length > 0 && (

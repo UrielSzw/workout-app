@@ -22,12 +22,44 @@ export type ISet = {
   repsRange?: { min: string; max: string };
 };
 
+export type IExerciseMuscle =
+  | 'chest'
+  | 'back'
+  | 'lower_back'
+  | 'lats'
+  | 'traps'
+  | 'legs'
+  | 'quads'
+  | 'hamstrings'
+  | 'calves'
+  | 'arms'
+  | 'biceps'
+  | 'triceps'
+  | 'shoulders'
+  | 'core'
+  | 'obliques'
+  | 'full_body'
+  | 'glutes'
+  | 'rear_delts'
+  | 'forearms'
+  | 'hip_flexors';
+
+export type IExerciseEquipment =
+  | 'dumbbell'
+  | 'barbell'
+  | 'machine'
+  | 'cable'
+  | 'bodyweight'
+  | 'kettlebell'
+  | 'band'
+  | 'other';
+
 export type IExercise = {
   id: string;
   name: string;
-  category: string;
-  muscleGroups: string[];
-  equipment: string;
+  muscleGroups: IExerciseMuscle[];
+  mainMuscleGroup: IExerciseMuscle;
+  equipment: IExerciseEquipment[];
   instructions: string[];
   imageUrl?: string;
 };
