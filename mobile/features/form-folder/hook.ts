@@ -13,8 +13,13 @@ export const useFormFolder = ({ isEditMode }: Params) => {
   const [folderIcon, setFolderIcon] = useState('');
   const [folderColor, setFolderColor] = useState('');
 
-  const { addFolder, updateFolder, setSelectedFolder, selectedFolder } =
-    mainStore((state) => state);
+  const {
+    addFolder,
+    updateFolder,
+    setSelectedFolder,
+    selectedFolder,
+    deleteFolder,
+  } = mainStore((state) => state);
 
   const defaultFolderName = folderName || selectedFolder?.name || '';
   const defaultFolderIcon = folderIcon || selectedFolder?.icon || '';
@@ -53,6 +58,28 @@ export const useFormFolder = ({ isEditMode }: Params) => {
     router.back();
   };
 
+  const handleDeleteFolder = () => {
+    if (selectedFolder) {
+      Alert.alert(
+        'Eliminar Carpeta',
+        '¿Estás seguro de que deseas eliminar esta carpeta?',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          {
+            text: 'Eliminar',
+            style: 'destructive',
+            onPress: () => {
+              // Call the deleteFolder function from the store
+              deleteFolder(selectedFolder.id);
+              setSelectedFolder(null);
+              router.back();
+            },
+          },
+        ],
+      );
+    }
+  };
+
   return {
     folderName: defaultFolderName,
     folderIcon: defaultFolderIcon,
@@ -61,5 +88,6 @@ export const useFormFolder = ({ isEditMode }: Params) => {
     setFolderIcon,
     setFolderColor,
     handleSaveFolder,
+    handleDeleteFolder,
   };
 };

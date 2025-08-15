@@ -5,19 +5,16 @@ import { View } from 'react-native';
 
 type Props = {
   onSaveRoutine: () => void;
-  onClearRoutine: () => void;
   isEditMode: boolean;
 };
 
 export const CreateRoutineHeader: React.FC<Props> = ({
   onSaveRoutine,
-  onClearRoutine,
   isEditMode,
 }) => {
   const { colors } = useColorScheme();
 
   const handleGoBack = () => {
-    onClearRoutine();
     router.back();
   };
 

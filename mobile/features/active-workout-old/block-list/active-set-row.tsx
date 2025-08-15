@@ -3,7 +3,6 @@ import { View, Pressable, TextInput, Alert } from 'react-native';
 import { IActiveSet } from '@/types/active-workout';
 import { IRepsType, ISetType } from '@/types/routine';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { getThemeColors } from '@/constants/Colors';
 import { Typography } from '@/components/ui';
 import { Ionicons } from '@expo/vector-icons';
 

@@ -26,6 +26,7 @@ type Props = {
   };
   getSetTypeColor: (type: string) => string;
   getSetTypeLabel: (type: string) => string;
+  prevSet?: IActiveSet | null;
 };
 
 export const SetRow: React.FC<Props> = ({
@@ -37,6 +38,7 @@ export const SetRow: React.FC<Props> = ({
   getSetTypeColor,
   getSetTypeLabel,
   setIndex,
+  prevSet,
 }) => {
   const [setData, setSetData] = useState({
     weight: '',
@@ -117,7 +119,7 @@ export const SetRow: React.FC<Props> = ({
           variant="caption"
           color="textMuted"
         >
-          12kg x 10
+          {prevSet ? `${prevSet.actualWeight}kg x ${prevSet.actualReps}` : '-'}
         </Typography>
       </View>
 

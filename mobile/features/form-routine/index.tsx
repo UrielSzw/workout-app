@@ -1,9 +1,6 @@
-import React, { useRef } from 'react';
+import React, { useEffect } from 'react';
 import { View, SafeAreaView, ScrollView } from 'react-native';
-import {
-  BottomSheetModal,
-  BottomSheetModalProvider,
-} from '@gorhom/bottom-sheet';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { CreateRoutineHeader } from './create-routine-header';
 import { RoutineInfo } from './routine-info';
@@ -11,9 +8,9 @@ import { ExerciseList } from './exercise-list';
 import { useFormRoutine } from './hook';
 import { ExerciseSelectorModal } from './exercise-selector-modal';
 import { SetTypeBottomSheet } from './set-type-sheet';
-import { IRepsType, ISetType } from '@/types/routine';
 import { RepsTypeBottomSheet } from './reps-type-sheet';
 import { RestTimeBottomSheet } from './rest-time-sheet';
+import { useNavigation } from 'expo-router';
 
 type Props = {
   isEditMode?: boolean;
@@ -21,96 +18,57 @@ type Props = {
 
 export const FormRoutineFeature = ({ isEditMode }: Props) => {
   const { colors } = useColorScheme();
+  const navigation = useNavigation();
 
   const {
-    blocks,
+    // Routine info
     routineName,
     setRoutineName,
     handleSaveRoutine,
+    handleClearRoutine,
+
+    // Blocks methods
+    blocks,
     handleDeleteBlock,
     handleConvertToIndividual,
     handleUpdateBlock,
     handleReorderBlocks,
+    handleAddAsIndividual,
+    handleAddAsBlock,
+
+    // Exercises methods
     handleReorderExercises,
-    setCurrentSetId,
-    setCurrentExerciseId,
-    setCurrentBlockId,
-    setCurrentRestTime,
-    setCurrentRestTimeType,
-    currentRestTime,
     exerciseSelectorVisible,
     setExerciseSelectorVisible,
     selectedExercises,
-    handleAddAsBlock,
-    handleAddAsIndividual,
     handleSelectExercise,
-    handleSetTypeSelect,
-    handleDeleteSet,
+
+    // Reps and rest time
+    currentRestTime,
     handleRepsTypeSelect,
     handleBlockRestTimeSelect,
     currentSetType,
-    setCurrentSetType,
-    handleClearRoutine,
     currentRepsType,
-    setCurrentRepsType,
+    handleSetTypeSelect,
+    handleDeleteSet,
+
+    // Bottom sheet methods
+    setTypeBottomSheetRef,
+    repsTypeBottomSheetRef,
+    restTimeBottomSheetRef,
+    handleShowSetTypeBottomSheet,
+    handleShowRepsTypeBottomSheet,
+    handleShowBlockRestTimeBottomSheet,
   } = useFormRoutine({ isEditMode });
 
-  // Bottom sheet refs
-  const setTypeBottomSheetRef = useRef<BottomSheetModal>(null);
-  const repsTypeBottomSheetRef = useRef<BottomSheetModal>(null);
-  const restTimeBottomSheetRef = useRef<BottomSheetModal>(null);
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', () => {
+      handleClearRoutine();
+    });
 
-  const handleShowSetTypeBottomSheet = (
-    setId: string,
-    exerciseId: string,
-    current: ISetType,
-  ) => {
-    setCurrentSetId(setId);
-    setCurrentExerciseId(exerciseId);
-    setCurrentSetType(current);
-    setTypeBottomSheetRef.current?.present();
-  };
-
-  const handleShowRepsTypeBottomSheet = (
-    exerciseId: string,
-    current: IRepsType,
-  ) => {
-    setCurrentExerciseId(exerciseId);
-    setCurrentRepsType(current);
-    repsTypeBottomSheetRef.current?.present();
-  };
-
-  const handleShowBlockRestTimeBottomSheet = (
-    blockId: string,
-    currentRestTime: number,
-    type: 'between-rounds' | 'between-exercises',
-  ) => {
-    setCurrentBlockId(blockId);
-    setCurrentRestTime(currentRestTime);
-    setCurrentRestTimeType(type);
-    restTimeBottomSheetRef.current?.present();
-  };
-
-  const handleSetTypeSelectMethod = (setType: ISetType) => {
-    handleSetTypeSelect(setType);
-    setCurrentSetType(null);
-    setTypeBottomSheetRef.current?.dismiss();
-  };
-
-  const handleDeleteSetMethod = () => {
-    handleDeleteSet();
-    setTypeBottomSheetRef.current?.dismiss();
-  };
-
-  const handleRepsTypeSelectMethod = (repsType: IRepsType) => {
-    handleRepsTypeSelect(repsType);
-    repsTypeBottomSheetRef.current?.dismiss();
-  };
-
-  const handleBlockRestTimeSelectMethod = (restTimeSeconds: number) => {
-    handleBlockRestTimeSelect(restTimeSeconds);
-    restTimeBottomSheetRef.current?.dismiss();
-  };
+    return unsubscribe;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigation]);
 
   return (
     <BottomSheetModalProvider>
@@ -118,7 +76,6 @@ export const FormRoutineFeature = ({ isEditMode }: Props) => {
         {/* Sticky Header */}
         <CreateRoutineHeader
           onSaveRoutine={handleSaveRoutine}
-          onClearRoutine={handleClearRoutine}
           isEditMode={!!isEditMode}
         />
 
@@ -147,6 +104,9 @@ export const FormRoutineFeature = ({ isEditMode }: Props) => {
               onReorderExercises={handleReorderExercises}
             />
           </View>
+
+          {/* Spacer */}
+          <View style={{ height: 200 }} />
         </ScrollView>
 
         {/* Exercise Selector Modal */}
@@ -162,21 +122,21 @@ export const FormRoutineFeature = ({ isEditMode }: Props) => {
         {/* Bottom Sheets */}
         <SetTypeBottomSheet
           ref={setTypeBottomSheetRef}
-          onSelectSetType={handleSetTypeSelectMethod}
-          onDeleteSet={handleDeleteSetMethod}
+          onSelectSetType={handleSetTypeSelect}
+          onDeleteSet={handleDeleteSet}
           currentSetType={currentSetType}
         />
 
         <RepsTypeBottomSheet
           ref={repsTypeBottomSheetRef}
           currentRepsType={currentRepsType}
-          onSelectRepsType={handleRepsTypeSelectMethod}
+          onSelectRepsType={handleRepsTypeSelect}
         />
 
         <RestTimeBottomSheet
           ref={restTimeBottomSheetRef}
           currentRestTime={currentRestTime}
-          onSelectRestTime={handleBlockRestTimeSelectMethod}
+          onSelectRestTime={handleBlockRestTimeSelect}
         />
       </SafeAreaView>
     </BottomSheetModalProvider>

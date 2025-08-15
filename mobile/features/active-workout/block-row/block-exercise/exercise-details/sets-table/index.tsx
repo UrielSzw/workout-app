@@ -40,6 +40,7 @@ export const SetsTable: React.FC<Props> = ({
   const { colors } = useColorScheme();
 
   const repsType = exerciseInBlock.sets[0]?.repsType || 'reps';
+  const prevSets = exerciseInBlock.exercise.userStats?.lastSets || [];
 
   return (
     <View style={{ marginTop: 12 }}>
@@ -104,6 +105,9 @@ export const SetsTable: React.FC<Props> = ({
           exerciseInBlock={exerciseInBlock}
           getSetTypeColor={getSetTypeColor}
           getSetTypeLabel={getSetTypeLabel}
+          prevSet={prevSets.find(
+            (prevSet) => prevSet.setNumber === set.setNumber,
+          )}
         />
       ))}
 

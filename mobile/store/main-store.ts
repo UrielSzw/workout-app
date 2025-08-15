@@ -1,11 +1,14 @@
-import { IFolder, IRoutine } from '@/types/routine';
+import { IExercise, IFolder, IRoutine } from '@/types/routine';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { ColorSchemeName } from 'react-native';
+import { IActiveWorkout, IActiveSet } from '@/types/active-workout';
+import { EXERCISE_LIBRARY } from '@/data/exercises';
 
 type MainStore = {
   routines: IRoutine[];
   folders: IFolder[];
+  exercises: IExercise[];
 
   // Theme
   colorScheme: ColorSchemeName;
@@ -19,6 +22,10 @@ type MainStore = {
 
   // UI State
   isLoading: boolean;
+
+  // Exercises
+  updateExercise: (id: string, exercise: Partial<IExercise>) => void;
+  updateExercisesSets: (activeWorkout: IActiveWorkout) => void;
 
   // Routines
   setRoutines: (routines: IRoutine[]) => void;
@@ -45,11 +52,13 @@ const STORAGE_KEYS = {
   ROUTINES: '@workout-app/routines',
   FOLDERS: '@workout-app/folders',
   COLOR_SCHEME: '@workout-app/colorScheme',
+  EXERCISES: '@workout-app/exercises',
 };
 
 export const mainStore = create<MainStore>((set, get) => ({
   routines: [],
   folders: [],
+  exercises: EXERCISE_LIBRARY,
 
   // Theme
   colorScheme: 'light',
@@ -73,6 +82,60 @@ export const mainStore = create<MainStore>((set, get) => ({
   setSelectedRoutine: (routine) => set({ selectedRoutine: routine }),
 
   isLoading: false,
+
+  // Exercises
+  updateExercise: (id, updates) => {
+    set((state) => ({
+      exercises: state.exercises.map((exercise) =>
+        exercise.id === id ? { ...exercise, ...updates } : exercise,
+      ),
+    }));
+    get().saveToStorage();
+  },
+  updateExercisesSets: (activeWorkout) => {
+    const { exercises } = get();
+
+    // Crear un Map para búsquedas O(1) en lugar de O(n)
+    const exerciseUpdatesMap = new Map<string, IActiveSet[]>();
+    // Recorrer todos los ejercicios completados y almacenar solo los sets completados
+    activeWorkout.blocks.forEach((block) => {
+      block.exercises.forEach((exerciseInBlock) => {
+        const exerciseId = exerciseInBlock.exercise.id;
+
+        // Solo incluir sets que fueron completados
+        const completedSets = exerciseInBlock.sets.filter(
+          (set) => set.completedAt,
+        );
+
+        if (completedSets.length > 0) {
+          exerciseUpdatesMap.set(exerciseId, completedSets);
+        }
+      });
+    });
+
+    console.log('Exercise updates map:', exerciseUpdatesMap);
+    // Actualizar exercises solo si hay cambios
+    if (exerciseUpdatesMap.size > 0) {
+      const updatedExercises = exercises.map((exercise) => {
+        const newLastSets = exerciseUpdatesMap.get(exercise.id);
+
+        if (newLastSets) {
+          return {
+            ...exercise,
+            userStats: {
+              ...exercise.userStats,
+              lastSets: newLastSets,
+            },
+          };
+        }
+
+        return exercise;
+      });
+
+      set({ exercises: updatedExercises });
+      get().saveToStorage();
+    }
+  },
 
   // Routines
   setRoutines: (routines) => {
@@ -151,20 +214,29 @@ export const mainStore = create<MainStore>((set, get) => ({
     try {
       set({ isLoading: true });
 
-      const [routinesData, foldersData, colorSchemeData] = await Promise.all([
-        AsyncStorage.getItem(STORAGE_KEYS.ROUTINES),
-        AsyncStorage.getItem(STORAGE_KEYS.FOLDERS),
-        AsyncStorage.getItem(STORAGE_KEYS.COLOR_SCHEME),
-      ]);
+      const [routinesData, foldersData, colorSchemeData, exercisesData] =
+        await Promise.all([
+          AsyncStorage.getItem(STORAGE_KEYS.ROUTINES),
+          AsyncStorage.getItem(STORAGE_KEYS.FOLDERS),
+          AsyncStorage.getItem(STORAGE_KEYS.COLOR_SCHEME),
+          AsyncStorage.getItem(STORAGE_KEYS.EXERCISES),
+        ]);
 
       const routines = routinesData ? JSON.parse(routinesData) : [];
       const folders = foldersData ? JSON.parse(foldersData) : [];
+      const exercises = exercisesData
+        ? JSON.parse(exercisesData)
+        : EXERCISE_LIBRARY;
       const colorScheme = (colorSchemeData as ColorSchemeName) || 'light';
 
-      console.log('Loaded folders:', folders);
+      console.log(
+        'Loaded exercises:',
+        exercises.find((exer: IExercise) => !!exer.userStats),
+      );
       set({
         routines,
         folders,
+        exercises,
         colorScheme,
         isLoading: false,
       });
@@ -176,10 +248,11 @@ export const mainStore = create<MainStore>((set, get) => ({
 
   saveToStorage: async () => {
     try {
-      const { routines, folders } = get();
+      const { routines, folders, exercises } = get();
       await Promise.all([
         AsyncStorage.setItem(STORAGE_KEYS.ROUTINES, JSON.stringify(routines)),
         AsyncStorage.setItem(STORAGE_KEYS.FOLDERS, JSON.stringify(folders)),
+        AsyncStorage.setItem(STORAGE_KEYS.EXERCISES, JSON.stringify(exercises)),
       ]);
     } catch (error) {
       console.error('Error saving data to storage:', error);

@@ -22,6 +22,7 @@ export const FormFolderFeature = ({ isEditMode }: Props) => {
     setFolderIcon,
     setFolderColor,
     handleSaveFolder,
+    handleDeleteFolder,
   } = useFormFolder({ isEditMode });
 
   return (
@@ -111,6 +112,15 @@ export const FormFolderFeature = ({ isEditMode }: Props) => {
             </View>
           </Card>
         </View>
+
+        {/* Delete folder button */}
+        {isEditMode && (
+          <View style={{ marginTop: 24 }}>
+            <Button variant="error" onPress={handleDeleteFolder}>
+              Eliminar Carpeta
+            </Button>
+          </View>
+        )}
 
         {/* Spacer */}
         <View style={{ height: 100 }} />

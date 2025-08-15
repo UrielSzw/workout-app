@@ -23,7 +23,11 @@ export type IActiveSet = ISet & {
 export type IActiveExerciseInBlock = {
   id: string;
   originalExerciseInBlockId?: string; // null si fue agregado durante workout
-  exercise: IExerciseInBlock['exercise'];
+  exercise: IExerciseInBlock['exercise'] & {
+    userStats?: {
+      lastSets?: IActiveSet[];
+    };
+  };
   sets: IActiveSet[];
   orderIndex: number;
   notes?: string;

@@ -9,8 +9,10 @@ import {
   IActiveBlock,
 } from '@/types/active-workout';
 import { IRoutine, IRepsType, ISetType } from '@/types/routine';
+import { mainStore } from '@/store/main-store';
 
 export const useActiveWorkout = () => {
+  const { updateExercisesSets } = mainStore();
   const {
     activeWorkout,
     isWorkoutActive,
@@ -93,6 +95,10 @@ export const useActiveWorkout = () => {
 
   const performFinishWorkout = async (elapsedTime: number) => {
     try {
+      if (!activeWorkout) return;
+
+      updateExercisesSets(activeWorkout);
+
       const workoutHistory = await finishWorkout();
 
       // Check if routine was modified and ask user

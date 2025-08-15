@@ -31,8 +31,6 @@ export const ActiveWorkoutFeature = () => {
 
   const workoutStats = getWorkoutStats();
 
-  console.log({ workoutStats });
-
   return (
     <BottomSheetModalProvider>
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
@@ -50,7 +48,7 @@ export const ActiveWorkoutFeature = () => {
         <ScrollView
           style={{ flex: 1 }}
           contentContainerStyle={{
-            paddingBottom: 100,
+            paddingBottom: 300,
           }}
           showsVerticalScrollIndicator={false}
         >

@@ -10,6 +10,7 @@ import {
   IActiveWorkoutRoutineSnapshot,
 } from '@/types/active-workout';
 import { IRoutine } from '@/types/routine';
+import { mainStore } from './main-store';
 
 type ActiveWorkoutStore = {
   // Estado principal
@@ -98,31 +99,49 @@ const createActiveWorkoutFromRoutine = (routine: IRoutine): IActiveWorkout => {
     snapshotTakenAt: new Date().toISOString(),
   };
 
+  // Obtener ejercicios del store global para acceder a lastSets
+  const { exercises } = mainStore.getState();
+
   const activeBlocks: IActiveBlock[] = routine.blocks.map((block) => ({
     id: generateId(),
     originalBlockId: block.id,
     type: block.type,
     name: block.name,
-    exercises: block.exercises.map((exercise) => ({
-      id: generateId(),
-      originalExerciseInBlockId: exercise.id,
-      exercise: exercise.exercise,
-      sets: exercise.sets.map((set) => ({
-        ...set,
+    exercises: block.exercises.map((exercise) => {
+      // Buscar el ejercicio en el store global para obtener lastSets
+      const globalExercise = exercises.find(
+        (ex) => ex.id === exercise.exercise.id,
+      );
+
+      const prevSets = globalExercise?.userStats?.lastSets || [];
+
+      return {
         id: generateId(),
-        completedAt: undefined,
-        actualWeight: undefined,
-        actualReps: undefined,
-        actualRpe: undefined,
-        restTimeUsedSeconds: undefined,
+        originalExerciseInBlockId: exercise.id,
+        exercise: {
+          ...exercise.exercise,
+          userStats: {
+            ...exercise.exercise.userStats,
+            lastSets: prevSets, // Cargar los sets previos aquí
+          },
+        },
+        sets: exercise.sets.map((set) => ({
+          ...set,
+          id: generateId(),
+          completedAt: undefined,
+          actualWeight: undefined,
+          actualReps: undefined,
+          actualRpe: undefined,
+          restTimeUsedSeconds: undefined,
+          wasModifiedFromOriginal: false,
+          originalSetData: { ...set },
+        })),
+        orderIndex: exercise.orderIndex,
+        notes: exercise.notes,
+        wasAddedDuringWorkout: false,
         wasModifiedFromOriginal: false,
-        originalSetData: { ...set },
-      })),
-      orderIndex: exercise.orderIndex,
-      notes: exercise.notes,
-      wasAddedDuringWorkout: false,
-      wasModifiedFromOriginal: false,
-    })),
+      };
+    }) as IActiveExerciseInBlock[],
     restTimeSeconds: block.restTimeSeconds,
     restBetweenExercisesSeconds: block.restBetweenExercisesSeconds,
     orderIndex: block.orderIndex,

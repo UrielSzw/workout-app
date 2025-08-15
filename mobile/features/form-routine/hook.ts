@@ -9,8 +9,9 @@ import {
   ISet,
   ISetType,
 } from '@/types/routine';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 type Params = {
   isEditMode?: boolean;
@@ -20,9 +21,13 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
   const { blocks, setBlocks, setReorderedBlock } = formRoutineStore(
     (state) => state,
   );
-  const { addRoutine, updateRoutine, selectedRoutine } = mainStore(
-    (state) => state,
-  );
+  const { addRoutine, updateRoutine, selectedRoutine, setSelectedRoutine } =
+    mainStore((state) => state);
+
+  // Bottom sheet refs
+  const setTypeBottomSheetRef = useRef<BottomSheetModal>(null);
+  const repsTypeBottomSheetRef = useRef<BottomSheetModal>(null);
+  const restTimeBottomSheetRef = useRef<BottomSheetModal>(null);
 
   // Routine information state
   const [routineName, setRoutineName] = useState('');
@@ -72,12 +77,26 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
       addRoutine(newRoutine);
     }
 
+    // Reset form values
+    handleClearRoutine();
+
     router.back();
   };
 
   // Block management functions
   const handleClearRoutine = () => {
+    setSelectedRoutine(null);
     setBlocks([]);
+    setRoutineName('');
+    setCurrentSetId(null);
+    setCurrentRepsType('reps');
+    setCurrentExerciseId(null);
+    setCurrentBlockId(null);
+    setCurrentRestTime(90);
+    setCurrentRestTimeType('between-rounds');
+    setExerciseSelectorVisible(false);
+    setSelectedExercises([]);
+    setCurrentSetType(null);
     setReorderedBlock(null);
   };
 
@@ -119,6 +138,8 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
 
   // Reorder functions
   const handleReorderBlocks = () => {
+    setBlocks(defaultBlocks);
+
     // Navigate to reorder screen with blocks data using push (not modal)
     router.push({
       pathname: '/reorder-blocks',
@@ -239,6 +260,9 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
 
       setBlocks(updatedBlocks);
     }
+
+    setCurrentSetType(null);
+    setTypeBottomSheetRef.current?.dismiss();
   };
 
   const handleDeleteSet = () => {
@@ -263,6 +287,8 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
 
       setBlocks(updatedBlocks);
     }
+
+    setTypeBottomSheetRef.current?.dismiss();
   };
 
   // Reps type modal function
@@ -283,6 +309,8 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
 
       setBlocks(updatedBlocks);
     }
+
+    repsTypeBottomSheetRef.current?.dismiss();
   };
 
   // Rest time modal function
@@ -309,39 +337,81 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
         handleUpdateBlock(currentBlockId, { restTimeSeconds });
       }
     }
+
+    restTimeBottomSheetRef.current?.dismiss();
+  };
+
+  // Bottom sheet methods
+
+  const handleShowSetTypeBottomSheet = (
+    setId: string,
+    exerciseId: string,
+    current: ISetType,
+  ) => {
+    setCurrentSetId(setId);
+    setCurrentExerciseId(exerciseId);
+    setCurrentSetType(current);
+    setTypeBottomSheetRef.current?.present();
+  };
+
+  const handleShowRepsTypeBottomSheet = (
+    exerciseId: string,
+    current: IRepsType,
+  ) => {
+    setCurrentExerciseId(exerciseId);
+    setCurrentRepsType(current);
+    repsTypeBottomSheetRef.current?.present();
+  };
+
+  const handleShowBlockRestTimeBottomSheet = (
+    blockId: string,
+    currentRestTime: number,
+    type: 'between-rounds' | 'between-exercises',
+  ) => {
+    setCurrentBlockId(blockId);
+    setCurrentRestTime(currentRestTime);
+    setCurrentRestTimeType(type);
+    restTimeBottomSheetRef.current?.present();
   };
 
   return {
+    // Routine info
     routineName: defaultRoutineName,
     setRoutineName,
-    blocks: defaultBlocks,
-    setBlocks,
     handleSaveRoutine,
+    handleClearRoutine,
+
+    // Blocks methods
+    blocks: defaultBlocks,
     handleDeleteBlock,
     handleConvertToIndividual,
     handleUpdateBlock,
     handleReorderBlocks,
+    handleAddAsIndividual,
+    handleAddAsBlock,
+
+    // Exercises methods
     handleReorderExercises,
-    currentRestTime,
-    setCurrentSetId,
-    setCurrentExerciseId,
-    setCurrentBlockId,
-    setCurrentRestTime,
-    setCurrentRestTimeType,
     exerciseSelectorVisible,
     setExerciseSelectorVisible,
     selectedExercises,
     handleSelectExercise,
-    handleAddAsIndividual,
-    handleAddAsBlock,
-    handleSetTypeSelect,
-    handleDeleteSet,
+
+    // Reps and rest time
+    currentRestTime,
     handleRepsTypeSelect,
     handleBlockRestTimeSelect,
     currentSetType,
-    setCurrentSetType,
-    handleClearRoutine,
     currentRepsType,
-    setCurrentRepsType,
+    handleSetTypeSelect,
+    handleDeleteSet,
+
+    // Bottom sheet methods
+    setTypeBottomSheetRef,
+    repsTypeBottomSheetRef,
+    restTimeBottomSheetRef,
+    handleShowSetTypeBottomSheet,
+    handleShowRepsTypeBottomSheet,
+    handleShowBlockRestTimeBottomSheet,
   };
 };

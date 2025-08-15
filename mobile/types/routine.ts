@@ -1,3 +1,5 @@
+import { IActiveSet } from './active-workout';
+
 export type ISetType =
   | 'normal'
   | 'warmup'
@@ -62,6 +64,9 @@ export type IExercise = {
   equipment: IExerciseEquipment[];
   instructions: string[];
   imageUrl?: string;
+  userStats?: {
+    lastSets?: IActiveSet[];
+  };
 };
 
 export type IExerciseInBlock = {

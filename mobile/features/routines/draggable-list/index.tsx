@@ -7,7 +7,6 @@ import DraggableFlatList, {
 import { FolderItem } from './folder-item';
 import { Button, Typography } from '@/components/ui';
 import { FolderPlus } from 'lucide-react-native';
-import { getThemeColors } from '@/constants/Colors';
 import { RoutineCard } from '../routine-card';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
@@ -65,12 +64,10 @@ export const DraggableList: React.FC<Props> = ({
     onReorder(data);
   };
 
-  if (!folders || folders.length === 0) return null;
-
   return (
     <View style={{ flex: 1 }}>
       <DraggableFlatList
-        data={folders}
+        data={folders || []}
         onDragEnd={handleReorder}
         keyExtractor={(item) => item.id}
         renderItem={renderFolderItem}
@@ -101,6 +98,17 @@ export const DraggableList: React.FC<Props> = ({
         )}
         ListFooterComponent={() => (
           <View>
+            {!folders ||
+              (folders?.length === 0 && (
+                <View
+                  style={{ flexDirection: 'row', gap: 12, marginBottom: 20 }}
+                >
+                  <Typography variant="body2" color="textSecondary">
+                    No hay carpetas. Toca &quot;Nueva&quot; para crear una.
+                  </Typography>
+                </View>
+              ))}
+
             {filteredRoutines.length > 0 && (
               <View style={{ marginBottom: 24 }}>
                 <Typography
