@@ -6,6 +6,7 @@ import { useActiveWorkout } from './hook';
 import { ActiveBlockRow } from './block-row';
 import { RestTimerBottomnSheet } from './rest-timer-sheet';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { RestTimeBottomSheet } from '@/components/rest-time-sheet';
 
 export const ActiveWorkoutFeature = () => {
   const { colors } = useColorScheme();
@@ -23,6 +24,12 @@ export const ActiveWorkoutFeature = () => {
     skipRestTimer,
     adjustRestTimer,
     restTimerSheetRef,
+
+    // Update workout on demand
+    restTimeBottomSheetRef,
+    handleShowBlockRestTimeBottomSheet,
+    handleBlockRestTimeSelect,
+    currentRestTime,
   } = useActiveWorkout();
 
   if (!activeWorkout || !isWorkoutActive) {
@@ -59,6 +66,9 @@ export const ActiveWorkoutFeature = () => {
               index={index}
               onCompleteSet={handleCompleteSet}
               onUncompleteSet={handleUncompleteSet}
+              onShowBlockRestTimeBottomSheet={
+                handleShowBlockRestTimeBottomSheet
+              }
             />
           ))}
 
@@ -73,6 +83,11 @@ export const ActiveWorkoutFeature = () => {
           />
 
           {/* TODO: Add other bottom sheets */}
+          <RestTimeBottomSheet
+            ref={restTimeBottomSheetRef}
+            currentRestTime={currentRestTime}
+            onSelectRestTime={handleBlockRestTimeSelect}
+          />
         </ScrollView>
       </SafeAreaView>
     </BottomSheetModalProvider>

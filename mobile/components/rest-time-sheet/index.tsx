@@ -41,7 +41,7 @@ export const RestTimeBottomSheet = forwardRef<BottomSheetModal, Props>(
     };
 
     const handleIncrease = () => {
-      const newTime = selectedTime + 15; // Increment by 15 seconds
+      const newTime = selectedTime + 5; // Increment by 5 seconds
       if (newTime <= 600) {
         // Max 10 minutes
         setSelectedTime(newTime);
@@ -49,7 +49,7 @@ export const RestTimeBottomSheet = forwardRef<BottomSheetModal, Props>(
     };
 
     const handleDecrease = () => {
-      const newTime = selectedTime - 15; // Decrement by 15 seconds
+      const newTime = selectedTime - 5; // Decrement by 5 seconds
       if (newTime >= 0) {
         setSelectedTime(newTime);
       }

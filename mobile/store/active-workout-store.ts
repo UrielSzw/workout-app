@@ -12,6 +12,11 @@ import {
 import { IRoutine } from '@/types/routine';
 import { mainStore } from './main-store';
 
+type IFinishWorkout = {
+  workoutHistory: IWorkoutHistory;
+  originalRoutine: IActiveWorkout;
+};
+
 type ActiveWorkoutStore = {
   // Estado principal
   activeWorkout: IActiveWorkout | null;
@@ -20,7 +25,7 @@ type ActiveWorkoutStore = {
 
   // Actions - Workout Lifecycle
   startWorkout: (routine: IRoutine) => Promise<void>;
-  finishWorkout: () => Promise<IWorkoutHistory>;
+  finishWorkout: () => Promise<IFinishWorkout>;
   cancelWorkout: () => void;
 
   // Actions - Modificaciones durante workout
@@ -263,6 +268,8 @@ export const activeWorkoutStore = create<ActiveWorkoutStore>((set, get) => ({
       JSON.stringify(history),
     );
 
+    const activeWorkoutSnapshot = { ...activeWorkout };
+
     // Limpiar workout activo
     set({
       activeWorkout: null,
@@ -270,7 +277,7 @@ export const activeWorkoutStore = create<ActiveWorkoutStore>((set, get) => ({
     });
     await AsyncStorage.removeItem(STORAGE_KEYS.ACTIVE_WORKOUT);
 
-    return workoutHistory;
+    return { workoutHistory, originalRoutine: activeWorkoutSnapshot };
   },
 
   cancelWorkout: () => {

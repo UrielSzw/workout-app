@@ -15,6 +15,11 @@ type Props = {
   };
   formatRestTime: (seconds: number) => string;
   index: number;
+  onShowBlockRestTimeBottomSheet: (
+    blockId: string,
+    currentRestTime: number,
+    type: 'between-rounds' | 'between-exercises',
+  ) => void;
 };
 
 export const BlockHeader: React.FC<Props> = ({
@@ -24,6 +29,7 @@ export const BlockHeader: React.FC<Props> = ({
   blockColors,
   formatRestTime,
   index,
+  onShowBlockRestTimeBottomSheet,
 }) => {
   const { colors } = useColorScheme();
 
@@ -87,13 +93,13 @@ export const BlockHeader: React.FC<Props> = ({
             <>
               {/* Rest Between Exercises */}
               <TouchableOpacity
-                // onPress={() =>
-                //   onShowRestTimeBottomSheet(
-                //     block.id,
-                //     block.restBetweenExercisesSeconds,
-                //     'between-exercises',
-                //   )
-                // }
+                onPress={() =>
+                  onShowBlockRestTimeBottomSheet(
+                    block.id,
+                    block.restBetweenExercisesSeconds,
+                    'between-exercises',
+                  )
+                }
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -121,13 +127,13 @@ export const BlockHeader: React.FC<Props> = ({
 
               {/* Rest Between Rounds */}
               <TouchableOpacity
-                // onPress={() =>
-                //   onShowRestTimeBottomSheet(
-                //     block.id,
-                //     block.restTimeSeconds,
-                //     'between-rounds',
-                //   )
-                // }
+                onPress={() =>
+                  onShowBlockRestTimeBottomSheet(
+                    block.id,
+                    block.restTimeSeconds,
+                    'between-rounds',
+                  )
+                }
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -156,13 +162,13 @@ export const BlockHeader: React.FC<Props> = ({
           ) : (
             // Individual exercises: show 1 button (between sets)
             <TouchableOpacity
-              // onPress={() =>
-              //   onShowRestTimeBottomSheet(
-              //     block.id,
-              //     block.restTimeSeconds,
-              //     'between-rounds',
-              //   )
-              // }
+              onPress={() =>
+                onShowBlockRestTimeBottomSheet(
+                  block.id,
+                  block.restTimeSeconds,
+                  'between-rounds',
+                )
+              }
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',

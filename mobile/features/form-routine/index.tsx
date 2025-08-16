@@ -9,7 +9,7 @@ import { useFormRoutine } from './hook';
 import { ExerciseSelectorModal } from './exercise-selector-modal';
 import { SetTypeBottomSheet } from './set-type-sheet';
 import { RepsTypeBottomSheet } from './reps-type-sheet';
-import { RestTimeBottomSheet } from './rest-time-sheet';
+import { RestTimeBottomSheet } from '../../components/rest-time-sheet';
 import { useNavigation } from 'expo-router';
 
 type Props = {

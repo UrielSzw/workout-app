@@ -18,6 +18,11 @@ type Props = {
     },
   ) => void;
   onUncompleteSet: (exerciseId: string, setId: string) => void;
+  onShowBlockRestTimeBottomSheet: (
+    blockId: string,
+    currentRestTime: number,
+    type: 'between-rounds' | 'between-exercises',
+  ) => void;
 };
 
 export const ActiveBlockRow: React.FC<Props> = ({
@@ -25,6 +30,7 @@ export const ActiveBlockRow: React.FC<Props> = ({
   index,
   onCompleteSet,
   onUncompleteSet,
+  onShowBlockRestTimeBottomSheet,
 }) => {
   const {
     blockColors,
@@ -53,6 +59,7 @@ export const ActiveBlockRow: React.FC<Props> = ({
           getBlockTypeIcon={getBlockTypeIcon}
           getBlockTypeLabel={getBlockTypeLabel}
           index={index}
+          onShowBlockRestTimeBottomSheet={onShowBlockRestTimeBottomSheet}
         />
 
         {/* Exercises List with Continuous Visual Line */}
