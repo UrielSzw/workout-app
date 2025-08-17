@@ -29,6 +29,11 @@ type Props = {
   getSetTypeLabel: (type: string) => string;
   onAddSetToExercise: (exerciseId: string) => void;
   onShowRepsTypeBottomSheet: (exerciseId: string, current: IRepsType) => void;
+  onShowExerciseOptionsBottomSheet: (
+    blockId: string,
+    exerciseId: string,
+    isInMultiExerciseBlock: boolean,
+  ) => void;
 };
 
 export const ExerciseDetails: React.FC<Props> = ({
@@ -44,12 +49,22 @@ export const ExerciseDetails: React.FC<Props> = ({
   getSetTypeLabel,
   onAddSetToExercise,
   onShowRepsTypeBottomSheet,
+  onShowExerciseOptionsBottomSheet,
 }) => {
+  const handlePress = () => {
+    onShowExerciseOptionsBottomSheet(
+      block.id,
+      exerciseInBlock.id,
+      block.exercises.length > 1,
+    );
+  };
+
   return (
     <TouchableOpacity
       style={{ flex: 1 }}
       onLongPress={block.exercises.length > 1 ? onLongPressExercise : undefined}
       delayLongPress={500}
+      onPress={handlePress}
       activeOpacity={block.exercises.length > 1 ? 0.8 : 1}
     >
       <ExerciseHeader

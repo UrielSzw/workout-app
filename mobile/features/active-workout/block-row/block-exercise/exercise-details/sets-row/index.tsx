@@ -1,6 +1,7 @@
 import { Typography } from '@/components/ui';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { IActiveExerciseInBlock, IActiveSet } from '@/types/active-workout';
+import { ISetType } from '@/types/routine';
 import { Check } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { TextInput, TouchableOpacity, View } from 'react-native';
@@ -27,6 +28,7 @@ type Props = {
   getSetTypeColor: (type: string) => string;
   getSetTypeLabel: (type: string) => string;
   prevSet?: IActiveSet | null;
+  onShowSetType: (exerciseId: string, setId: string, current: ISetType) => void;
 };
 
 export const SetRow: React.FC<Props> = ({
@@ -39,6 +41,7 @@ export const SetRow: React.FC<Props> = ({
   getSetTypeLabel,
   setIndex,
   prevSet,
+  onShowSetType,
 }) => {
   const [setData, setSetData] = useState({
     weight: '',
@@ -53,8 +56,8 @@ export const SetRow: React.FC<Props> = ({
       onUncompleteSet(exerciseInBlock.id, setId);
     } else {
       onCompleteSet(exerciseInBlock.id, setId, {
-        actualWeight: setData.weight || set.weight,
-        actualReps: setData.reps || set?.repsRange?.min || set.reps,
+        actualWeight: setData.weight || set.weight || '0',
+        actualReps: setData.reps || set?.repsRange?.min || set.reps || '0',
       });
     }
   };
@@ -86,9 +89,7 @@ export const SetRow: React.FC<Props> = ({
       {/* Set Number */}
       <View style={{ width: 40, alignItems: 'center' }}>
         <TouchableOpacity
-          // onPress={() =>
-          //   onShowSetTypeBottomSheet(set.id, exerciseInBlock.id, set.type)
-          // }
+          onPress={() => onShowSetType(exerciseInBlock.id, set.id, set.type)}
           style={{
             width: 28,
             height: 28,

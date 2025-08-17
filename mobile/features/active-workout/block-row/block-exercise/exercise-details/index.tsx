@@ -2,10 +2,11 @@ import { TouchableOpacity } from 'react-native';
 import { ExerciseHeader } from './exercise-header';
 import { SetsTable } from './sets-table';
 import { IRepsType, ISetType } from '@/types/routine';
-import { IActiveExerciseInBlock, IActiveSet } from '@/types/active-workout';
+import { IActiveBlock, IActiveExerciseInBlock } from '@/types/active-workout';
 
 type Props = {
   exerciseInBlock: IActiveExerciseInBlock;
+  block: IActiveBlock;
   blockColors: {
     primary: string;
     light: string;
@@ -24,19 +25,38 @@ type Props = {
     },
   ) => void;
   onUncompleteSet: (exerciseId: string, setId: string) => void;
+  onAddSetToExercise: (exerciseId: string) => void;
+  onShowSetType: (exerciseId: string, setId: string, current: ISetType) => void;
+  onShowExerciseOptionsBottomSheet: (
+    blockId: string,
+    exerciseId: string,
+    isInMultiExerciseBlock: boolean,
+  ) => void;
 };
 
 export const ExerciseDetails: React.FC<Props> = ({
   exerciseInBlock,
+  block,
   blockColors,
   getRepsColumnTitle,
   getSetTypeColor,
   getSetTypeLabel,
   onCompleteSet,
   onUncompleteSet,
+  onAddSetToExercise,
+  onShowSetType,
+  onShowExerciseOptionsBottomSheet,
 }) => {
+  const handlePress = () => {
+    onShowExerciseOptionsBottomSheet(
+      block.id,
+      exerciseInBlock.id,
+      block.exercises.length > 1,
+    );
+  };
+
   return (
-    <TouchableOpacity style={{ flex: 1 }}>
+    <TouchableOpacity style={{ flex: 1 }} onPress={handlePress}>
       <ExerciseHeader exerciseInBlock={exerciseInBlock} />
 
       {/* Sets Table */}
@@ -48,6 +68,8 @@ export const ExerciseDetails: React.FC<Props> = ({
         getSetTypeLabel={getSetTypeLabel}
         onCompleteSet={onCompleteSet}
         onUncompleteSet={onUncompleteSet}
+        onAddSetToExercise={onAddSetToExercise}
+        onShowSetType={onShowSetType}
       />
     </TouchableOpacity>
   );

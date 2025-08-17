@@ -1,42 +1,38 @@
 import React, { forwardRef } from 'react';
-import { TouchableOpacity, Platform } from 'react-native';
+import { TouchableOpacity } from 'react-native';
 import { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Typography } from '@/components/ui';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 type Props = {
   onDelete: () => void;
-  onEdit: () => void;
+  onShowReplace: () => void;
+  isInMultipleExercisesBlock?: boolean;
 };
 
-export const RoutineOptionsBottomSheet = forwardRef<BottomSheetModal, Props>(
-  ({ onDelete, onEdit }, ref) => {
+export const ExerciseOptionsBottomSheet = forwardRef<BottomSheetModal, Props>(
+  ({ onDelete, onShowReplace, isInMultipleExercisesBlock }, ref) => {
     const { colors } = useColorScheme();
-    const insets = useSafeAreaInsets();
 
-    // Calcular el bottomInset considerando el tab bar
-    const tabBarHeight = Platform.OS === 'ios' ? 49 : 56;
-    const bottomInset = insets.bottom + tabBarHeight;
-
-    const routineOptions = [{ type: 'edit', label: 'Editar Rutina' }];
+    const exerciseOptions = [{ type: 'replace', label: 'Remplazar ejercicio' }];
 
     const handleOptionPress = (type: string) => {
       switch (type) {
-        case 'edit':
-          onEdit();
+        case 'replace':
+          onShowReplace();
           break;
         default:
           break;
       }
     };
 
+    console.log('isINsmult', isInMultipleExercisesBlock);
+
     return (
       <BottomSheetModal
         ref={ref}
         snapPoints={['50%']}
         enablePanDownToClose
-        bottomInset={bottomInset}
         backgroundStyle={{
           backgroundColor: colors.surface,
           shadowColor: '#000',
@@ -50,16 +46,16 @@ export const RoutineOptionsBottomSheet = forwardRef<BottomSheetModal, Props>(
         }}
         handleIndicatorStyle={{ backgroundColor: colors.textMuted }}
       >
-        <BottomSheetView style={{ padding: 16, paddingBottom: 40 }}>
+        <BottomSheetView style={{ padding: 16, paddingBottom: 120 }}>
           <Typography
             variant="h3"
             weight="semibold"
             style={{ marginBottom: 16 }}
           >
-            Opciones de Rutina
+            Opciones de Bloque
           </Typography>
 
-          {routineOptions.map((option) => (
+          {exerciseOptions.map((option) => (
             <TouchableOpacity
               key={option.type}
               onPress={() => handleOptionPress(option.type)}
@@ -74,18 +70,20 @@ export const RoutineOptionsBottomSheet = forwardRef<BottomSheetModal, Props>(
             </TouchableOpacity>
           ))}
 
-          <TouchableOpacity
-            onPress={onDelete}
-            style={{ paddingVertical: 16, paddingHorizontal: 16 }}
-          >
-            <Typography variant="body1" style={{ color: colors.error[500] }}>
-              Eliminar rutina
-            </Typography>
-          </TouchableOpacity>
+          {isInMultipleExercisesBlock && (
+            <TouchableOpacity
+              onPress={onDelete}
+              style={{ paddingVertical: 16, paddingHorizontal: 16 }}
+            >
+              <Typography variant="body1" style={{ color: colors.error[500] }}>
+                Eliminar ejercicio
+              </Typography>
+            </TouchableOpacity>
+          )}
         </BottomSheetView>
       </BottomSheetModal>
     );
   },
 );
 
-RoutineOptionsBottomSheet.displayName = 'RoutineOptionsBottomSheet';
+ExerciseOptionsBottomSheet.displayName = 'ExerciseOptionsBottomSheet';

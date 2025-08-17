@@ -30,6 +30,9 @@ type ActiveWorkoutStore = {
 
   // Actions - Modificaciones durante workout
   addBlock: (block: Omit<IActiveBlock, 'id' | 'wasAddedDuringWorkout'>) => void;
+  addBlocks: (
+    blocks: Omit<IActiveBlock, 'id' | 'wasAddedDuringWorkout'>[],
+  ) => void;
   addExerciseToBlock: (
     blockId: string,
     exercise: Omit<IActiveExerciseInBlock, 'id' | 'wasAddedDuringWorkout'>,
@@ -61,6 +64,10 @@ type ActiveWorkoutStore = {
     updates: Partial<IActiveExerciseInBlock>,
   ) => void;
   updateBlock: (blockId: string, updates: Partial<IActiveBlock>) => void;
+
+  // Actions - delete
+  deleteSet: (exerciseId: string, setId: string) => void;
+  deleteBlock: (blockId: string) => void;
 
   // Actions - Storage & History
   loadFromStorage: () => Promise<void>;
@@ -314,6 +321,32 @@ export const activeWorkoutStore = create<ActiveWorkoutStore>((set, get) => ({
     get().saveToStorage();
   },
 
+  addBlocks: (blocks: Omit<IActiveBlock, 'id' | 'wasAddedDuringWorkout'>[]) => {
+    const { activeWorkout } = get();
+    if (!activeWorkout) return;
+
+    const newBlocks = blocks.map((block) => ({
+      ...block,
+      id: generateId(),
+      wasAddedDuringWorkout: true,
+    }));
+
+    const updatedWorkout = {
+      ...activeWorkout,
+      blocks: [...activeWorkout.blocks, ...newBlocks],
+      hasModificationsFromOriginal: true,
+      stats: {
+        ...activeWorkout.stats,
+        totalSetsPlanned:
+          activeWorkout.stats.totalSetsPlanned +
+          newBlocks.reduce((total, block) => total + block.exercises.length, 0),
+      },
+    };
+
+    set({ activeWorkout: updatedWorkout });
+    get().saveToStorage();
+  },
+
   addExerciseToBlock: (blockId, exerciseData) => {
     const { activeWorkout } = get();
     if (!activeWorkout) return;
@@ -360,18 +393,28 @@ export const activeWorkoutStore = create<ActiveWorkoutStore>((set, get) => ({
       wasModifiedFromOriginal: false,
     };
 
+    let isBlockUpdated = false;
+
     const updatedBlocks = activeWorkout.blocks.map((block) => ({
       ...block,
-      exercises: block.exercises.map((exercise) => {
+      exercises: block.exercises.map((exercise, exerciseIndex) => {
+        if (exerciseIndex === 0) {
+          isBlockUpdated = false;
+        }
+
         if (exercise.id === exerciseId) {
+          isBlockUpdated = true;
+
           return {
             ...exercise,
             sets: [...exercise.sets, newSet],
             wasModifiedFromOriginal: true,
           };
         }
+
         return exercise;
       }),
+      wasModifiedFromOriginal: isBlockUpdated,
     }));
 
     const updatedWorkout = {
@@ -486,14 +529,22 @@ export const activeWorkoutStore = create<ActiveWorkoutStore>((set, get) => ({
     const { activeWorkout } = get();
     if (!activeWorkout) return;
 
+    let isBlockUpdated = false;
+
     const updatedBlocks = activeWorkout.blocks.map((block) => ({
       ...block,
-      exercises: block.exercises.map((exercise) => {
+      exercises: block.exercises.map((exercise, exerciseIndex) => {
         if (exercise.id === exerciseId) {
+          if (exerciseIndex === 0) {
+            isBlockUpdated = false;
+          }
+
           return {
             ...exercise,
             sets: exercise.sets.map((set) => {
               if (set.id === setId) {
+                isBlockUpdated = true;
+
                 return {
                   ...set,
                   ...updates,
@@ -507,6 +558,7 @@ export const activeWorkoutStore = create<ActiveWorkoutStore>((set, get) => ({
         }
         return exercise;
       }),
+      wasModifiedFromOriginal: isBlockUpdated,
     }));
 
     const updatedWorkout = {
@@ -589,6 +641,61 @@ export const activeWorkoutStore = create<ActiveWorkoutStore>((set, get) => ({
     } finally {
       set({ isLoading: false });
     }
+  },
+
+  deleteSet: (exerciseId, setId) => {
+    const { activeWorkout } = get();
+    if (!activeWorkout) return;
+
+    let isBlockUpdated = false;
+
+    const updatedBlocks = activeWorkout.blocks.map((block) => ({
+      ...block,
+      exercises: block.exercises.map((exercise, exerciseIndex) => {
+        if (exerciseIndex === 0) {
+          isBlockUpdated = false;
+        }
+
+        if (exercise.id === exerciseId) {
+          isBlockUpdated = true;
+
+          return {
+            ...exercise,
+            sets: exercise.sets.filter((set) => set.id !== setId),
+            wasModifiedFromOriginal: true,
+          };
+        }
+        return exercise;
+      }),
+      wasModifiedFromOriginal: isBlockUpdated,
+    }));
+
+    const updatedWorkout = {
+      ...activeWorkout,
+      blocks: updatedBlocks,
+      hasModificationsFromOriginal: true,
+    };
+
+    set({ activeWorkout: updatedWorkout });
+    get().saveToStorage();
+  },
+
+  deleteBlock: (blockId: string) => {
+    const { activeWorkout } = get();
+    if (!activeWorkout) return;
+
+    const updatedBlocks = activeWorkout.blocks.filter(
+      (block) => block.id !== blockId,
+    );
+
+    const updatedWorkout = {
+      ...activeWorkout,
+      blocks: updatedBlocks,
+      hasModificationsFromOriginal: true,
+    };
+
+    set({ activeWorkout: updatedWorkout });
+    get().saveToStorage();
   },
 
   saveToStorage: async () => {

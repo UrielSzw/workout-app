@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, Dimensions } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { Button, Typography } from '@/components/ui';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { X, Timer, Flag } from 'lucide-react-native';
 import { ElapsedTime } from './elapsed-time';
 import { IActiveWorkout } from '@/types/active-workout';
+import { ProgressLine } from './progress-line';
 
 interface WorkoutProgress {
   completed: number;
@@ -21,8 +22,6 @@ type Props = {
   activeWorkout: IActiveWorkout | null;
   onFinishWorkout: (elapsedTime: number) => void;
 };
-
-const { width } = Dimensions.get('window');
 
 export const ActiveWorkoutHeader: React.FC<Props> = ({
   routineName,
@@ -55,15 +54,8 @@ export const ActiveWorkoutHeader: React.FC<Props> = ({
         position: 'relative',
       }}
     >
-      <View
-        style={{
-          position: 'absolute',
-          height: 4,
-          width: (width * progress.percentage) / 100,
-          backgroundColor: colors.border,
-          bottom: 0,
-        }}
-      />
+      {/* Animated Progress Line */}
+      <ProgressLine progressPercentage={progress?.percentage} />
 
       {/* Top Navigation - Solo X para salir */}
       <TouchableOpacity
@@ -72,7 +64,7 @@ export const ActiveWorkoutHeader: React.FC<Props> = ({
           width: 40,
           height: 40,
           borderRadius: 20,
-          backgroundColor: isDarkMode ? colors.gray[600] : colors.gray[100],
+          backgroundColor: isDarkMode ? colors.gray[800] : colors.gray[100],
           alignItems: 'center',
           justifyContent: 'center',
         }}

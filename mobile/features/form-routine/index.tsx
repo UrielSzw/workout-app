@@ -6,11 +6,13 @@ import { CreateRoutineHeader } from './create-routine-header';
 import { RoutineInfo } from './routine-info';
 import { ExerciseList } from './exercise-list';
 import { useFormRoutine } from './hook';
-import { ExerciseSelectorModal } from './exercise-selector-modal';
-import { SetTypeBottomSheet } from './set-type-sheet';
+import { ExerciseSelectorModal } from '../../components/exercise-selector-modal';
+import { SetTypeBottomSheet } from '../../components/set-type-sheet';
 import { RepsTypeBottomSheet } from './reps-type-sheet';
 import { RestTimeBottomSheet } from '../../components/rest-time-sheet';
 import { useNavigation } from 'expo-router';
+import { BlockOptionsBottomSheet } from '../../components/block-options-sheet';
+import { ExerciseOptionsBottomSheet } from '@/components/exercise-options-sheet';
 
 type Props = {
   isEditMode?: boolean;
@@ -35,6 +37,9 @@ export const FormRoutineFeature = ({ isEditMode }: Props) => {
     handleReorderBlocks,
     handleAddAsIndividual,
     handleAddAsBlock,
+    blockOptionsBottomSheetRef,
+    handleShowBlockOptionsBottomSheet,
+    exercisesLength,
 
     // Exercises methods
     handleReorderExercises,
@@ -42,6 +47,10 @@ export const FormRoutineFeature = ({ isEditMode }: Props) => {
     setExerciseSelectorVisible,
     selectedExercises,
     handleSelectExercise,
+    exerciseOptionsBottomSheetRef,
+    handleShowExerciseOptionsBottomSheet,
+    handleDeleteExercise,
+    isInMultipleExerciseBlock,
 
     // Reps and rest time
     currentRestTime,
@@ -102,6 +111,10 @@ export const FormRoutineFeature = ({ isEditMode }: Props) => {
               }
               onReorderBlocks={handleReorderBlocks}
               onReorderExercises={handleReorderExercises}
+              onShowBlockOptionsBottomSheet={handleShowBlockOptionsBottomSheet}
+              onShowExerciseOptionsBottomSheet={
+                handleShowExerciseOptionsBottomSheet
+              }
             />
           </View>
 
@@ -137,6 +150,20 @@ export const FormRoutineFeature = ({ isEditMode }: Props) => {
           ref={restTimeBottomSheetRef}
           currentRestTime={currentRestTime}
           onSelectRestTime={handleBlockRestTimeSelect}
+        />
+
+        <BlockOptionsBottomSheet
+          ref={blockOptionsBottomSheetRef}
+          onDelete={handleDeleteBlock}
+          onConvertToIndividual={handleConvertToIndividual}
+          exercisesLength={exercisesLength}
+        />
+
+        <ExerciseOptionsBottomSheet
+          ref={exerciseOptionsBottomSheetRef}
+          onDelete={handleDeleteExercise}
+          onShowReplace={() => {}}
+          isInMultipleExercisesBlock={isInMultipleExerciseBlock}
         />
       </SafeAreaView>
     </BottomSheetModalProvider>

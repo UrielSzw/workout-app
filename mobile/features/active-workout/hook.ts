@@ -16,6 +16,8 @@ import {
   IBlock,
   IExerciseInBlock,
   ISet,
+  IExercise,
+  IBlockType,
 } from '@/types/routine';
 import { mainStore } from '@/store/main-store';
 
@@ -38,6 +40,9 @@ export const useActiveWorkout = () => {
     getExerciseHistory,
     loadFromStorage,
     updateBlock,
+    addBlocks,
+    deleteSet,
+    deleteBlock,
   } = activeWorkoutStore();
 
   // UI State
@@ -54,9 +59,17 @@ export const useActiveWorkout = () => {
   const repsTypeSheetRef = useRef<BottomSheetModal>(null);
   const setTypeSheetRef = useRef<BottomSheetModal>(null);
   const exerciseSelectorRef = useRef<BottomSheetModal>(null);
+  const blockOptionsBottomSheetRef = useRef<BottomSheetModal>(null);
+  const exerciseOptionsBottomSheetRef = useRef<BottomSheetModal>(null);
 
   // Current editing state
   const [currentBlockId, setCurrentBlockId] = useState<string | null>(null);
+  const [currentExerciseId, setCurrentExerciseId] = useState<string | null>(
+    null,
+  );
+  const [isInMultipleExerciseBlock, setIsInMultipleExerciseBlock] =
+    useState<boolean>(false);
+  const [exercisesLength, setCurrentExercisesLength] = useState<number>(0);
   const [currentRestTime, setCurrentRestTime] = useState<number>(90);
   const [currentRestTimeType, setCurrentRestTimeType] = useState<
     'between-rounds' | 'between-exercises'
@@ -70,6 +83,7 @@ export const useActiveWorkout = () => {
 
   // Exercise selector state
   const [exerciseSelectorVisible, setExerciseSelectorVisible] = useState(false);
+  const [selectedExercises, setSelectedExercises] = useState<IExercise[]>([]);
 
   // Load active workout on mount
   useEffect(() => {
@@ -146,6 +160,13 @@ export const useActiveWorkout = () => {
 
     for (const activeBlock of activeWorkout.blocks) {
       // Si el bloque fue agregado durante el workout, convertirlo a IBlock
+      console.log(
+        'activeBlock',
+        activeBlock.name,
+        activeBlock.wasAddedDuringWorkout,
+        activeBlock.wasModifiedFromOriginal,
+      );
+
       if (activeBlock.wasAddedDuringWorkout) {
         const newBlock: IBlock = {
           id: activeBlock.originalBlockId || generateNewId(),
@@ -196,6 +217,13 @@ export const useActiveWorkout = () => {
 
           for (const activeExercise of activeBlock.exercises) {
             // Si el ejercicio fue agregado durante el workout
+            console.log(
+              'activeExercise.wasAddedDuringWorkout:',
+              activeExercise.wasAddedDuringWorkout,
+              activeExercise.exercise.name,
+              activeExercise.wasModifiedFromOriginal,
+            );
+
             if (activeExercise.wasAddedDuringWorkout) {
               const newExercise: IExerciseInBlock = {
                 id: generateNewId(),
@@ -231,6 +259,13 @@ export const useActiveWorkout = () => {
                 (ex) => ex.id === activeExercise.originalExerciseInBlockId,
               );
 
+              console.log(
+                'originalExercise:',
+                !!originalExercise,
+                activeExercise.exercise.name,
+                activeExercise.wasModifiedFromOriginal,
+              );
+
               if (originalExercise) {
                 const updatedSets: ISet[] = activeExercise.sets.map(
                   (activeSet) => ({
@@ -246,6 +281,8 @@ export const useActiveWorkout = () => {
                     repsRange: activeSet.repsRange,
                   }),
                 );
+
+                console.log('UPDATED SETS:', updatedSets);
 
                 const updatedExercise: IExerciseInBlock = {
                   ...originalExercise,
@@ -442,6 +479,7 @@ export const useActiveWorkout = () => {
     if (!exercise) return;
 
     const newSetNumber = exercise.sets.length + 1;
+
     addSetToExercise(exerciseId, {
       setNumber: newSetNumber,
       type: 'normal',
@@ -605,6 +643,212 @@ export const useActiveWorkout = () => {
     restTimeBottomSheetRef.current?.dismiss();
   };
 
+  // Block update methods
+  const createDefaultSets = (): IActiveSet[] => [
+    {
+      id: `set_${Date.now()}_1`,
+      setNumber: 1,
+      weight: '',
+      reps: '',
+      type: 'normal',
+      completed: false,
+      repsType: 'reps',
+      wasModifiedFromOriginal: false,
+    },
+    {
+      id: `set_${Date.now()}_2`,
+      setNumber: 2,
+      weight: '',
+      reps: '',
+      type: 'normal',
+      completed: false,
+      repsType: 'reps',
+      wasModifiedFromOriginal: false,
+    },
+    {
+      id: `set_${Date.now()}_3`,
+      setNumber: 3,
+      weight: '',
+      reps: '',
+      type: 'normal',
+      completed: false,
+      repsType: 'reps',
+      wasModifiedFromOriginal: false,
+    },
+  ];
+
+  const handleSelectExercise = (exercise: IExercise) => {
+    if (selectedExercises.find((ex) => ex.id === exercise.id)) {
+      setSelectedExercises(
+        selectedExercises.filter((ex) => ex.id !== exercise.id),
+      );
+    } else {
+      setSelectedExercises([...selectedExercises, exercise]);
+    }
+  };
+
+  const handleAddAsIndividual = () => {
+    if (selectedExercises.length === 0) return;
+
+    const blocksLength = activeWorkout?.blocks.length || 0;
+
+    const newBlocks: Omit<IActiveBlock, 'id' | 'wasAddedDuringWorkout'>[] =
+      selectedExercises.map((exercise, i) => ({
+        type: 'individual' as const,
+        orderIndex: blocksLength + i,
+        exercises: [
+          {
+            id: `exercise_${Date.now()}_${i}`,
+            exercise,
+            sets: createDefaultSets(),
+            orderIndex: 0,
+            wasAddedDuringWorkout: true,
+            wasModifiedFromOriginal: false,
+          },
+        ] as IActiveExerciseInBlock[],
+        restTimeSeconds: 90,
+        restBetweenExercisesSeconds: 0,
+        wasModifiedFromOriginal: false,
+      }));
+
+    addBlocks(newBlocks);
+    setSelectedExercises([]);
+    setExerciseSelectorVisible(false);
+  };
+
+  const handleAddAsBlock = () => {
+    if (selectedExercises.length < 2) return;
+
+    const blocksLength = activeWorkout?.blocks.length || 0;
+
+    const newBlock: IActiveBlock = {
+      id: `block_${Date.now()}`,
+      type: 'superset', // Always start as superset
+      orderIndex: blocksLength,
+      exercises: selectedExercises.map((exercise, i) => ({
+        id: `exercise_${Date.now()}_${i}`,
+        exercise,
+        sets: createDefaultSets(),
+        orderIndex: i,
+        wasAddedDuringWorkout: true,
+        wasModifiedFromOriginal: false,
+      })),
+      restTimeSeconds: 90,
+      restBetweenExercisesSeconds: 0, // No rest = superset
+      name: 'Superserie',
+      wasAddedDuringWorkout: true,
+      wasModifiedFromOriginal: false,
+    };
+
+    addBlocks([newBlock]);
+    setSelectedExercises([]);
+    setExerciseSelectorVisible(false);
+  };
+
+  const handleConvertToIndividual = () => {
+    if (!currentBlockId || !activeWorkout) return;
+
+    const blockToConvert = activeWorkout.blocks.find(
+      (block) => block.id === currentBlockId,
+    );
+
+    if (!blockToConvert) return;
+
+    // Remove the original block and add individual blocks for each exercise
+    const otherBlocks = activeWorkout.blocks.filter(
+      (block) => block.id !== currentBlockId,
+    );
+
+    const individualBlocks: IActiveBlock[] = blockToConvert.exercises.map(
+      (exerciseInBlock, index) => ({
+        id: Date.now().toString() + index,
+        type: 'individual' as const,
+        orderIndex: otherBlocks.length + index,
+        exercises: [exerciseInBlock],
+        restTimeSeconds: blockToConvert.restTimeSeconds,
+        restBetweenExercisesSeconds: 0,
+        name: `Ejercicio Individual ${otherBlocks.length + index + 1}`,
+        wasAddedDuringWorkout: true,
+        wasModifiedFromOriginal: false,
+      }),
+    );
+
+    deleteBlock(blockToConvert.id);
+    addBlocks(individualBlocks);
+    blockOptionsBottomSheetRef.current?.dismiss();
+  };
+
+  // Delete operations
+  const handleDeleteSet = () => {
+    const { exerciseId, setId } = currentSetData || {};
+
+    if (!exerciseId || !setId) return;
+
+    deleteSet(exerciseId, setId);
+    setCurrentSetData(null);
+    setTypeSheetRef.current?.dismiss();
+  };
+
+  const handleDeleteBlock = () => {
+    if (!currentBlockId) return;
+
+    deleteBlock(currentBlockId);
+    setCurrentBlockId(null);
+    blockOptionsBottomSheetRef.current?.dismiss();
+  };
+
+  const handleShowBlockOptionsBottomSheet = (
+    blockId: string,
+    exercisesLength: number,
+  ) => {
+    setCurrentBlockId(blockId);
+    setCurrentExercisesLength(exercisesLength);
+    blockOptionsBottomSheetRef.current?.present();
+  };
+
+  const handleShowExerciseOptionsBottomSheet = (
+    blockId: string,
+    exerciseId: string,
+    isInMultiExerciseBlock: boolean,
+  ) => {
+    setCurrentBlockId(blockId);
+    setCurrentExerciseId(exerciseId);
+    setIsInMultipleExerciseBlock(isInMultiExerciseBlock);
+    exerciseOptionsBottomSheetRef.current?.present();
+  };
+
+  const handleDeleteExercise = () => {
+    if (!currentBlockId || !currentExerciseId) return;
+
+    const blockToUpdate = activeWorkout?.blocks.find(
+      (b) => b.id === currentBlockId,
+    );
+
+    if (!blockToUpdate) return null;
+
+    const newExercises = blockToUpdate.exercises.filter(
+      (exercise) => exercise.id !== currentExerciseId,
+    );
+
+    let updatedBlock = {
+      ...blockToUpdate,
+      exercises: newExercises,
+    };
+
+    if (newExercises.length === 1) {
+      updatedBlock = {
+        ...updatedBlock,
+        type: 'individual',
+      };
+    }
+
+    updateBlock(currentBlockId, updatedBlock);
+    setCurrentBlockId(null);
+    setCurrentExerciseId(null);
+    setIsInMultipleExerciseBlock(false);
+    exerciseOptionsBottomSheetRef.current?.dismiss();
+  };
+
   return {
     // State
     activeWorkout,
@@ -648,6 +892,11 @@ export const useActiveWorkout = () => {
     handleAddSetToExercise,
     handleAddExercise,
     setExerciseSelectorVisible,
+    handleSelectExercise,
+    handleAddAsIndividual,
+    handleAddAsBlock,
+    selectedExercises,
+    handleConvertToIndividual,
 
     // Getters
     getWorkoutStats,
@@ -657,5 +906,18 @@ export const useActiveWorkout = () => {
     handleBlockRestTimeSelect,
     handleShowBlockRestTimeBottomSheet,
     currentRestTime,
+
+    // Delete operations
+    handleDeleteSet,
+    blockOptionsBottomSheetRef,
+    handleShowBlockOptionsBottomSheet,
+    exercisesLength,
+    handleDeleteBlock,
+
+    // Exercise options
+    exerciseOptionsBottomSheetRef,
+    handleDeleteExercise,
+    handleShowExerciseOptionsBottomSheet,
+    isInMultipleExerciseBlock,
   };
 };

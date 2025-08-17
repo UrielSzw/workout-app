@@ -1,7 +1,7 @@
 import { Typography } from '@/components/ui';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { IActiveExerciseInBlock, IActiveSet } from '@/types/active-workout';
-import { IRepsType } from '@/types/routine';
+import { IRepsType, ISetType } from '@/types/routine';
 import { Check, ChevronDown, Plus } from 'lucide-react-native';
 import { TouchableOpacity, View } from 'react-native';
 import { SetRow } from '../sets-row';
@@ -26,6 +26,8 @@ type Props = {
     },
   ) => void;
   onUncompleteSet: (exerciseId: string, setId: string) => void;
+  onAddSetToExercise: (exerciseId: string) => void;
+  onShowSetType: (exerciseId: string, setId: string, current: ISetType) => void;
 };
 
 export const SetsTable: React.FC<Props> = ({
@@ -36,6 +38,8 @@ export const SetsTable: React.FC<Props> = ({
   getSetTypeLabel,
   onCompleteSet,
   onUncompleteSet,
+  onAddSetToExercise,
+  onShowSetType,
 }) => {
   const { colors } = useColorScheme();
 
@@ -108,12 +112,13 @@ export const SetsTable: React.FC<Props> = ({
           prevSet={prevSets.find(
             (prevSet) => prevSet.setNumber === set.setNumber,
           )}
+          onShowSetType={onShowSetType}
         />
       ))}
 
       {/* Add Set Button */}
       <TouchableOpacity
-        // onPress={() => onAddSetToExercise(exerciseInBlock.id)}
+        onPress={() => onAddSetToExercise(exerciseInBlock.id)}
         style={{
           flexDirection: 'row',
           alignItems: 'center',

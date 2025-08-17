@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, ScrollView } from 'react-native';
+import { SafeAreaView, ScrollView, View } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ActiveWorkoutHeader } from './active-workout-header';
 import { useActiveWorkout } from './hook';
@@ -7,6 +7,12 @@ import { ActiveBlockRow } from './block-row';
 import { RestTimerBottomnSheet } from './rest-timer-sheet';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { RestTimeBottomSheet } from '@/components/rest-time-sheet';
+import { ExerciseSelectorModal } from '@/components/exercise-selector-modal';
+import { AddExerciseButton } from '@/components/add-exercise-button';
+import { SetTypeBottomSheet } from '@/components/set-type-sheet';
+import { ISetType } from '@/types/routine';
+import { BlockOptionsBottomSheet } from '@/components/block-options-sheet';
+import { ExerciseOptionsBottomSheet } from '@/components/exercise-options-sheet';
 
 export const ActiveWorkoutFeature = () => {
   const { colors } = useColorScheme();
@@ -30,6 +36,34 @@ export const ActiveWorkoutFeature = () => {
     handleShowBlockRestTimeBottomSheet,
     handleBlockRestTimeSelect,
     currentRestTime,
+
+    exerciseSelectorVisible,
+    setExerciseSelectorVisible,
+    handleAddAsIndividual,
+    handleAddAsBlock,
+    handleConvertToIndividual,
+    selectedExercises,
+    handleSelectExercise,
+
+    handleAddSetToExercise,
+
+    setTypeSheetRef,
+    handleSetTypeSelect,
+    currentSetData,
+    handleShowSetTypeSheet,
+
+    // Delete
+    handleDeleteSet,
+    blockOptionsBottomSheetRef,
+    handleShowBlockOptionsBottomSheet,
+    exercisesLength,
+    handleDeleteBlock,
+
+    // Exercise methods
+    exerciseOptionsBottomSheetRef,
+    handleShowExerciseOptionsBottomSheet,
+    handleDeleteExercise,
+    isInMultipleExerciseBlock,
   } = useActiveWorkout();
 
   if (!activeWorkout || !isWorkoutActive) {
@@ -69,8 +103,20 @@ export const ActiveWorkoutFeature = () => {
               onShowBlockRestTimeBottomSheet={
                 handleShowBlockRestTimeBottomSheet
               }
+              onAddSetToExercise={handleAddSetToExercise}
+              onShowSetType={handleShowSetTypeSheet}
+              onShowBlockOptionsBottomSheet={handleShowBlockOptionsBottomSheet}
+              onShowExerciseOptionsBottomSheet={
+                handleShowExerciseOptionsBottomSheet
+              }
             />
           ))}
+
+          <View style={{ padding: 20 }}>
+            <AddExerciseButton
+              setExerciseSelectorVisible={setExerciseSelectorVisible}
+            />
+          </View>
 
           {/* Rest Timer Bottom Sheet */}
           <RestTimerBottomnSheet
@@ -87,6 +133,36 @@ export const ActiveWorkoutFeature = () => {
             ref={restTimeBottomSheetRef}
             currentRestTime={currentRestTime}
             onSelectRestTime={handleBlockRestTimeSelect}
+          />
+
+          <SetTypeBottomSheet
+            ref={setTypeSheetRef}
+            onSelectSetType={handleSetTypeSelect}
+            onDeleteSet={handleDeleteSet}
+            currentSetType={currentSetData?.current as ISetType}
+          />
+
+          <ExerciseSelectorModal
+            visible={exerciseSelectorVisible}
+            onClose={() => setExerciseSelectorVisible(false)}
+            selectedExercises={selectedExercises}
+            onSelectExercise={handleSelectExercise}
+            onAddAsIndividual={handleAddAsIndividual}
+            onAddAsBlock={handleAddAsBlock}
+          />
+
+          <BlockOptionsBottomSheet
+            ref={blockOptionsBottomSheetRef}
+            onDelete={handleDeleteBlock}
+            onConvertToIndividual={handleConvertToIndividual}
+            exercisesLength={exercisesLength}
+          />
+
+          <ExerciseOptionsBottomSheet
+            ref={exerciseOptionsBottomSheetRef}
+            onDelete={handleDeleteExercise}
+            onShowReplace={() => {}}
+            isInMultipleExercisesBlock={isInMultipleExerciseBlock}
           />
         </ScrollView>
       </SafeAreaView>

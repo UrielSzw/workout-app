@@ -1,5 +1,5 @@
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { IActiveBlock } from '@/types/active-workout';
+import { IActiveBlock, IActiveSet } from '@/types/active-workout';
 import { IRepsType } from '@/types/routine';
 import { Link2, RotateCcw } from 'lucide-react-native';
 type Params = {

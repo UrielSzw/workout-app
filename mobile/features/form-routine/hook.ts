@@ -2,6 +2,7 @@ import { formRoutineStore } from '@/store/form-routine-store';
 import { mainStore } from '@/store/main-store';
 import {
   IBlock,
+  IBlockType,
   IExercise,
   IExerciseInBlock,
   IRepsType,
@@ -28,6 +29,8 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
   const setTypeBottomSheetRef = useRef<BottomSheetModal>(null);
   const repsTypeBottomSheetRef = useRef<BottomSheetModal>(null);
   const restTimeBottomSheetRef = useRef<BottomSheetModal>(null);
+  const blockOptionsBottomSheetRef = useRef<BottomSheetModal>(null);
+  const exerciseOptionsBottomSheetRef = useRef<BottomSheetModal>(null);
 
   // Routine information state
   const [routineName, setRoutineName] = useState('');
@@ -36,7 +39,10 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
   const [currentExerciseId, setCurrentExerciseId] = useState<string | null>(
     null,
   );
+  const [isInMultipleExerciseBlock, setIsInMultipleExerciseBlock] =
+    useState<boolean>(false);
   const [currentBlockId, setCurrentBlockId] = useState<string | null>(null);
+  const [exercisesLength, setCurrentExercisesLength] = useState<number>(0);
   const [currentRestTime, setCurrentRestTime] = useState<number>(90);
   const [currentRestTimeType, setCurrentRestTimeType] = useState<
     'between-rounds' | 'between-exercises'
@@ -100,18 +106,26 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
     setReorderedBlock(null);
   };
 
-  const handleDeleteBlock = (blockId: string) => {
-    const updatedBlocks = defaultBlocks.filter((block) => block.id !== blockId);
+  const handleDeleteBlock = () => {
+    const updatedBlocks = defaultBlocks.filter(
+      (block) => block.id !== currentBlockId,
+    );
+
     setBlocks(updatedBlocks);
+    blockOptionsBottomSheetRef.current?.dismiss();
   };
 
-  const handleConvertToIndividual = (blockId: string) => {
-    const blockToConvert = defaultBlocks.find((block) => block.id === blockId);
+  const handleConvertToIndividual = () => {
+    const blockToConvert = defaultBlocks.find(
+      (block) => block.id === currentBlockId,
+    );
 
     if (!blockToConvert) return;
 
     // Remove the original block and add individual blocks for each exercise
-    const otherBlocks = defaultBlocks.filter((block) => block.id !== blockId);
+    const otherBlocks = defaultBlocks.filter(
+      (block) => block.id !== currentBlockId,
+    );
 
     const individualBlocks: IBlock[] = blockToConvert.exercises.map(
       (exerciseInBlock, index) => ({
@@ -126,6 +140,7 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
     );
 
     setBlocks([...otherBlocks, ...individualBlocks]);
+    blockOptionsBottomSheetRef.current?.dismiss();
   };
 
   const handleUpdateBlock = (blockId: string, updatedData: Partial<IBlock>) => {
@@ -374,6 +389,54 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
     restTimeBottomSheetRef.current?.present();
   };
 
+  const handleShowBlockOptionsBottomSheet = (
+    blockId: string,
+    exercisesLength: number,
+  ) => {
+    setCurrentBlockId(blockId);
+    setCurrentExercisesLength(exercisesLength);
+    blockOptionsBottomSheetRef.current?.present();
+  };
+
+  const handleShowExerciseOptionsBottomSheet = (
+    blockId: string,
+    exerciseId: string,
+    isInMultiExerciseBlock: boolean,
+  ) => {
+    setCurrentBlockId(blockId);
+    setCurrentExerciseId(exerciseId);
+    setIsInMultipleExerciseBlock(isInMultiExerciseBlock);
+    exerciseOptionsBottomSheetRef.current?.present();
+  };
+
+  const handleDeleteExercise = () => {
+    const updatedBlocks = blocks.map((block) => {
+      if (block.id === currentBlockId) {
+        const updateExercises = block.exercises.filter(
+          (exercise) => exercise.id !== currentExerciseId,
+        );
+
+        if (updateExercises.length === 1) {
+          return {
+            ...block,
+            exercises: updateExercises,
+            type: 'individual' as IBlockType,
+          };
+        }
+
+        return { ...block, exercises: updateExercises };
+      }
+
+      return block;
+    });
+
+    setBlocks(updatedBlocks);
+    setCurrentBlockId(null);
+    setCurrentExerciseId(null);
+    setIsInMultipleExerciseBlock(false);
+    exerciseOptionsBottomSheetRef.current?.dismiss();
+  };
+
   return {
     // Routine info
     routineName: defaultRoutineName,
@@ -389,6 +452,9 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
     handleReorderBlocks,
     handleAddAsIndividual,
     handleAddAsBlock,
+    blockOptionsBottomSheetRef,
+    handleShowBlockOptionsBottomSheet,
+    exercisesLength,
 
     // Exercises methods
     handleReorderExercises,
@@ -396,6 +462,10 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
     setExerciseSelectorVisible,
     selectedExercises,
     handleSelectExercise,
+    exerciseOptionsBottomSheetRef,
+    handleDeleteExercise,
+    handleShowExerciseOptionsBottomSheet,
+    isInMultipleExerciseBlock,
 
     // Reps and rest time
     currentRestTime,

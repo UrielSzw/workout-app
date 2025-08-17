@@ -28,6 +28,13 @@ type Props = {
     },
   ) => void;
   onUncompleteSet: (exerciseId: string, setId: string) => void;
+  onAddSetToExercise: (exerciseId: string) => void;
+  onShowSetType: (exerciseId: string, setId: string, current: ISetType) => void;
+  onShowExerciseOptionsBottomSheet: (
+    blockId: string,
+    exerciseId: string,
+    isInMultiExerciseBlock: boolean,
+  ) => void;
 };
 
 export const BlockExercise: React.FC<Props> = ({
@@ -41,6 +48,9 @@ export const BlockExercise: React.FC<Props> = ({
   formatRestTime,
   onCompleteSet,
   onUncompleteSet,
+  onAddSetToExercise,
+  onShowSetType,
+  onShowExerciseOptionsBottomSheet,
 }) => {
   return (
     <View key={exerciseInBlock.id} style={{ position: 'relative' }}>
@@ -62,6 +72,10 @@ export const BlockExercise: React.FC<Props> = ({
             getSetTypeLabel={getSetTypeLabel}
             onCompleteSet={onCompleteSet}
             onUncompleteSet={onUncompleteSet}
+            onAddSetToExercise={onAddSetToExercise}
+            onShowSetType={onShowSetType}
+            block={block}
+            onShowExerciseOptionsBottomSheet={onShowExerciseOptionsBottomSheet}
           />
         </View>
       </View>

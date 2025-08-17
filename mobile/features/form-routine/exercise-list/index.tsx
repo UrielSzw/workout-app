@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import { ExerciseListTop } from './exercise-list-top';
 import { EmptyList } from './empty-list';
 import { ListHint } from './list-hint';
-import { AddExerciseButton } from './add-exercise-button';
+import { AddExerciseButton } from '../../../components/add-exercise-button';
 import { BlockRow } from '../block-row';
 
 type Props = {
@@ -26,6 +26,15 @@ type Props = {
   onShowRepsTypeBottomSheet: (exerciseId: string, current: IRepsType) => void;
   onReorderBlocks: () => void;
   onReorderExercises: (block: IBlock) => void;
+  onShowBlockOptionsBottomSheet: (
+    blockId: string,
+    exercisesLength: number,
+  ) => void;
+  onShowExerciseOptionsBottomSheet: (
+    blockId: string,
+    exerciseId: string,
+    isInMultiExerciseBlock: boolean,
+  ) => void;
 };
 
 export const ExerciseList: React.FC<Props> = ({
@@ -39,6 +48,8 @@ export const ExerciseList: React.FC<Props> = ({
   onReorderBlocks,
   onReorderExercises,
   onShowRepsTypeBottomSheet,
+  onShowBlockOptionsBottomSheet,
+  onShowExerciseOptionsBottomSheet,
 }) => {
   return (
     <View style={{ marginBottom: 24 }}>
@@ -66,6 +77,10 @@ export const ExerciseList: React.FC<Props> = ({
               onLongPressReorder={onReorderBlocks}
               onLongPressReorderExercises={onReorderExercises}
               onShowRepsTypeBottomSheet={onShowRepsTypeBottomSheet}
+              onShowBlockOptionsBottomSheet={onShowBlockOptionsBottomSheet}
+              onShowExerciseOptionsBottomSheet={
+                onShowExerciseOptionsBottomSheet
+              }
             />
           ))}
 

@@ -33,6 +33,11 @@ type Props = {
   onAddSetToExercise: (exerciseId: string) => void;
   formatRestTime: (seconds: number) => string;
   onShowRepsTypeBottomSheet: (exerciseId: string, current: IRepsType) => void;
+  onShowExerciseOptionsBottomSheet: (
+    blockId: string,
+    exerciseId: string,
+    isInMultiExerciseBlock: boolean,
+  ) => void;
 };
 
 export const BlockExercise: React.FC<Props> = ({
@@ -50,6 +55,7 @@ export const BlockExercise: React.FC<Props> = ({
   onAddSetToExercise,
   formatRestTime,
   onShowRepsTypeBottomSheet,
+  onShowExerciseOptionsBottomSheet,
 }) => {
   return (
     <View key={exerciseInBlock.id} style={{ position: 'relative' }}>
@@ -83,6 +89,7 @@ export const BlockExercise: React.FC<Props> = ({
             getSetTypeLabel={getSetTypeLabel}
             onAddSetToExercise={onAddSetToExercise}
             onShowRepsTypeBottomSheet={onShowRepsTypeBottomSheet}
+            onShowExerciseOptionsBottomSheet={onShowExerciseOptionsBottomSheet}
           />
         </View>
       </View>

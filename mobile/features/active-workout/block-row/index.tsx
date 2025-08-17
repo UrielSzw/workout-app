@@ -4,6 +4,7 @@ import { useBlockRow } from './hook';
 import { BlockHeader } from './block-header';
 import { BlockExercise } from './block-exercise';
 import { IActiveBlock } from '@/types/active-workout';
+import { ISetType } from '@/types/routine';
 
 type Props = {
   block: IActiveBlock;
@@ -23,6 +24,17 @@ type Props = {
     currentRestTime: number,
     type: 'between-rounds' | 'between-exercises',
   ) => void;
+  onAddSetToExercise: (exerciseId: string) => void;
+  onShowSetType: (exerciseId: string, setId: string, current: ISetType) => void;
+  onShowBlockOptionsBottomSheet: (
+    blockId: string,
+    exercisesLength: number,
+  ) => void;
+  onShowExerciseOptionsBottomSheet: (
+    blockId: string,
+    exerciseId: string,
+    isInMultiExerciseBlock: boolean,
+  ) => void;
 };
 
 export const ActiveBlockRow: React.FC<Props> = ({
@@ -31,6 +43,10 @@ export const ActiveBlockRow: React.FC<Props> = ({
   onCompleteSet,
   onUncompleteSet,
   onShowBlockRestTimeBottomSheet,
+  onAddSetToExercise,
+  onShowSetType,
+  onShowBlockOptionsBottomSheet,
+  onShowExerciseOptionsBottomSheet,
 }) => {
   const {
     blockColors,
@@ -44,8 +60,13 @@ export const ActiveBlockRow: React.FC<Props> = ({
     block,
   });
 
+  const handlePress = () => {
+    onShowBlockOptionsBottomSheet(block.id, block.exercises.length);
+  };
+
   return (
     <TouchableOpacity
+      onPress={handlePress}
       onLongPress={() => {}}
       delayLongPress={500}
       activeOpacity={1}
@@ -77,6 +98,11 @@ export const ActiveBlockRow: React.FC<Props> = ({
               block={block}
               onCompleteSet={onCompleteSet}
               onUncompleteSet={onUncompleteSet}
+              onAddSetToExercise={onAddSetToExercise}
+              onShowSetType={onShowSetType}
+              onShowExerciseOptionsBottomSheet={
+                onShowExerciseOptionsBottomSheet
+              }
             />
           ))}
         </View>

@@ -4,7 +4,6 @@ import { Card } from '@/components/ui';
 import { IBlock, IRepsType, ISetType } from '@/types/routine';
 import { useBlockRow } from './hook';
 import { BlockHeader } from './block-header';
-import { BlockOptions } from './block-options';
 import { BlockExercise } from './block-exercise';
 
 type Props = {
@@ -26,6 +25,15 @@ type Props = {
   onLongPressReorder?: () => void;
   onLongPressReorderExercises?: (block: IBlock) => void;
   onShowRepsTypeBottomSheet: (exerciseId: string, current: IRepsType) => void;
+  onShowBlockOptionsBottomSheet: (
+    blockId: string,
+    exercisesLength: number,
+  ) => void;
+  onShowExerciseOptionsBottomSheet: (
+    blockId: string,
+    exerciseId: string,
+    isInMultiExerciseBlock: boolean,
+  ) => void;
 };
 
 export const BlockRow: React.FC<Props> = ({
@@ -39,6 +47,8 @@ export const BlockRow: React.FC<Props> = ({
   onLongPressReorder,
   onLongPressReorderExercises,
   onShowRepsTypeBottomSheet,
+  onShowBlockOptionsBottomSheet,
+  onShowExerciseOptionsBottomSheet,
 }) => {
   const {
     isExpanded,
@@ -52,8 +62,6 @@ export const BlockRow: React.FC<Props> = ({
     handleLongPress,
     addSetToExercise,
     getRepsColumnTitle,
-    handleConvertToIndividual,
-    handleDeleteBlock,
     handleLongPressExercise,
     updateSet,
     setIsExpanded,
@@ -67,11 +75,16 @@ export const BlockRow: React.FC<Props> = ({
     onLongPressReorder,
   });
 
+  const handlePress = () => {
+    onShowBlockOptionsBottomSheet(block.id, block.exercises.length);
+  };
+
   return (
     <TouchableOpacity
       onLongPress={handleLongPress}
       delayLongPress={500}
       activeOpacity={1}
+      onPress={handlePress}
     >
       <Card variant="outlined" padding="none">
         {/* Block Header with Continuous Line */}
@@ -90,12 +103,12 @@ export const BlockRow: React.FC<Props> = ({
         />
 
         {/* Menu Options - Only for multi-exercise blocks */}
-        {showMenu && block.exercises.length > 1 && (
+        {/* {showMenu && block.exercises.length > 1 && (
           <BlockOptions
             onConvertToIndividual={handleConvertToIndividual}
             onDeleteBlock={handleDeleteBlock}
           />
-        )}
+        )} */}
 
         {/* Exercises List with Continuous Visual Line */}
         {isExpanded && (
@@ -132,6 +145,9 @@ export const BlockRow: React.FC<Props> = ({
                 onLongPressExercise={handleLongPressExercise}
                 onLongPressReorderExercises={onLongPressReorderExercises}
                 onShowRepsTypeBottomSheet={onShowRepsTypeBottomSheet}
+                onShowExerciseOptionsBottomSheet={
+                  onShowExerciseOptionsBottomSheet
+                }
               />
             ))}
           </View>
