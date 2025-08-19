@@ -26,8 +26,6 @@ export const ExerciseOptionsBottomSheet = forwardRef<BottomSheetModal, Props>(
       }
     };
 
-    console.log('isINsmult', isInMultipleExercisesBlock);
-
     return (
       <BottomSheetModal
         ref={ref}

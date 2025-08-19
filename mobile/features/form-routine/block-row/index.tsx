@@ -5,6 +5,7 @@ import { IBlock, IRepsType, ISetType } from '@/types/routine';
 import { useBlockRow } from './hook';
 import { BlockHeader } from './block-header';
 import { BlockExercise } from './block-exercise';
+import { useBlockStyles } from './utils';
 
 type Props = {
   block: IBlock;
@@ -53,15 +54,8 @@ export const BlockRow: React.FC<Props> = ({
   const {
     isExpanded,
     showMenu,
-    blockColors,
-    getBlockTypeIcon,
-    getBlockTypeLabel,
-    getSetTypeLabel,
-    getSetTypeColor,
-    formatRestTime,
     handleLongPress,
     addSetToExercise,
-    getRepsColumnTitle,
     handleLongPressExercise,
     updateSet,
     setIsExpanded,
@@ -74,6 +68,10 @@ export const BlockRow: React.FC<Props> = ({
     onConvertToIndividual,
     onLongPressReorder,
   });
+
+  const { getBlockColors } = useBlockStyles();
+
+  const blockColors = getBlockColors(block.type);
 
   const handlePress = () => {
     onShowBlockOptionsBottomSheet(block.id, block.exercises.length);
@@ -90,10 +88,6 @@ export const BlockRow: React.FC<Props> = ({
         {/* Block Header with Continuous Line */}
         <BlockHeader
           block={block}
-          blockColors={blockColors}
-          formatRestTime={formatRestTime}
-          getBlockTypeIcon={getBlockTypeIcon}
-          getBlockTypeLabel={getBlockTypeLabel}
           index={index}
           showMenu={showMenu}
           setShowMenu={setShowMenu}
@@ -133,12 +127,7 @@ export const BlockRow: React.FC<Props> = ({
                 key={exerciseInBlock.id}
                 exerciseInBlock={exerciseInBlock}
                 exerciseIndex={exerciseIndex}
-                blockColors={blockColors}
                 onAddSetToExercise={addSetToExercise}
-                formatRestTime={formatRestTime}
-                getSetTypeLabel={getSetTypeLabel}
-                getSetTypeColor={getSetTypeColor}
-                getRepsColumnTitle={getRepsColumnTitle}
                 onShowSetTypeBottomSheet={onShowSetTypeBottomSheet}
                 block={block}
                 onUpdateSet={updateSet}

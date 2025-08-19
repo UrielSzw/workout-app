@@ -1,4 +1,4 @@
-import { TouchableOpacity } from 'react-native';
+import { View } from 'react-native';
 import { ExerciseHeader } from './exercise-header';
 import { SetsTable } from './sets-table';
 import { IRepsType, ISetType } from '@/types/routine';
@@ -56,8 +56,8 @@ export const ExerciseDetails: React.FC<Props> = ({
   };
 
   return (
-    <TouchableOpacity style={{ flex: 1 }} onPress={handlePress}>
-      <ExerciseHeader exerciseInBlock={exerciseInBlock} />
+    <View style={{ flex: 1 }}>
+      <ExerciseHeader exerciseInBlock={exerciseInBlock} onPress={handlePress} />
 
       {/* Sets Table */}
       <SetsTable
@@ -71,6 +71,6 @@ export const ExerciseDetails: React.FC<Props> = ({
         onAddSetToExercise={onAddSetToExercise}
         onShowSetType={onShowSetType}
       />
-    </TouchableOpacity>
+    </View>
   );
 };

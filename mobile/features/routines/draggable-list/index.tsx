@@ -73,6 +73,7 @@ export const DraggableList: React.FC<Props> = ({
         renderItem={renderFolderItem}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 20 }}
+        style={{ minHeight: '100%' }}
         activationDistance={15}
         ListHeaderComponent={() => (
           <View

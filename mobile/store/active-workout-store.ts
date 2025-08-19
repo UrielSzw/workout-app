@@ -9,8 +9,9 @@ import {
   ICompletedSetHistory,
   IActiveWorkoutRoutineSnapshot,
 } from '@/types/active-workout';
-import { IRoutine } from '@/types/routine';
+import { IExercise, IRoutine } from '@/types/routine';
 import { mainStore } from './main-store';
+import { createDefaultSets } from '@/lib/utils/create-default-sets';
 
 type IFinishWorkout = {
   workoutHistory: IWorkoutHistory;
@@ -41,6 +42,7 @@ type ActiveWorkoutStore = {
     exerciseId: string,
     set: Omit<IActiveSet, 'id' | 'wasModifiedFromOriginal'>,
   ) => void;
+  replaceExercise: (exerciseId: string, newExercise: IExercise) => void;
 
   // Actions - Operaciones de sets
   completeSet: (
@@ -431,6 +433,47 @@ export const activeWorkoutStore = create<ActiveWorkoutStore>((set, get) => ({
     get().saveToStorage();
   },
 
+  replaceExercise: (exerciseId, newExercise) => {
+    const { activeWorkout } = get();
+    if (!activeWorkout) return;
+
+    const updatedBlocks = activeWorkout.blocks.map((block) => ({
+      ...block,
+      exercises: block.exercises.map((exercise) => {
+        if (exercise.id === exerciseId) {
+          return {
+            ...exercise,
+            exercise: newExercise,
+            wasAddedDuringWorkout: true,
+            id: generateId(),
+            notes: '',
+            sets: createDefaultSets().map((set) => ({
+              ...set,
+              id: generateId(),
+              completedAt: undefined,
+              actualWeight: undefined,
+              actualReps: undefined,
+              actualRpe: undefined,
+              restTimeUsedSeconds: undefined,
+              wasModifiedFromOriginal: false,
+              originalSetData: { ...set },
+            })),
+          };
+        }
+        return exercise;
+      }),
+    }));
+
+    const updatedWorkout = {
+      ...activeWorkout,
+      blocks: updatedBlocks,
+      hasModificationsFromOriginal: true,
+    };
+
+    set({ activeWorkout: updatedWorkout });
+    get().saveToStorage();
+  },
+
   completeSet: (exerciseId, setId, completionData) => {
     const { activeWorkout } = get();
     if (!activeWorkout) return;
@@ -674,6 +717,10 @@ export const activeWorkoutStore = create<ActiveWorkoutStore>((set, get) => ({
       ...activeWorkout,
       blocks: updatedBlocks,
       hasModificationsFromOriginal: true,
+      stats: {
+        ...activeWorkout.stats,
+        totalSetsPlanned: activeWorkout.stats.totalSetsPlanned - 1,
+      },
     };
 
     set({ activeWorkout: updatedWorkout });

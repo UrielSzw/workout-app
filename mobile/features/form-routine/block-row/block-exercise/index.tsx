@@ -4,15 +4,11 @@ import { Timer } from 'lucide-react-native';
 import { View } from 'react-native';
 import { BlockLine } from './block-line';
 import { ExerciseDetails } from './exercise-details';
+import { useBlockStyles } from '../utils';
 
 type Props = {
   exerciseInBlock: IExerciseInBlock;
   block: IBlock;
-  blockColors: {
-    primary: string;
-    light: string;
-    border: string;
-  };
   exerciseIndex: number;
   onShowSetTypeBottomSheet: (
     setId: string,
@@ -27,11 +23,7 @@ type Props = {
   ) => void;
   onLongPressExercise?: () => void;
   onLongPressReorderExercises?: (block: IBlock) => void;
-  getRepsColumnTitle: (repsType: IRepsType) => string;
-  getSetTypeColor: (type: string) => string;
-  getSetTypeLabel: (type: string) => string;
   onAddSetToExercise: (exerciseId: string) => void;
-  formatRestTime: (seconds: number) => string;
   onShowRepsTypeBottomSheet: (exerciseId: string, current: IRepsType) => void;
   onShowExerciseOptionsBottomSheet: (
     blockId: string,
@@ -43,20 +35,19 @@ type Props = {
 export const BlockExercise: React.FC<Props> = ({
   exerciseInBlock,
   block,
-  blockColors,
   exerciseIndex,
   onShowSetTypeBottomSheet,
   onUpdateSet,
   onLongPressExercise,
   onLongPressReorderExercises,
-  getRepsColumnTitle,
-  getSetTypeColor,
-  getSetTypeLabel,
   onAddSetToExercise,
-  formatRestTime,
   onShowRepsTypeBottomSheet,
   onShowExerciseOptionsBottomSheet,
 }) => {
+  const { getBlockColors, formatRestTime } = useBlockStyles();
+
+  const blockColors = getBlockColors(block.type);
+
   return (
     <View key={exerciseInBlock.id} style={{ position: 'relative' }}>
       {/* Exercise Container */}
@@ -79,14 +70,10 @@ export const BlockExercise: React.FC<Props> = ({
           <ExerciseDetails
             block={block}
             exerciseInBlock={exerciseInBlock}
-            blockColors={blockColors}
             onShowSetTypeBottomSheet={onShowSetTypeBottomSheet}
             onUpdateSet={onUpdateSet}
             onLongPressExercise={onLongPressExercise}
             onLongPressReorderExercises={onLongPressReorderExercises}
-            getRepsColumnTitle={getRepsColumnTitle}
-            getSetTypeColor={getSetTypeColor}
-            getSetTypeLabel={getSetTypeLabel}
             onAddSetToExercise={onAddSetToExercise}
             onShowRepsTypeBottomSheet={onShowRepsTypeBottomSheet}
             onShowExerciseOptionsBottomSheet={onShowExerciseOptionsBottomSheet}

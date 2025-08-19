@@ -66,7 +66,6 @@ export const ActiveBlockRow: React.FC<Props> = ({
 
   return (
     <TouchableOpacity
-      onPress={handlePress}
       onLongPress={() => {}}
       delayLongPress={500}
       activeOpacity={1}
@@ -81,6 +80,7 @@ export const ActiveBlockRow: React.FC<Props> = ({
           getBlockTypeLabel={getBlockTypeLabel}
           index={index}
           onShowBlockRestTimeBottomSheet={onShowBlockRestTimeBottomSheet}
+          onPress={handlePress}
         />
 
         {/* Exercises List with Continuous Visual Line */}

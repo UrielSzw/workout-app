@@ -7,13 +7,18 @@ import { TouchableOpacity, View } from 'react-native';
 
 type Props = {
   exerciseInBlock: IExerciseInBlock;
+  onPress?: () => void;
 };
 
-export const ExerciseHeader: React.FC<Props> = ({ exerciseInBlock }) => {
+export const ExerciseHeader: React.FC<Props> = ({
+  exerciseInBlock,
+  onPress,
+}) => {
   const { colors } = useColorScheme();
 
   return (
-    <View
+    <TouchableOpacity
+      onPress={onPress}
       style={{
         flexDirection: 'row',
         alignItems: 'center',
@@ -42,6 +47,6 @@ export const ExerciseHeader: React.FC<Props> = ({ exerciseInBlock }) => {
       <TouchableOpacity style={{ padding: 8 }}>
         <MoreVerticalIcon size={26} color={colors.textMuted} />
       </TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 };

@@ -4,17 +4,12 @@ import { IRepsType, ISet, ISetType } from '@/types/routine';
 import { ChevronDown, Plus } from 'lucide-react-native';
 import { TouchableOpacity, View } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
+import { useBlockStyles } from '../../../utils';
+import { IActiveBlock } from '@/types/active-workout';
 
 type Props = {
-  blockColors: {
-    primary: string;
-    light: string;
-    border: string;
-  };
+  block: IActiveBlock;
   exerciseInBlock: any;
-  getRepsColumnTitle: (repsType: IRepsType) => string;
-  getSetTypeColor: (type: string) => string;
-  getSetTypeLabel: (type: string) => string;
   onShowSetTypeBottomSheet: (
     setId: string,
     exerciseId: string,
@@ -31,17 +26,22 @@ type Props = {
 };
 
 export const SetsTable: React.FC<Props> = ({
-  blockColors,
   exerciseInBlock,
-  getRepsColumnTitle,
-  getSetTypeColor,
-  getSetTypeLabel,
+  block,
   onShowSetTypeBottomSheet,
   onUpdateSet,
   onAddSetToExercise,
   onShowRepsTypeBottomSheet,
 }) => {
   const { colors } = useColorScheme();
+  const {
+    getRepsColumnTitle,
+    getSetTypeColor,
+    getSetTypeLabel,
+    getBlockColors,
+  } = useBlockStyles();
+
+  const blockColors = getBlockColors(block.type);
 
   const repsType = exerciseInBlock.sets[0]?.repsType || 'reps';
 

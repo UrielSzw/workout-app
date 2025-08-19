@@ -20,6 +20,7 @@ type Props = {
     currentRestTime: number,
     type: 'between-rounds' | 'between-exercises',
   ) => void;
+  onPress: () => void;
 };
 
 export const BlockHeader: React.FC<Props> = ({
@@ -30,11 +31,13 @@ export const BlockHeader: React.FC<Props> = ({
   formatRestTime,
   index,
   onShowBlockRestTimeBottomSheet,
+  onPress,
 }) => {
   const { colors } = useColorScheme();
 
   return (
-    <View
+    <TouchableOpacity
+      onPress={onPress}
       style={{
         paddingHorizontal: 16,
         paddingVertical: 12,
@@ -196,6 +199,6 @@ export const BlockHeader: React.FC<Props> = ({
           )}
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };

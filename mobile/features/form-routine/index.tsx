@@ -51,6 +51,9 @@ export const FormRoutineFeature = ({ isEditMode }: Props) => {
     handleShowExerciseOptionsBottomSheet,
     handleDeleteExercise,
     isInMultipleExerciseBlock,
+    handleShowReplaceModal,
+    isReplaceMode,
+    handleReplaceExercise,
 
     // Reps and rest time
     currentRestTime,
@@ -130,6 +133,8 @@ export const FormRoutineFeature = ({ isEditMode }: Props) => {
           onSelectExercise={handleSelectExercise}
           onAddAsIndividual={handleAddAsIndividual}
           onAddAsBlock={handleAddAsBlock}
+          isReplaceMode={isReplaceMode}
+          onReplaceExercise={handleReplaceExercise}
         />
 
         {/* Bottom Sheets */}
@@ -162,7 +167,7 @@ export const FormRoutineFeature = ({ isEditMode }: Props) => {
         <ExerciseOptionsBottomSheet
           ref={exerciseOptionsBottomSheetRef}
           onDelete={handleDeleteExercise}
-          onShowReplace={() => {}}
+          onShowReplace={handleShowReplaceModal}
           isInMultipleExercisesBlock={isInMultipleExerciseBlock}
         />
       </SafeAreaView>

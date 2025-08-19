@@ -7,21 +7,19 @@ import {
   IExerciseInBlock,
   IRepsType,
   IRoutine,
-  ISet,
   ISetType,
 } from '@/types/routine';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { router } from 'expo-router';
 import { useRef, useState } from 'react';
+import { createDefaultSets } from './utils';
 
 type Params = {
   isEditMode?: boolean;
 };
 
 export const useFormRoutine = ({ isEditMode }: Params) => {
-  const { blocks, setBlocks, setReorderedBlock } = formRoutineStore(
-    (state) => state,
-  );
+  const { setReorderedBlock } = formRoutineStore((state) => state);
   const { addRoutine, updateRoutine, selectedRoutine, setSelectedRoutine } =
     mainStore((state) => state);
 
@@ -33,6 +31,7 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
   const exerciseOptionsBottomSheetRef = useRef<BottomSheetModal>(null);
 
   // Routine information state
+  const [blocks, setBlocks] = useState<IBlock[]>([]);
   const [routineName, setRoutineName] = useState('');
   const [currentSetId, setCurrentSetId] = useState<string | null>(null);
   const [currentRepsType, setCurrentRepsType] = useState<IRepsType>('reps');
@@ -50,6 +49,7 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
   const [exerciseSelectorVisible, setExerciseSelectorVisible] = useState(false);
   const [selectedExercises, setSelectedExercises] = useState<IExercise[]>([]);
   const [currentSetType, setCurrentSetType] = useState<ISetType | null>(null);
+  const [isReplaceMode, setIsReplaceMode] = useState<boolean>(false);
 
   const defaultRoutineName = routineName || selectedRoutine?.name || '';
   const defaultBlocks =
@@ -170,44 +170,42 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
   };
 
   // Exercise modal functions
-  const createDefaultSets = (): ISet[] => [
-    {
-      id: `set_${Date.now()}_1`,
-      setNumber: 1,
-      weight: '',
-      reps: '',
-      type: 'normal',
-      completed: false,
-      repsType: 'reps',
-    },
-    {
-      id: `set_${Date.now()}_2`,
-      setNumber: 2,
-      weight: '',
-      reps: '',
-      type: 'normal',
-      completed: false,
-      repsType: 'reps',
-    },
-    {
-      id: `set_${Date.now()}_3`,
-      setNumber: 3,
-      weight: '',
-      reps: '',
-      type: 'normal',
-      completed: false,
-      repsType: 'reps',
-    },
-  ];
 
   const handleSelectExercise = (exercise: IExercise) => {
     if (selectedExercises.find((ex) => ex.id === exercise.id)) {
       setSelectedExercises(
         selectedExercises.filter((ex) => ex.id !== exercise.id),
       );
-    } else {
+    } else if (!isReplaceMode) {
       setSelectedExercises([...selectedExercises, exercise]);
+    } else {
+      setSelectedExercises([exercise]);
     }
+  };
+
+  const handleReplaceExercise = () => {
+    if (selectedExercises.length === 0) return;
+
+    const updatedBlocks = defaultBlocks.map((block) => ({
+      ...block,
+      exercises: block.exercises.map((ex) => {
+        if (ex.id === currentExerciseId) {
+          return {
+            ...ex,
+            exercise: selectedExercises[0],
+          };
+        }
+        return ex;
+      }),
+    }));
+
+    setBlocks(updatedBlocks);
+    setSelectedExercises([]);
+    setExerciseSelectorVisible(false);
+    setCurrentExerciseId(null);
+    setIsReplaceMode(false);
+    setIsInMultipleExerciseBlock(false);
+    exerciseOptionsBottomSheetRef.current?.dismiss();
   };
 
   const handleAddAsIndividual = () => {
@@ -409,6 +407,11 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
     exerciseOptionsBottomSheetRef.current?.present();
   };
 
+  const handleShowReplaceModal = () => {
+    setIsReplaceMode(true);
+    setExerciseSelectorVisible(true);
+  };
+
   const handleDeleteExercise = () => {
     const updatedBlocks = blocks.map((block) => {
       if (block.id === currentBlockId) {
@@ -466,6 +469,9 @@ export const useFormRoutine = ({ isEditMode }: Params) => {
     handleDeleteExercise,
     handleShowExerciseOptionsBottomSheet,
     isInMultipleExerciseBlock,
+    handleShowReplaceModal,
+    isReplaceMode,
+    handleReplaceExercise,
 
     // Reps and rest time
     currentRestTime,

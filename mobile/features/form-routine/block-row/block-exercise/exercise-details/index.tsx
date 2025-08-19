@@ -6,11 +6,6 @@ import { IRepsType, ISet, ISetType } from '@/types/routine';
 type Props = {
   block: any;
   exerciseInBlock: any;
-  blockColors: {
-    primary: string;
-    light: string;
-    border: string;
-  };
   onShowSetTypeBottomSheet: (
     setId: string,
     exerciseId: string,
@@ -24,9 +19,6 @@ type Props = {
   ) => void;
   onLongPressExercise?: () => void;
   onLongPressReorderExercises?: (block: any) => void;
-  getRepsColumnTitle: (repsType: IRepsType) => string;
-  getSetTypeColor: (type: string) => string;
-  getSetTypeLabel: (type: string) => string;
   onAddSetToExercise: (exerciseId: string) => void;
   onShowRepsTypeBottomSheet: (exerciseId: string, current: IRepsType) => void;
   onShowExerciseOptionsBottomSheet: (
@@ -39,14 +31,10 @@ type Props = {
 export const ExerciseDetails: React.FC<Props> = ({
   block,
   exerciseInBlock,
-  blockColors,
   onShowSetTypeBottomSheet,
   onUpdateSet,
   onLongPressExercise,
   onLongPressReorderExercises,
-  getRepsColumnTitle,
-  getSetTypeColor,
-  getSetTypeLabel,
   onAddSetToExercise,
   onShowRepsTypeBottomSheet,
   onShowExerciseOptionsBottomSheet,
@@ -75,11 +63,8 @@ export const ExerciseDetails: React.FC<Props> = ({
 
       {/* Sets Table */}
       <SetsTable
-        blockColors={blockColors}
+        block={block}
         exerciseInBlock={exerciseInBlock}
-        getRepsColumnTitle={getRepsColumnTitle}
-        getSetTypeColor={getSetTypeColor}
-        getSetTypeLabel={getSetTypeLabel}
         onShowSetTypeBottomSheet={onShowSetTypeBottomSheet}
         onUpdateSet={onUpdateSet}
         onAddSetToExercise={onAddSetToExercise}

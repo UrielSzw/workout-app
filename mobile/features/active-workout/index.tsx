@@ -64,6 +64,9 @@ export const ActiveWorkoutFeature = () => {
     handleShowExerciseOptionsBottomSheet,
     handleDeleteExercise,
     isInMultipleExerciseBlock,
+    handleShowReplaceModal,
+    isReplaceMode,
+    handleReplaceExercise,
   } = useActiveWorkout();
 
   if (!activeWorkout || !isWorkoutActive) {
@@ -149,6 +152,8 @@ export const ActiveWorkoutFeature = () => {
             onSelectExercise={handleSelectExercise}
             onAddAsIndividual={handleAddAsIndividual}
             onAddAsBlock={handleAddAsBlock}
+            isReplaceMode={isReplaceMode}
+            onReplaceExercise={handleReplaceExercise}
           />
 
           <BlockOptionsBottomSheet
@@ -161,7 +166,7 @@ export const ActiveWorkoutFeature = () => {
           <ExerciseOptionsBottomSheet
             ref={exerciseOptionsBottomSheetRef}
             onDelete={handleDeleteExercise}
-            onShowReplace={() => {}}
+            onShowReplace={handleShowReplaceModal}
             isInMultipleExercisesBlock={isInMultipleExerciseBlock}
           />
         </ScrollView>

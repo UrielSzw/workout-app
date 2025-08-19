@@ -9,20 +9,13 @@ import {
 } from 'lucide-react-native';
 import { Dispatch, SetStateAction } from 'react';
 import { TouchableOpacity, View } from 'react-native';
+import { useBlockStyles } from '../utils';
 
 type Props = {
   block: IBlock;
-  getBlockTypeIcon: () => React.ReactNode;
-  getBlockTypeLabel: () => string;
-  blockColors: {
-    primary: string;
-    light: string;
-    border: string;
-  };
   setIsExpanded: Dispatch<SetStateAction<boolean>>;
   isExpanded: boolean;
   setShowMenu: Dispatch<SetStateAction<boolean>>;
-  formatRestTime: (seconds: number) => string;
   onShowRestTimeBottomSheet: (
     blockId: string,
     currentRestTime: number,
@@ -34,18 +27,22 @@ type Props = {
 
 export const BlockHeader: React.FC<Props> = ({
   block,
-  getBlockTypeIcon,
-  getBlockTypeLabel,
-  blockColors,
   setIsExpanded,
   isExpanded,
   setShowMenu,
-  formatRestTime,
   onShowRestTimeBottomSheet,
   index,
   showMenu,
 }) => {
+  const {
+    getBlockTypeIcon,
+    getBlockTypeLabel,
+    getBlockColors,
+    formatRestTime,
+  } = useBlockStyles();
   const { colors } = useColorScheme();
+
+  const blockColors = getBlockColors(block.type);
 
   return (
     <View
@@ -79,13 +76,13 @@ export const BlockHeader: React.FC<Props> = ({
             gap: 8,
           }}
         >
-          {getBlockTypeIcon()}
+          {getBlockTypeIcon(block.type)}
           <Typography
             variant="body2"
             weight="semibold"
             style={{ color: blockColors.primary }}
           >
-            {block.name || `${getBlockTypeLabel()} ${index + 1}`}
+            {block.name || `${getBlockTypeLabel(block.type)} ${index + 1}`}
           </Typography>
         </View>
 

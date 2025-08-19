@@ -22,6 +22,8 @@ type Props = {
   selectedExercises: IExercise[];
   onAddAsIndividual: () => void;
   onAddAsBlock: () => void;
+  onReplaceExercise: () => void;
+  isReplaceMode?: boolean;
 };
 
 export const ExerciseSelectorModal: React.FC<Props> = ({
@@ -31,6 +33,8 @@ export const ExerciseSelectorModal: React.FC<Props> = ({
   selectedExercises,
   onAddAsIndividual,
   onAddAsBlock,
+  isReplaceMode,
+  onReplaceExercise,
 }) => {
   const { colors, isDarkMode } = useColorScheme();
   const { allExercises } = useExercises();
@@ -75,9 +79,10 @@ export const ExerciseSelectorModal: React.FC<Props> = ({
         isSelected={isExerciseSelected(item.id)}
         onSelectExercise={onSelectExercise}
         colors={colors}
+        isReplaceMode={isReplaceMode}
       />
     ),
-    [isExerciseSelected, onSelectExercise, colors],
+    [isExerciseSelected, onSelectExercise, colors, isReplaceMode],
   );
 
   return (
@@ -100,11 +105,21 @@ export const ExerciseSelectorModal: React.FC<Props> = ({
         >
           <View style={{ flex: 1 }}>
             <Typography variant="h5" weight="semibold">
-              Seleccionar Ejercicios
+              {isReplaceMode
+                ? 'Reemplazar Ejercicio'
+                : 'Seleccionar Ejercicios'}
             </Typography>
-            <Typography variant="body2" color="textMuted">
-              {selectedExercises.length} ejercicios seleccionados
-            </Typography>
+            {isReplaceMode ? (
+              <Typography variant="body2" color="textMuted">
+                {selectedExercises.length > 0
+                  ? `Reemplazando ${selectedExercises.length} ejercicio`
+                  : 'Selecciona un ejercicio para reemplazar'}
+              </Typography>
+            ) : (
+              <Typography variant="body2" color="textMuted">
+                {selectedExercises.length} ejercicios seleccionados
+              </Typography>
+            )}
           </View>
 
           <Button
@@ -194,15 +209,15 @@ export const ExerciseSelectorModal: React.FC<Props> = ({
         />
 
         {/* Footer */}
-        {selectedExercises.length > 0 && (
-          <View
-            style={{
-              padding: 20,
-              borderTopWidth: 1,
-              borderTopColor: colors.border,
-              backgroundColor: colors.background,
-            }}
-          >
+        <View
+          style={{
+            padding: 20,
+            borderTopWidth: 1,
+            borderTopColor: colors.border,
+            backgroundColor: colors.background,
+          }}
+        >
+          {!isReplaceMode && selectedExercises.length > 0 && (
             <View style={{ gap: 12 }}>
               {selectedExercises.length > 1 && (
                 <Button variant="primary" fullWidth onPress={onAddAsBlock}>
@@ -215,8 +230,14 @@ export const ExerciseSelectorModal: React.FC<Props> = ({
                 {selectedExercises.length > 1 ? 'es' : ''}
               </Button>
             </View>
-          </View>
-        )}
+          )}
+
+          {isReplaceMode && selectedExercises.length > 0 && (
+            <Button variant="primary" fullWidth onPress={onReplaceExercise}>
+              Remplazar ejercicio
+            </Button>
+          )}
+        </View>
       </View>
     </Modal>
   );

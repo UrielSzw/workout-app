@@ -18,10 +18,11 @@ type Props = {
     primary: { [key: string]: string };
     gray: { [key: string]: string };
   };
+  isReplaceMode?: boolean;
 };
 
 export const ExerciseCard: React.FC<Props> = memo(
-  ({ exercise, isSelected, onSelectExercise, colors }) => (
+  ({ exercise, isSelected, onSelectExercise, colors, isReplaceMode }) => (
     <Card
       key={exercise.id}
       variant="outlined"
@@ -81,7 +82,13 @@ export const ExerciseCard: React.FC<Props> = memo(
                 )
               }
             >
-              {isSelected ? 'Agregado' : 'Agregar'}
+              {!isReplaceMode
+                ? isSelected
+                  ? 'Agregado'
+                  : 'Agregar'
+                : isSelected
+                  ? 'Seleccionado'
+                  : 'Seleccionar'}
             </Button>
 
             <Button

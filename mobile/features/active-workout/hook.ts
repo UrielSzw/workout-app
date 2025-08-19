@@ -17,7 +17,6 @@ import {
   IExerciseInBlock,
   ISet,
   IExercise,
-  IBlockType,
 } from '@/types/routine';
 import { mainStore } from '@/store/main-store';
 
@@ -43,6 +42,7 @@ export const useActiveWorkout = () => {
     addBlocks,
     deleteSet,
     deleteBlock,
+    replaceExercise,
   } = activeWorkoutStore();
 
   // UI State
@@ -80,6 +80,7 @@ export const useActiveWorkout = () => {
     field: 'repsType' | 'type';
     current: IRepsType | ISetType;
   } | null>(null);
+  const [isReplaceMode, setIsReplaceMode] = useState<boolean>(false);
 
   // Exercise selector state
   const [exerciseSelectorVisible, setExerciseSelectorVisible] = useState(false);
@@ -682,9 +683,25 @@ export const useActiveWorkout = () => {
       setSelectedExercises(
         selectedExercises.filter((ex) => ex.id !== exercise.id),
       );
-    } else {
+    } else if (!isReplaceMode) {
       setSelectedExercises([...selectedExercises, exercise]);
+    } else {
+      setSelectedExercises([exercise]);
     }
+  };
+
+  const handleReplaceExercise = () => {
+    if (selectedExercises.length === 0 || !activeWorkout || !currentExerciseId)
+      return;
+
+    replaceExercise(currentExerciseId, selectedExercises[0]);
+
+    setSelectedExercises([]);
+    setExerciseSelectorVisible(false);
+    setCurrentExerciseId(null);
+    setIsReplaceMode(false);
+    setIsInMultipleExerciseBlock(false);
+    exerciseOptionsBottomSheetRef.current?.dismiss();
   };
 
   const handleAddAsIndividual = () => {
@@ -849,6 +866,11 @@ export const useActiveWorkout = () => {
     exerciseOptionsBottomSheetRef.current?.dismiss();
   };
 
+  const handleShowReplaceModal = () => {
+    setIsReplaceMode(true);
+    setExerciseSelectorVisible(true);
+  };
+
   return {
     // State
     activeWorkout,
@@ -919,5 +941,8 @@ export const useActiveWorkout = () => {
     handleDeleteExercise,
     handleShowExerciseOptionsBottomSheet,
     isInMultipleExerciseBlock,
+    handleReplaceExercise,
+    isReplaceMode,
+    handleShowReplaceModal,
   };
 };
