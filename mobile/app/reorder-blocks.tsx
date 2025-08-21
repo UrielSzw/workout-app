@@ -2,13 +2,17 @@ import React from 'react';
 import { router } from 'expo-router';
 import { ReorderBlocksScreen } from '@/features/form-routine/reorder-blocks';
 import { IBlock } from '@/types/routine';
-import { formRoutineStore } from '@/store/form-routine-store';
+import {
+  useBlockActions,
+  useBlocksState,
+} from '@/features/form-routine/hooks/use-form-routine-store';
 
 export default function ReorderBlocksPage() {
-  const { blocks, setBlocks } = formRoutineStore((state) => state);
+  const blocks = useBlocksState();
+  const { reorderBlocks } = useBlockActions();
 
   const handleReorder = (reorderedBlocks: IBlock[]) => {
-    setBlocks(reorderedBlocks);
+    reorderBlocks(reorderedBlocks);
     router.back();
   };
 

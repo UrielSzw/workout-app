@@ -8,7 +8,7 @@ import { ISetType } from '@/types/routine';
 type Props = {
   onSelectSetType: (type: ISetType) => void;
   onDeleteSet: () => void;
-  currentSetType: ISetType | null;
+  currentSetType?: ISetType | null;
 };
 
 export const SetTypeBottomSheet = forwardRef<BottomSheetModal, Props>(

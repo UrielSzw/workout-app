@@ -2,7 +2,7 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 import { Platform } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { Home, Dumbbell, BarChart3, User } from 'lucide-react-native';
+import { Home, Dumbbell, Activity, BarChart3, User } from 'lucide-react-native';
 import { HapticTab } from '@/components/ui/haptic-tab';
 
 export default function TabLayout() {
@@ -43,6 +43,15 @@ export default function TabLayout() {
           title: 'Rutinas',
           tabBarIcon: ({ color, size }) => (
             <Dumbbell size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="tracker"
+        options={{
+          title: 'Tracker',
+          tabBarIcon: ({ color, size }) => (
+            <Activity size={size} color={color} />
           ),
         }}
       />

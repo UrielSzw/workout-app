@@ -1,35 +1,34 @@
 import React from 'react';
 import { router } from 'expo-router';
-import { formRoutineStore } from '@/store/form-routine-store';
 import { IBlock } from '@/types/routine';
 import { ReorderExercisesScreen } from '@/features/form-routine/reorder-exercises';
+import {
+  useBlockActions,
+  useBlockToReorderState,
+} from '@/features/form-routine/hooks/use-form-routine-store';
 
 export default function ReorderExercisesPage() {
-  const { reorderedBlock, setReorderedBlock, blocks, setBlocks } =
-    formRoutineStore((state) => state);
+  const { reorderBlockExercises, setBlockToReorder } = useBlockActions();
+  const blockToReorder = useBlockToReorderState();
 
-  if (!reorderedBlock) {
+  if (!blockToReorder) {
     return null;
   }
 
   const handleReorder = (reorderedBlock: IBlock) => {
-    // Save reordered block to global state for the parent to pick up
-    const updatedBlocks = blocks.map((block) =>
-      block.id === reorderedBlock.id ? reorderedBlock : block,
-    );
-
-    setBlocks(updatedBlocks);
-    setReorderedBlock(null);
+    reorderBlockExercises(reorderedBlock);
     router.back();
+    setBlockToReorder(null);
   };
 
   const handleCancel = () => {
+    setBlockToReorder(null);
     router.back();
   };
 
   return (
     <ReorderExercisesScreen
-      block={reorderedBlock}
+      block={blockToReorder}
       onReorder={handleReorder}
       onCancel={handleCancel}
     />

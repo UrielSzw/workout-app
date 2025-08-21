@@ -574,9 +574,9 @@ ORDER BY pr.date_achieved DESC;
 ```javascript
 // Para funcionalidad offline
 const localStorageKeys = {
-  ACTIVE_WORKOUT: "@fitblocks/active_workout",
-  DRAFT_ROUTINES: "@fitblocks/draft_routines",
-  USER_PREFERENCES: "@fitblocks/user_preferences",
+  ACTIVE_WORKOUT: '@fitblocks/active_workout',
+  DRAFT_ROUTINES: '@fitblocks/draft_routines',
+  USER_PREFERENCES: '@fitblocks/user_preferences',
 };
 ```
 

@@ -7,11 +7,11 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 type Props = {
   onDelete: () => void;
   onConvertToIndividual: () => void;
-  exercisesLength: number;
+  isMultiBlock: boolean;
 };
 
 export const BlockOptionsBottomSheet = forwardRef<BottomSheetModal, Props>(
-  ({ onDelete, onConvertToIndividual, exercisesLength }, ref) => {
+  ({ onDelete, onConvertToIndividual, isMultiBlock }, ref) => {
     const { colors } = useColorScheme();
 
     const blockOptions = [{ type: 'convert', label: 'Separar ejercicios' }];
@@ -53,7 +53,7 @@ export const BlockOptionsBottomSheet = forwardRef<BottomSheetModal, Props>(
             Opciones de Bloque
           </Typography>
 
-          {exercisesLength > 1 &&
+          {isMultiBlock &&
             blockOptions.map((option) => (
               <TouchableOpacity
                 key={option.type}

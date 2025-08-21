@@ -65,7 +65,7 @@ export const Button: React.FC<ButtonProps> = ({
     if (isDisabled) {
       return {
         ...baseStyles,
-        backgroundColor: colors.gray[200],
+        backgroundColor: colors.primary[200],
         borderWidth: 0,
       };
     }
@@ -124,7 +124,7 @@ export const Button: React.FC<ButtonProps> = ({
   };
 
   const getTextColor = () => {
-    if (isDisabled) return 'textMuted';
+    // if (isDisabled) return 'textMuted';
 
     switch (variant) {
       case 'outline':

@@ -14,7 +14,9 @@ export const RestTimeBottomSheet = forwardRef<BottomSheetModal, Props>(
   ({ currentRestTime, onSelectRestTime }, ref) => {
     const { colors } = useColorScheme();
 
-    const [selectedTime, setSelectedTime] = useState(currentRestTime);
+    const [selectedTime, setSelectedTime] = useState<number | null>(null);
+    console.log({ currentRestTime });
+    const showSelectedTime = selectedTime || currentRestTime;
 
     // Predefined rest time options (in seconds)
     const quickOptions = [
@@ -41,7 +43,7 @@ export const RestTimeBottomSheet = forwardRef<BottomSheetModal, Props>(
     };
 
     const handleIncrease = () => {
-      const newTime = selectedTime + 5; // Increment by 5 seconds
+      const newTime = showSelectedTime + 5; // Increment by 5 seconds
       if (newTime <= 600) {
         // Max 10 minutes
         setSelectedTime(newTime);
@@ -49,14 +51,14 @@ export const RestTimeBottomSheet = forwardRef<BottomSheetModal, Props>(
     };
 
     const handleDecrease = () => {
-      const newTime = selectedTime - 5; // Decrement by 5 seconds
+      const newTime = showSelectedTime - 5; // Decrement by 5 seconds
       if (newTime >= 0) {
         setSelectedTime(newTime);
       }
     };
 
     const handleSave = () => {
-      onSelectRestTime(selectedTime);
+      onSelectRestTime(showSelectedTime);
     };
 
     return (
@@ -138,7 +140,7 @@ export const RestTimeBottomSheet = forwardRef<BottomSheetModal, Props>(
                   weight="bold"
                   style={{ color: colors.primary[500] }}
                 >
-                  {formatTime(selectedTime)}
+                  {formatTime(showSelectedTime)}
                 </Typography>
               </View>
 

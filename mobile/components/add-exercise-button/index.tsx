@@ -1,21 +1,20 @@
 import { Typography } from '@/components/ui';
+import { useEditValuesActions } from '@/features/form-routine/hooks/use-form-routine-store';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Plus } from 'lucide-react-native';
-import { Dispatch, SetStateAction } from 'react';
 import { TouchableOpacity } from 'react-native';
 
-type Props = {
-  setExerciseSelectorVisible: Dispatch<SetStateAction<boolean>>;
-};
-
-export const AddExerciseButton: React.FC<Props> = ({
-  setExerciseSelectorVisible,
-}) => {
+export const AddExerciseButton = () => {
   const { colors } = useColorScheme();
+  const { setExerciseModal } = useEditValuesActions();
+
+  const handleOpenModal = () => {
+    setExerciseModal(true, false);
+  };
 
   return (
     <TouchableOpacity
-      onPress={() => setExerciseSelectorVisible(true)}
+      onPress={handleOpenModal}
       style={{
         flexDirection: 'row',
         alignItems: 'center',
