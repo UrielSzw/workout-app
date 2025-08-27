@@ -1,4 +1,4 @@
-import { ExerciseSelectorModal } from '@/components/exercise-selector-modal';
+import { ExerciseSelectorModal } from '@/components/shared/exercise-selector-modal';
 import React from 'react';
 import {
   useBlockActions,
@@ -8,18 +8,33 @@ import {
   useExerciseModal,
   useSelectedExercises,
 } from '../../hooks/use-form-routine-store';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 
-export const ExerciseModal = () => {
-  const { clearEditValues, selectExercise } = useEditValuesActions();
-  const { addIndividualBlock, addMultiBlock } = useBlockActions();
+type Props = {
+  blockOptionsBottomSheetRef: React.RefObject<BottomSheetModal | null>;
+};
+
+export const ExerciseModal = ({ blockOptionsBottomSheetRef }: Props) => {
+  const { clearEditValues, selectExercise, setExerciseModal } =
+    useEditValuesActions();
+  const { addIndividualBlock, addMultiBlock, addToBlock } = useBlockActions();
   const { replaceExercise } = useExerciseActions();
   const selectedExercises = useSelectedExercises();
-  const { isReplaceMode } = useEditValuesState();
+  const { exerciseModalMode } = useEditValuesState();
   const isExerciseModalOpen = useExerciseModal();
 
   const handleReplaceExercise = () => {
     replaceExercise();
+    setExerciseModal(false, null);
     clearEditValues();
+    blockOptionsBottomSheetRef.current?.dismiss();
+  };
+
+  const handleAddToBlock = () => {
+    addToBlock();
+    setExerciseModal(false, null);
+    clearEditValues();
+    blockOptionsBottomSheetRef.current?.dismiss();
   };
 
   return (
@@ -30,8 +45,9 @@ export const ExerciseModal = () => {
       onSelectExercise={selectExercise}
       onAddAsIndividual={addIndividualBlock}
       onAddAsBlock={addMultiBlock}
-      isReplaceMode={isReplaceMode}
+      exerciseModalMode={exerciseModalMode}
       onReplaceExercise={handleReplaceExercise}
+      onAddToBlock={handleAddToBlock}
     />
   );
 };

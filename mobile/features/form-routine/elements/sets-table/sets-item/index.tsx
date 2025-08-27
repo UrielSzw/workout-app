@@ -1,7 +1,6 @@
 import { IRepsType, ISet } from '@/types/routine';
 import React, { useCallback } from 'react';
 import { TextInput, TouchableOpacity, View } from 'react-native';
-import { useBlockStyles } from '../../../hooks/use-block-styles';
 import { Typography } from '@/components/ui';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { IToogleSheet } from '@/features/form-routine/hooks/use-form-routine-sheets';
@@ -9,6 +8,7 @@ import {
   useEditValuesActions,
   useSetActions,
 } from '@/features/form-routine/hooks/use-form-routine-store';
+import { useBlockStyles } from '@/hooks/use-block-styles';
 
 type Props = {
   set: ISet;

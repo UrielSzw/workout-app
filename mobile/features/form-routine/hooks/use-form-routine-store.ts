@@ -1,6 +1,14 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { IBlock, IExercise, IRepsType, ISet, ISetType } from '@/types/routine';
+import {
+  IBlock,
+  IExercise,
+  IExerciseInBlock,
+  IRepsType,
+  IRoutine,
+  ISet,
+  ISetType,
+} from '@/types/routine';
 import {
   convertExercisesInBlock,
   createIndividualBlock,
@@ -11,24 +19,28 @@ import {
   findExerciseInBlockById,
   findSetInBlockById,
 } from '../utils/store-helpers';
+import { createExercises } from '@/features/active-workout/utils/store-helpers';
+
+type IExerciseModalMode = 'add-new' | 'replace' | 'add-to-block' | null;
 
 type IEdit = {
   blockId?: string | null;
   exerciseInBlockId?: string | null;
+  exerciseName?: string | null;
   setId?: string | null;
   repsType?: IRepsType | null;
   currentRestTime?: number | null;
   currentRestTimeType?: 'between-exercises' | 'between-rounds' | null;
   isMultiBlock?: boolean;
-  isReplaceMode?: boolean;
+  exerciseModalMode?: IExerciseModalMode;
   currentRepsType?: IRepsType | null;
   currentSetType?: ISetType | null;
+  routineName?: string;
 };
 
 type IStore = {
   blocks: IBlock[];
   blockToReorder: IBlock | null;
-  routineName: string;
   selectedExercises: IExercise[];
   isExerciseModalOpen: boolean;
   editState: IEdit;
@@ -36,23 +48,24 @@ type IStore = {
   editStateActions: {
     setEditValues: ({ blockId, exerciseInBlockId, setId }: IEdit) => void;
     clearEditValues: () => void;
-    setExerciseModal: (open: boolean, isReplaceMode: boolean) => void;
+    setExerciseModal: (open: boolean, mode: IExerciseModalMode) => void;
     selectExercise: (exercise: IExercise) => void;
     clearRoutine: () => void;
-  };
-  infoActions: {
+    createRoutine: () => IRoutine;
     setRoutineName: (name: string) => void;
   };
   blockActions: {
     deleteBlock: () => void;
     addIndividualBlock: () => void;
     addMultiBlock: () => void;
+    addToBlock: () => void;
     convertBlockToIndividual: () => void;
     updateBlock: (blockId: string, updatedData: Partial<IBlock>) => void;
     updateRestTime: (restTime: number) => void;
     reorderBlocks: (newBlocks: IBlock[]) => void;
     reorderBlockExercises: (newBlock: IBlock) => void;
     setBlockToReorder: (block: IBlock | null) => void;
+    setBlocks: (blocks: IBlock[]) => void;
   };
   exerciseActions: {
     deleteExercise: () => void;
@@ -78,7 +91,6 @@ const useFormRoutineStore = create<IStore>()(
     blockToReorder: null,
     selectedExercises: [],
     isExerciseModalOpen: false,
-    routineName: '',
     editState: {
       blockId: null,
       exerciseInBlockId: null,
@@ -87,9 +99,11 @@ const useFormRoutineStore = create<IStore>()(
       currentRestTime: null,
       currentRestTimeType: null,
       isMultiBlock: false,
-      isReplaceMode: false,
+      exerciseModalMode: null,
       currentRepsType: null,
       currentSetType: null,
+      routineName: '',
+      exerciseName: null,
     },
 
     editStateActions: {
@@ -101,9 +115,11 @@ const useFormRoutineStore = create<IStore>()(
         currentRestTime,
         currentRestTimeType,
         isMultiBlock,
-        isReplaceMode,
+        exerciseModalMode,
         currentRepsType,
         currentSetType,
+        exerciseName,
+        routineName,
       }) => {
         set((state) => {
           if (blockId) state.editState.blockId = blockId;
@@ -117,11 +133,18 @@ const useFormRoutineStore = create<IStore>()(
             state.editState.currentRestTimeType = currentRestTimeType;
           if (isMultiBlock !== undefined)
             state.editState.isMultiBlock = isMultiBlock;
-          if (isReplaceMode !== undefined)
-            state.editState.isReplaceMode = isReplaceMode;
+          if (exerciseModalMode)
+            state.editState.exerciseModalMode = exerciseModalMode;
           if (currentRepsType)
             state.editState.currentRepsType = currentRepsType;
           if (currentSetType) state.editState.currentSetType = currentSetType;
+          if (exerciseName) state.editState.exerciseName = exerciseName;
+          if (routineName) state.editState.routineName = routineName;
+        });
+      },
+      setRoutineName: (name: string) => {
+        set((state) => {
+          state.editState.routineName = name;
         });
       },
       clearEditValues: () => {
@@ -133,18 +156,19 @@ const useFormRoutineStore = create<IStore>()(
           state.editState.currentRestTime = null;
           state.editState.currentRestTimeType = null;
           state.editState.isMultiBlock = false;
-          state.editState.isReplaceMode = false;
+          state.editState.exerciseModalMode = null;
           state.editState.currentRepsType = null;
           state.editState.currentSetType = null;
+          state.editState.exerciseName = null;
 
           state.isExerciseModalOpen = false;
           state.selectedExercises = [];
         });
       },
-      setExerciseModal: (open: boolean, isReplaceMode: boolean) => {
+      setExerciseModal: (open: boolean, mode: IExerciseModalMode) => {
         set((state) => {
           state.isExerciseModalOpen = open;
-          state.editState.isReplaceMode = isReplaceMode;
+          state.editState.exerciseModalMode = mode;
         });
       },
       selectExercise: (exercise: IExercise) => {
@@ -163,7 +187,6 @@ const useFormRoutineStore = create<IStore>()(
           state.blocks = [];
           state.selectedExercises = [];
           state.isExerciseModalOpen = false;
-          state.routineName = '';
           state.editState = {
             blockId: null,
             exerciseInBlockId: null,
@@ -172,21 +195,37 @@ const useFormRoutineStore = create<IStore>()(
             currentRestTime: null,
             currentRestTimeType: null,
             isMultiBlock: false,
-            isReplaceMode: false,
+            exerciseModalMode: null,
             currentRepsType: null,
             currentSetType: null,
+            routineName: '',
+            exerciseName: null,
           };
         });
       },
-    },
-    infoActions: {
-      setRoutineName: (name: string) => {
-        set((state) => {
-          state.routineName = name;
-        });
+      createRoutine: () => {
+        const { editState, blocks } = get();
+
+        const newRoutine: IRoutine = {
+          id: Date.now().toString(),
+          name: editState.routineName || '',
+          description: '',
+          folderId: undefined,
+          blocks,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+
+        return newRoutine;
       },
     },
+
     blockActions: {
+      setBlocks: (blocks: IBlock[]) => {
+        set((state) => {
+          state.blocks = blocks;
+        });
+      },
       deleteBlock: () => {
         set((state) => ({
           blocks: state.blocks.filter(
@@ -237,6 +276,30 @@ const useFormRoutineStore = create<IStore>()(
           state.blocks.push(newBlock);
           state.selectedExercises = [];
           state.isExerciseModalOpen = false;
+        });
+      },
+      addToBlock: () => {
+        set((state) => {
+          const { selectedExercises } = get();
+
+          if (selectedExercises.length === 0) return;
+
+          if (!state.editState.blockId) return;
+
+          const block = findBlockById(state.blocks, state.editState.blockId);
+
+          const newExercises: IExerciseInBlock[] =
+            createExercises(selectedExercises);
+
+          if (!block) return null;
+
+          block.exercises.push(...newExercises);
+
+          if (block.type === 'individual' && block.exercises.length > 1) {
+            block.type = 'superset';
+            block.name = 'Superserie';
+            block.restBetweenExercisesSeconds = 0;
+          }
         });
       },
       updateBlock: (blockId: string, updatedData: Partial<IBlock>) => {
@@ -291,6 +354,7 @@ const useFormRoutineStore = create<IStore>()(
         });
       },
     },
+
     exerciseActions: {
       deleteExercise: () => {
         set((state) => {
@@ -308,6 +372,11 @@ const useFormRoutineStore = create<IStore>()(
 
             if (block.exercises.length === 0) {
               state.blocks = state.blocks.filter((b) => b.id !== block.id);
+            }
+
+            if (block.exercises.length === 1) {
+              block.type = 'individual';
+              block.name = undefined;
             }
           }
         });
@@ -343,6 +412,7 @@ const useFormRoutineStore = create<IStore>()(
         });
       },
     },
+
     setActions: {
       addSet: (exerciseInBlockId: string) => {
         set((state) => {
@@ -450,12 +520,6 @@ const useFormRoutineStore = create<IStore>()(
     },
   })),
 );
-
-export const useInfoActions = () =>
-  useFormRoutineStore((state) => state.infoActions);
-
-export const useInfoState = () =>
-  useFormRoutineStore((state) => state.routineName);
 
 export const useBlocksState = () =>
   useFormRoutineStore((state) => state.blocks);

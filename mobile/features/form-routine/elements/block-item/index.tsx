@@ -5,10 +5,10 @@ import { IBlock } from '@/types/routine';
 import { router } from 'expo-router';
 import { IToogleSheet } from '../../hooks/use-form-routine-sheets';
 import { BlockHeader } from './block-header';
-import { useBlockStyles } from '../../hooks/use-block-styles';
 import { ExerciseInBlockItem } from '../exercise-in-block-item';
 import { ExerciseItem } from '../exercise-item';
 import { useEditValuesActions } from '../../hooks/use-form-routine-store';
+import { useBlockStyles } from '@/hooks/use-block-styles';
 
 type Props = {
   block: IBlock;

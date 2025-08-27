@@ -3,14 +3,14 @@ import { View, TextInput } from 'react-native';
 import { Typography, Card } from '@/components/ui';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import {
-  useInfoActions,
-  useInfoState,
+  useEditValuesActions,
+  useEditValuesState,
 } from '../../hooks/use-form-routine-store';
 
 export const RoutineInfo = () => {
   const { colors } = useColorScheme();
-  const { setRoutineName } = useInfoActions();
-  const routineName = useInfoState();
+  const { setRoutineName } = useEditValuesActions();
+  const { routineName } = useEditValuesState();
 
   const [isNameFocused, setIsNameFocused] = useState(false);
 

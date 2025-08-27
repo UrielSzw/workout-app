@@ -6,7 +6,7 @@ export const EmptyList = () => {
   const { setExerciseModal } = useEditValuesActions();
 
   const handleOpenModal = () => {
-    setExerciseModal(true, false);
+    setExerciseModal(true, 'add-new');
   };
 
   return (

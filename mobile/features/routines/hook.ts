@@ -1,9 +1,13 @@
-import { activeWorkoutStore } from '@/store/active-workout-store';
 import { mainStore } from '@/store/main-store';
 import { IRoutine } from '@/types/routine';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert } from 'react-native';
+import {
+  useBlockActions,
+  useEditValuesActions,
+} from '../form-routine/hooks/use-form-routine-store';
+import { useActiveWorkoutActions } from '../active-workout/hooks/use-active-workout-store';
 
 export const useHandleRoutines = () => {
   const {
@@ -20,7 +24,9 @@ export const useHandleRoutines = () => {
     selectedRoutine,
   } = mainStore();
 
-  const { startWorkout } = activeWorkoutStore();
+  const { startWorkout } = useActiveWorkoutActions();
+  const { setBlocks } = useBlockActions();
+  const { setRoutineName } = useEditValuesActions();
 
   const [moveRoutineModalVisible, setMoveRoutineModalVisible] = useState(false);
   const [selectedRoutineForMove, setSelectedRoutineForMove] =
@@ -32,13 +38,13 @@ export const useHandleRoutines = () => {
 
   const handleEditRoutine = () => {
     if (!selectedRoutine) return;
-
+    setBlocks(selectedRoutine.blocks);
+    setRoutineName(selectedRoutine.name);
     router.push(`/routines/edit`);
   };
 
   const handleEditFolder = () => {
     if (!selectedFolder) return;
-
     router.push('/folders/edit');
   };
 

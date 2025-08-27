@@ -43,7 +43,7 @@ export const FormRoutineFeature = ({ isEditMode }: Props) => {
 
   return (
     <SheetPageWrapper>
-      <CreateRoutineHeader isEditMode={!!isEditMode} />
+      <CreateRoutineHeader isEditMode={!!isEditMode} blocks={blocks} />
 
       <ScrollView style={{ flex: 1 }}>
         <View style={{ flex: 1, padding: 20 }}>
@@ -63,7 +63,7 @@ export const FormRoutineFeature = ({ isEditMode }: Props) => {
         <View style={{ height: 200 }} />
       </ScrollView>
 
-      <ExerciseModal />
+      <ExerciseModal blockOptionsBottomSheetRef={blockOptionsBottomSheetRef} />
 
       <BottomSheets
         blockOptionsBottomSheetRef={blockOptionsBottomSheetRef}

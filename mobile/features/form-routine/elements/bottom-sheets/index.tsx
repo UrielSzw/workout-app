@@ -1,10 +1,8 @@
-import { SetTypeBottomSheet } from '@/components/set-type-sheet';
+import { SetTypeBottomSheet } from '@/components/shared/set-type-sheet';
 import React, { useCallback } from 'react';
-import { RepsTypeBottomSheet } from '../reps-type-sheet';
-import { RestTimeBottomSheet } from '@/components/rest-time-sheet';
-import { BlockOptionsBottomSheet } from '@/components/block-options-sheet';
-import { ExerciseOptionsBottomSheet } from '@/components/exercise-options-sheet';
+import { RestTimeBottomSheet } from '@/components/shared/rest-time-sheet';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { ISetType } from '@/types/routine';
 import {
   useBlockActions,
   useEditValuesActions,
@@ -12,7 +10,9 @@ import {
   useExerciseActions,
   useSetActions,
 } from '../../hooks/use-form-routine-store';
-import { ISetType } from '@/types/routine';
+import { RepsTypeBottomSheet } from '../reps-type-sheet';
+import { BlockOptionsBottomSheet } from '@/components/shared/block-options-sheet';
+import { ExerciseOptionsBottomSheet } from '@/components/shared/exercise-options-sheet';
 
 type Props = {
   setTypeBottomSheetRef: React.RefObject<BottomSheetModal | null>;
@@ -29,7 +29,7 @@ export const BottomSheets: React.FC<Props> = ({
   blockOptionsBottomSheetRef,
   exerciseOptionsBottomSheetRef,
 }) => {
-  const { currentSetType, currentRestTime, isMultiBlock } =
+  const { currentSetType, currentRestTime, isMultiBlock, exerciseName } =
     useEditValuesState();
   const { setExerciseModal, clearEditValues } = useEditValuesActions();
   const { deleteSet, updateSetType } = useSetActions();
@@ -86,7 +86,13 @@ export const BottomSheets: React.FC<Props> = ({
   }, [deleteExercise, clearEditValues]);
 
   const handleShowReplaceModal = useCallback(() => {
-    setExerciseModal(true, true);
+    setExerciseModal(true, 'replace');
+    exerciseOptionsBottomSheetRef.current?.dismiss();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setExerciseModal]);
+
+  const handleShowAddExerciseModal = useCallback(() => {
+    setExerciseModal(true, 'add-to-block');
     exerciseOptionsBottomSheetRef.current?.dismiss();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setExerciseModal]);
@@ -112,6 +118,7 @@ export const BottomSheets: React.FC<Props> = ({
         ref={blockOptionsBottomSheetRef}
         onDelete={handleDeleteBlock}
         onConvertToIndividual={handleConvertBlockToIndividual}
+        onShowAddExerciseModal={handleShowAddExerciseModal}
         isMultiBlock={!!isMultiBlock}
       />
 
@@ -120,6 +127,7 @@ export const BottomSheets: React.FC<Props> = ({
         onDelete={handleDeleteExercise}
         onShowReplace={handleShowReplaceModal}
         isInMultipleExercisesBlock={isMultiBlock}
+        exerciseName={exerciseName}
       />
     </>
   );

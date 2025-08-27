@@ -1,7 +1,6 @@
 import { useColorScheme } from '@/hooks/useColorScheme';
 import React from 'react';
 import { TouchableOpacity, View } from 'react-native';
-import { useBlockStyles } from '../../hooks/use-block-styles';
 import { Typography } from '@/components/ui';
 import { ChevronDown, Plus } from 'lucide-react-native';
 import { IBlockType, IRepsType } from '@/types/routine';
@@ -10,6 +9,7 @@ import {
   useEditValuesActions,
   useSetActions,
 } from '../../hooks/use-form-routine-store';
+import { useBlockStyles } from '@/hooks/use-block-styles';
 
 type Props = {
   children: React.ReactNode;

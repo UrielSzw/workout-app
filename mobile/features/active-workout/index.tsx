@@ -1,92 +1,34 @@
 import React from 'react';
 import { SafeAreaView, ScrollView, View } from 'react-native';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { ActiveWorkoutHeader } from './active-workout-header';
-import { useActiveWorkout } from './hook';
-import { ActiveBlockRow } from './block-row';
-import { RestTimerBottomnSheet } from './rest-timer-sheet';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { RestTimeBottomSheet } from '@/components/rest-time-sheet';
-import { ExerciseSelectorModal } from '@/components/exercise-selector-modal';
-import { AddExerciseButton } from '@/components/add-exercise-button';
-import { SetTypeBottomSheet } from '@/components/set-type-sheet';
-import { ISetType } from '@/types/routine';
-import { BlockOptionsBottomSheet } from '@/components/block-options-sheet';
-import { ExerciseOptionsBottomSheet } from '@/components/exercise-options-sheet';
+import { ActiveWorkoutHeader } from './elements/active-workout-header';
+import { useActiveWorkoutState } from './hooks/use-active-workout-store';
+import { ActiveBlockItem } from './elements/active-block-item';
+import { ActiveExerciseModal } from './elements/active-exercise-modal';
+import { ActiveBottomSheets } from './elements/active-bottom-sheets';
+import { useActiveWorkoutSheets } from './hooks/use-active-workout-sheets';
+import { ActiveAddExerciseButton } from './elements/active-add-exercise-button';
 
 export const ActiveWorkoutFeature = () => {
   const { colors } = useColorScheme();
+  const activeWorkout = useActiveWorkoutState();
+
   const {
-    activeWorkout,
-    isWorkoutActive,
-    getWorkoutStats,
-    handleExitWorkout,
-    handleCompleteSet,
-    handleUncompleteSet,
-    handleFinishWorkout,
-
-    // Rest timer
-    restTimer,
-    skipRestTimer,
-    adjustRestTimer,
-    restTimerSheetRef,
-
-    // Update workout on demand
+    handleToggleSheet,
+    setTypeBottomSheetRef,
     restTimeBottomSheetRef,
-    handleShowBlockRestTimeBottomSheet,
-    handleBlockRestTimeSelect,
-    currentRestTime,
-
-    exerciseSelectorVisible,
-    setExerciseSelectorVisible,
-    handleAddAsIndividual,
-    handleAddAsBlock,
-    handleConvertToIndividual,
-    selectedExercises,
-    handleSelectExercise,
-
-    handleAddSetToExercise,
-
-    setTypeSheetRef,
-    handleSetTypeSelect,
-    currentSetData,
-    handleShowSetTypeSheet,
-
-    // Delete
-    handleDeleteSet,
     blockOptionsBottomSheetRef,
-    handleShowBlockOptionsBottomSheet,
-    exercisesLength,
-    handleDeleteBlock,
-
-    // Exercise methods
     exerciseOptionsBottomSheetRef,
-    handleShowExerciseOptionsBottomSheet,
-    handleDeleteExercise,
-    isInMultipleExerciseBlock,
-    handleShowReplaceModal,
-    isReplaceMode,
-    handleReplaceExercise,
-  } = useActiveWorkout();
+    restTimerSheetRef,
+  } = useActiveWorkoutSheets();
 
-  if (!activeWorkout || !isWorkoutActive) {
-    return null; // Or redirect to routines
-  }
-
-  const workoutStats = getWorkoutStats();
+  if (!activeWorkout) return null;
 
   return (
     <BottomSheetModalProvider>
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-        {/* Header Sticky */}
-        <ActiveWorkoutHeader
-          routineName={activeWorkout.name}
-          progress={workoutStats}
-          onExit={handleExitWorkout}
-          isWorkoutActive={isWorkoutActive}
-          activeWorkout={activeWorkout}
-          onFinishWorkout={handleFinishWorkout}
-        />
+        <ActiveWorkoutHeader />
 
         {/* ScrollView Content */}
         <ScrollView
@@ -96,80 +38,31 @@ export const ActiveWorkoutFeature = () => {
           }}
           showsVerticalScrollIndicator={false}
         >
-          {activeWorkout.blocks.map((blockData, index) => (
-            <ActiveBlockRow
-              key={blockData.id}
-              block={blockData}
+          {activeWorkout.blocks.map((block, index) => (
+            <ActiveBlockItem
+              key={block.id}
+              block={block}
               index={index}
-              onCompleteSet={handleCompleteSet}
-              onUncompleteSet={handleUncompleteSet}
-              onShowBlockRestTimeBottomSheet={
-                handleShowBlockRestTimeBottomSheet
-              }
-              onAddSetToExercise={handleAddSetToExercise}
-              onShowSetType={handleShowSetTypeSheet}
-              onShowBlockOptionsBottomSheet={handleShowBlockOptionsBottomSheet}
-              onShowExerciseOptionsBottomSheet={
-                handleShowExerciseOptionsBottomSheet
-              }
+              onToggleSheet={handleToggleSheet}
             />
           ))}
 
           <View style={{ padding: 20 }}>
-            <AddExerciseButton
-              setExerciseSelectorVisible={setExerciseSelectorVisible}
-            />
+            <ActiveAddExerciseButton />
           </View>
-
-          {/* Rest Timer Bottom Sheet */}
-          <RestTimerBottomnSheet
-            ref={restTimerSheetRef}
-            restTimeSeconds={restTimer?.totalTime || 0}
-            timerKey={restTimer?.startedAt}
-            onSkip={skipRestTimer}
-            onAdjustTime={adjustRestTimer}
-            onTimerComplete={() => {}}
-          />
-
-          {/* TODO: Add other bottom sheets */}
-          <RestTimeBottomSheet
-            ref={restTimeBottomSheetRef}
-            currentRestTime={currentRestTime}
-            onSelectRestTime={handleBlockRestTimeSelect}
-          />
-
-          <SetTypeBottomSheet
-            ref={setTypeSheetRef}
-            onSelectSetType={handleSetTypeSelect}
-            onDeleteSet={handleDeleteSet}
-            currentSetType={currentSetData?.current as ISetType}
-          />
-
-          <ExerciseSelectorModal
-            visible={exerciseSelectorVisible}
-            onClose={() => setExerciseSelectorVisible(false)}
-            selectedExercises={selectedExercises}
-            onSelectExercise={handleSelectExercise}
-            onAddAsIndividual={handleAddAsIndividual}
-            onAddAsBlock={handleAddAsBlock}
-            isReplaceMode={isReplaceMode}
-            onReplaceExercise={handleReplaceExercise}
-          />
-
-          <BlockOptionsBottomSheet
-            ref={blockOptionsBottomSheetRef}
-            onDelete={handleDeleteBlock}
-            onConvertToIndividual={handleConvertToIndividual}
-            exercisesLength={exercisesLength}
-          />
-
-          <ExerciseOptionsBottomSheet
-            ref={exerciseOptionsBottomSheetRef}
-            onDelete={handleDeleteExercise}
-            onShowReplace={handleShowReplaceModal}
-            isInMultipleExercisesBlock={isInMultipleExerciseBlock}
-          />
         </ScrollView>
+
+        <ActiveExerciseModal
+          blockOptionsBottomSheetRef={blockOptionsBottomSheetRef}
+        />
+
+        <ActiveBottomSheets
+          setTypeBottomSheetRef={setTypeBottomSheetRef}
+          restTimeBottomSheetRef={restTimeBottomSheetRef}
+          blockOptionsBottomSheetRef={blockOptionsBottomSheetRef}
+          exerciseOptionsBottomSheetRef={exerciseOptionsBottomSheetRef}
+          restTimerSheetRef={restTimerSheetRef}
+        />
       </SafeAreaView>
     </BottomSheetModalProvider>
   );

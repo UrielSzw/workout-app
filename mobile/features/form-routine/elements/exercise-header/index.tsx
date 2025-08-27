@@ -13,7 +13,6 @@ const ExerciseHeaderComponent: React.FC<Props> = ({ exerciseInBlock }) => {
     <View
       style={{
         flexDirection: 'row',
-        alignItems: 'center',
         gap: 8,
       }}
     >

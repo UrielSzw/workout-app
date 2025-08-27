@@ -53,6 +53,15 @@ export const createIndividualBlock = (
   return newBlocks;
 };
 
+const createExercises = (exercises: IExercise[]) => {
+  return exercises.map((exercise, i) => ({
+    id: `exercise_${Date.now()}_${i}`,
+    exercise,
+    sets: createDefaultSets(),
+    orderIndex: i,
+  })) as IExerciseInBlock[];
+};
+
 export const createMultiBlock = (
   exercises: IExercise[],
   totalBlocks: number,
@@ -61,12 +70,7 @@ export const createMultiBlock = (
     id: `block_${Date.now()}`,
     type: 'superset', // Always start as superset
     orderIndex: totalBlocks,
-    exercises: exercises.map((exercise, i) => ({
-      id: `exercise_${Date.now()}_${i}`,
-      exercise,
-      sets: createDefaultSets(),
-      orderIndex: i,
-    })),
+    exercises: createExercises(exercises),
     restTimeSeconds: 90,
     restBetweenExercisesSeconds: 0, // No rest = superset
     name: 'Superserie',

@@ -3,9 +3,9 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { IBlock } from '@/types/routine';
 import { Timer } from 'lucide-react-native';
 import { TouchableOpacity, View } from 'react-native';
-import { useBlockStyles } from '../../../hooks/use-block-styles';
 import { IToogleSheet } from '@/features/form-routine/hooks/use-form-routine-sheets';
 import { useEditValuesActions } from '@/features/form-routine/hooks/use-form-routine-store';
+import { useBlockStyles } from '@/hooks/use-block-styles';
 
 type Props = {
   block: IBlock;

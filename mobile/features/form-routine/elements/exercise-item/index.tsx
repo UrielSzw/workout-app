@@ -35,6 +35,7 @@ export const ExerciseItem: React.FC<Props> = ({
       blockId: block.id,
       exerciseInBlockId: exerciseInBlock.id,
       isMultiBlock: block.type !== 'individual',
+      exerciseName: exerciseInBlock.exercise.name,
     });
     onToggleSheet('exerciseOptions');
   };

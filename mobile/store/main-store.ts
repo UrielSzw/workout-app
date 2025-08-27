@@ -261,3 +261,5 @@ export const mainStore = create<MainStore>((set, get) => ({
 
   setLoading: (loading) => set({ isLoading: loading }),
 }));
+
+export const useAddRoutines = () => mainStore((state) => state.addRoutine);

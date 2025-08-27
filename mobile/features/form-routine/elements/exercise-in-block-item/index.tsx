@@ -2,9 +2,9 @@ import { Typography } from '@/components/ui';
 import { IBlock, IExerciseInBlock } from '@/types/routine';
 import { Timer } from 'lucide-react-native';
 import { View } from 'react-native';
-import { useBlockStyles } from '../../hooks/use-block-styles';
 import { BlockLine } from '../block-line';
 import React from 'react';
+import { useBlockStyles } from '@/hooks/use-block-styles';
 
 type Props = {
   exerciseInBlock: IExerciseInBlock;

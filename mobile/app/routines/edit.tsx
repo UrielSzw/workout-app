@@ -1,4 +1,4 @@
-import { FormRoutineFeature } from '@/features/form-routine/index-old';
+import { FormRoutineFeature } from '@/features/form-routine';
 import React from 'react';
 
 export default function EditRoutineScreen() {
