@@ -61,7 +61,7 @@ export const mainStore = create<MainStore>((set, get) => ({
   exercises: EXERCISE_LIBRARY,
 
   // Theme
-  colorScheme: 'light',
+  colorScheme: 'dark',
   setColorScheme: async (scheme) => {
     set({ colorScheme: scheme });
     try {
